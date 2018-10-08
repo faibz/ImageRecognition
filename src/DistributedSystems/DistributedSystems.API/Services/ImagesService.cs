@@ -28,10 +28,10 @@ namespace DistributedSystems.API.Services
         public ImagesService(IConfiguration config, IImagesRepository imagesRepository)
         {
             _imagesRepository = imagesRepository;
-            _queueClient = new QueueClient(config.GetValue<string>("ServiceBusConnectionString"), config.GetValue<string>("ServiceBusQueueName"));
-            _blobContainer = CloudStorageAccount.Parse("CloudStorageConnectionString")
+            _queueClient = new QueueClient(config.GetValue<string>("Azure:ServiceBusConnectionString"), config.GetValue<string>("Azure:ServiceBusQueueName"));
+            _blobContainer = CloudStorageAccount.Parse("Azure:CloudStorageConnectionString")
                 .CreateCloudBlobClient()
-                .GetContainerReference(config.GetValue<string>("blobName"));
+                .GetContainerReference(config.GetValue<string>("Azure:CloudBlobContainerName"));
         }
 
 
