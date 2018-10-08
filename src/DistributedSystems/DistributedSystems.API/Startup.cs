@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using DistributedSystems.API.Factories;
 using DistributedSystems.API.Repositories;
 using DistributedSystems.API.Services;
 using Microsoft.AspNetCore.Builder;
@@ -27,6 +28,7 @@ namespace DistributedSystems.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddSingleton<IDbConnectionFactory, DbConnectionFactory>();
             services.AddTransient<IImagesRepository, ImagesRepository>();
             services.AddTransient<IImagesService, ImagesService>();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
