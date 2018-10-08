@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using DistributedSystems.API.Models;
@@ -39,10 +40,26 @@ namespace DistributedSystems.API.Services
             //TODO MEMES
             //await _blobContainer.CreateIfNotExistsAsync();
             //Decide on blockBlobReference. Id from DB?
+            //Does the SAS helper require settings to be configured in azure?
+            //set stuff up to allow failures to be shown
 
-            await _blobContainer.GetBlockBlobReference("blockBlobRef").UploadFromStreamAsync(memoryStream); //can still change to diff file system
+
+            var blockBlob = _blobContainer.GetBlockBlobReference("blockBlobRef");
+            await blockBlob.UploadFromStreamAsync(memoryStream); //can still change to diff file system
+
+            //TODO: MOVE THIS INTO SAS HELPER
+            var lx2 = new SharedAccessBlobPolicy
+            {
+                Permissions = SharedAccessBlobPermissions.Read,
+                SharedAccessStartTime = DateTimeOffset.UtcNow.AddMinutes(-1),
+                SharedAccessExpiryTime = DateTimeOffset.UtcNow.AddMinutes(5)
+            };
+
+            blockBlob.GetSharedAccessSignature(lx2);
+            image.Location = blockBlob.StorageUri.PrimaryUri.AbsoluteUri;
             await _imagesRepository.InsertImage(image);
             await _queueClient.SendAsync(new Message(Encoding.UTF8.GetBytes("messageToAddToQueue")));
+
 
             return new UploadImageResult(true, image);
         }
