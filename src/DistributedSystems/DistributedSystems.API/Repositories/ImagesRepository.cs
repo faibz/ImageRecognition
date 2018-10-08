@@ -22,9 +22,9 @@ namespace DistributedSystems.API.Repositories
 
         public async Task<Image> InsertImage(Image image)
         {
-            await _connection.ExecuteAsync("meme");
+            await _connection.ExecuteAsync("INSERT INTO [dbo].[Images] ([Id], [Location]) VALUES (@Id, @Location", new { image.Id, image.Location });
 
-            return new Image(new Models.Requests.ImageRequest());
+            return image; //lol?
         }
     }
 }

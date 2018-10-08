@@ -21,6 +21,10 @@ namespace DistributedSystems.API.Controllers
         [HttpPost]
         public async Task<IActionResult> SubmitImage([FromBody] ImageRequest imageRequest)
         {
+            //TODO: what does 4000000 mean
+            //clean up call to UploadImage
+            //map stuff
+
             var imgStream = new MemoryStream(imageRequest.Image);
             if (imgStream.Length > 4000000) return BadRequest("Image too large");
 
