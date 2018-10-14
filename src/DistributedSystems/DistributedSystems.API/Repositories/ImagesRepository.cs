@@ -13,7 +13,7 @@ namespace DistributedSystems.API.Repositories
 
     public class ImagesRepository : IImagesRepository
     {
-        private IDbConnection _connection;
+        private readonly IDbConnection _connection;
 
         public ImagesRepository(IDbConnectionFactory connectionFactory)
         {

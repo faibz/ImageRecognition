@@ -1,8 +1,10 @@
 ﻿using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using DistributedSystems.API.Models;
 using DistributedSystems.API.Models.Requests;
 using DistributedSystems.API.Services;
+using DistributedSystems.API.Validators;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DistributedSystems.API.Controllers
@@ -12,23 +14,43 @@ namespace DistributedSystems.API.Controllers
     public class ImagesController : ControllerBase
     {
         private readonly IImagesService _imagesService;
+        private readonly IImageValidator _imageValidator;
+        private readonly IMapValidator _mapValidator;
+        private readonly IMapService _mapService;
 
-        public ImagesController(IImagesService imagesService)
+        public ImagesController(IImagesService imagesService, IImageValidator imageValidator, IMapValidator mapValidator, IMapService mapService)
         {
             _imagesService = imagesService;
+            _imageValidator = imageValidator;
+            _mapValidator = mapValidator;
+            _mapService = mapService;
         }
 
-        [HttpPost]
+        [HttpGet("[action]")]
+        public async Task<IActionResult> CreateImageMap(int columnCount, int rowCount)
+        {
+
+            var validationErrors = _mapValidator.ValidateCreateImageMapRequest(columnCount, rowCount);
+            if (validationErrors.Any()) return BadRequest(validationErrors);
+
+            var map = await _mapService.CreateNewImageMap(columnCount, rowCount);
+            
+            return Ok(map);
+        }
+
+        [HttpPost("[action]")]
         public async Task<IActionResult> SubmitImage([FromBody] ImageRequest imageRequest)
         {
-            //TODO: what does 4000000 mean
-            //clean up call to UploadImage
             //map stuff
 
-            var imgStream = new MemoryStream(imageRequest.Image);
-            if (imgStream.Length > 4000000) return BadRequest("Image too large");
+            var validationErrors = _imageValidator.ValidateImageRequest(imageRequest);
+            if (validationErrors.Any()) return BadRequest(validationErrors);
 
-            if (!(await _imagesService.UploadImage(new Image(imageRequest), imgStream)).Success) return BadRequest();
+            var imgStream = new MemoryStream(imageRequest.Image);
+
+            var uploadImageResult = await _imagesService.UploadImage(new Image(imageRequest), imgStream);
+
+            if (!uploadImageResult.Success) return BadRequest();
 
             return Ok();
         }
