@@ -1,6 +1,8 @@
-﻿using DistributedSystems.API.Factories;
+﻿using DistributedSystems.API.Controllers;
+using DistributedSystems.API.Factories;
 using DistributedSystems.API.Repositories;
 using DistributedSystems.API.Services;
+using DistributedSystems.API.Validators;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -24,6 +26,7 @@ namespace DistributedSystems.API
             services.AddSingleton<IDbConnectionFactory, DbConnectionFactory>();
             services.AddTransient<IImagesRepository, ImagesRepository>();
             services.AddTransient<IImagesService, ImagesService>();
+            services.AddTransient<IImageValidator, ImageValidator>();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }
 

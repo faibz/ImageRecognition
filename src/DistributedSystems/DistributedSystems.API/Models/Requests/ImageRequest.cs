@@ -6,6 +6,6 @@ namespace DistributedSystems.API.Models.Requests
     {
         [JsonConverter(typeof(Base64FileJsonConverter))]
         public byte[] Image { get; set; }
-        //TODO: DOES THIS RELATE TO A BIGGER PHOTO? IF SO, MAP INFORMATION
+        public MapData MapData { get; set; }
     }
 }
