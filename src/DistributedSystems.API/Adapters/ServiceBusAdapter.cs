@@ -16,7 +16,7 @@ namespace DistributedSystems.API.Adapters
         }
 
         public async Task SendMessage(string message) 
-            => await _queueClient.SendAsync(new Message(Encoding.UTF8.GetBytes("messageToAddToQueue")));
+            => await _queueClient.SendAsync(new Message(Encoding.UTF8.GetBytes(message)));
 
         public async Task SendMessage(object obj) 
             => await _queueClient.SendAsync(new Message(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(obj))));

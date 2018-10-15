@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Threading.Tasks;
 using DistributedSystems.API.Adapters;
 using DistributedSystems.API.Models;
@@ -28,12 +29,17 @@ namespace DistributedSystems.API.Services
 
         public async Task<UploadImageResult> UploadImage(Image image, MemoryStream memoryStream)
         {
-            //TODO: set stuff up to allow failures to be shown
-
-            image.Location = await _storageAdapter.UploadImage(image, memoryStream);
-            await _imagesRepository.InsertImage(image);
-            image.Location = await _storageAdapter.GetImageUriWithKey(image.Id);
-            await _queueAdapter.SendMessage(image);
+            try
+            {
+                image.Location = await _storageAdapter.UploadImage(image, memoryStream);
+                await _imagesRepository.InsertImage(image);
+                image.Location = await _storageAdapter.GetImageUriWithKey(image.Id);
+                await _queueAdapter.SendMessage(image);
+            }
+            catch (Exception)
+            {
+                return new UploadImageResult(false, null);
+            }
 
             return new UploadImageResult(true, image);
         }

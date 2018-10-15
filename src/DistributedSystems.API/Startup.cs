@@ -1,4 +1,5 @@
-﻿using DistributedSystems.API.Factories;
+﻿using DistributedSystems.API.Adapters;
+using DistributedSystems.API.Factories;
 using DistributedSystems.API.Repositories;
 using DistributedSystems.API.Services;
 using DistributedSystems.API.Validators;
@@ -29,6 +30,8 @@ namespace DistributedSystems.API
             services.AddTransient<IMapRepository, MapRepository>();
             services.AddTransient<IMapService, MapService>();
             services.AddTransient<IMapValidator, MapValidator>();
+            services.AddTransient<IFileStorageAdapter, AzureBlobStorageAdapter>();
+            services.AddTransient<IQueueAdapter, ServiceBusAdapter>();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }
 
