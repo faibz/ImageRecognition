@@ -3,12 +3,15 @@ using System.Data;
 using Dapper;
 using DistributedSystems.API.Factories;
 using DistributedSystems.API.Models;
+using System;
 
 namespace DistributedSystems.API.Repositories
 {
     public interface IMapRepository
     {
         Task<Map> InsertMap(Map map);
+        Task<Map> GetMapById(Guid mapId);
+        Task<MapImagePart> GetMapImagePartByIdAndLocation(Guid mapId, int x, int y);
     }
 
     public class MapRepository : IMapRepository
@@ -27,6 +30,24 @@ namespace DistributedSystems.API.Repositories
                 new {map.Id, map.ColumnCount, map.RowCount});
 
             return map;
+        }
+
+        public async Task<Map> GetMapById(Guid mapId)
+        {
+            var map = await _connection.QueryFirstAsync<Models.DTOs.Map>(
+                "SELECT TOP 1 [Id], [ColumnCount], [RowCount] FROM [dbo].[Maps] WHERE [Id] = @MapId",
+                new { MapId = mapId });
+
+            return (Map) map;
+        }
+
+        public async Task<MapImagePart> GetMapImagePartByIdAndLocation(Guid mapId, int x, int y)
+        {
+            var mapImagePart = await _connection.QueryFirstAsync<Models.DTOs.MapImagePart>(
+                "SELECT TOP 1 [MapId], [ImageId], [CoordinateX], [CoordinateY] FROM [dbo].[MapImageParts] WHERE [MapId] = @MapId AND [CoordinateX] = @CoordinateX, AND [CoordinateY] = @CoordinateY",
+                new { MapId = mapId, CoordinateX = x, CoordinateY = y });
+
+            return (MapImagePart) mapImagePart;
         }
     }
 }

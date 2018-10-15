@@ -1,5 +1,4 @@
-﻿using DistributedSystems.API.Controllers;
-using DistributedSystems.API.Factories;
+﻿using DistributedSystems.API.Factories;
 using DistributedSystems.API.Repositories;
 using DistributedSystems.API.Services;
 using DistributedSystems.API.Validators;
@@ -27,6 +26,9 @@ namespace DistributedSystems.API
             services.AddTransient<IImagesRepository, ImagesRepository>();
             services.AddTransient<IImagesService, ImagesService>();
             services.AddTransient<IImageValidator, ImageValidator>();
+            services.AddTransient<IMapRepository, MapRepository>();
+            services.AddTransient<IMapService, MapService>();
+            services.AddTransient<IMapValidator, MapValidator>();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }
 

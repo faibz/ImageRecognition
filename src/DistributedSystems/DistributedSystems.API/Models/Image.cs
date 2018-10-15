@@ -9,10 +9,7 @@ namespace DistributedSystems.API.Models
         //TODO: DEFINITELY NEED TO THINK ABOUT THAT MAP
         //TODO: COULD ADD IN OTHER INFORMATION HERE LIKE DATE ETC OR JUST DO RIGHT BEFORE AN INSERT
 
-        public Image()
-        {
-
-        }
+        public Image() { }
 
         public Image(ImageRequest imageRequest)
         {
