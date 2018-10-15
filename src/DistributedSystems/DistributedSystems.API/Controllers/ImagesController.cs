@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using DistributedSystems.API.Models;
@@ -26,24 +27,11 @@ namespace DistributedSystems.API.Controllers
             _mapService = mapService;
         }
 
-        [HttpGet("[action]")]
-        public async Task<IActionResult> CreateImageMap(int columnCount, int rowCount)
-        {
-
-            var validationErrors = _mapValidator.ValidateCreateImageMapRequest(columnCount, rowCount);
-            if (validationErrors.Any()) return BadRequest(validationErrors);
-
-            var map = await _mapService.CreateNewImageMap(columnCount, rowCount);
-            
-            return Ok(map);
-        }
-
         [HttpPost("[action]")]
         public async Task<IActionResult> SubmitImage([FromBody] ImageRequest imageRequest)
         {
-            //map stuff
-
-            var validationErrors = _imageValidator.ValidateImageRequest(imageRequest);
+            var validationErrors = (List<Error>)_imageValidator.ValidateImageRequest(imageRequest);
+            if (imageRequest.MapData != null) validationErrors.AddRange(await _mapValidator.ValidateMapEntry(imageRequest.MapData));
             if (validationErrors.Any()) return BadRequest(validationErrors);
 
             var imgStream = new MemoryStream(imageRequest.Image);

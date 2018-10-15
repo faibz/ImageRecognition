@@ -19,6 +19,6 @@ namespace DistributedSystems.API.Services
         }
 
         public async Task<Map> CreateNewImageMap(int columnCount, int rowCount) 
-            => await _mapRepository.InsertMap(new Map(columnCount, rowCount)); //remove?
+            => await _mapRepository.InsertMap(new Map(columnCount, rowCount));
     }
 }
