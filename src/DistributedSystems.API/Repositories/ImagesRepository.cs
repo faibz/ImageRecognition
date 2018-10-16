@@ -24,7 +24,7 @@ namespace DistributedSystems.API.Repositories
         {
             await _connection.ExecuteAsync("INSERT INTO [dbo].[Images] ([Id], [Location]) VALUES (@Id, @Location", new { image.Id, image.Location });
 
-            return image; //lol?
+            return image;
         }
     }
 }

@@ -5,7 +5,6 @@ using DistributedSystems.API.Adapters;
 using DistributedSystems.API.Models;
 using DistributedSystems.API.Models.Results;
 using DistributedSystems.API.Repositories;
-using Microsoft.Extensions.Configuration;
 
 namespace DistributedSystems.API.Services
 {
@@ -20,7 +19,7 @@ namespace DistributedSystems.API.Services
         private readonly IFileStorageAdapter _storageAdapter;
         private readonly IQueueAdapter _queueAdapter;
 
-        public ImagesService(IConfiguration config, IImagesRepository imagesRepository, IFileStorageAdapter storageAdapter, IQueueAdapter queueAdapter)
+        public ImagesService(IImagesRepository imagesRepository, IFileStorageAdapter storageAdapter, IQueueAdapter queueAdapter)
         {
             _imagesRepository = imagesRepository;
             _queueAdapter = queueAdapter;
