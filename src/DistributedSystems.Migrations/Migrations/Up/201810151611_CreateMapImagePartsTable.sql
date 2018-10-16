@@ -1,0 +1,12 @@
+﻿IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'MapImageParts')
+BEGIN
+    CREATE TABLE MapImageParts (
+		MapId UNIQUEIDENTIFIER NOT NULL,
+		ImageId UNIQUEIDENTIFIER NOT NULL,
+		CoordinateX INT NOT NULL,
+		CoordinateY INT NOT NULL,
+		CONSTRAINT PK_MapImageParts PRIMARY KEY (MapId, ImageId, CoordinateX, CoordinateY),
+		CONSTRAINT FK_MapImageParts_MapId_Maps_Id FOREIGN KEY (MapId) REFERENCES Maps(Id),
+		CONSTRAINT FK_MapImageParts_ImageId_Images_Id FOREIGN KEY (ImageId) REFERENCES Images(Id),
+    );
+END
