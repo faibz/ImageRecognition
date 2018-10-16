@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -8,23 +8,24 @@
   <ItemGroup>
     <None Remove="Migrations\Down\201810151550_CreateImagesTable.sql" />
     <None Remove="Migrations\Down\201810151553_CreateMapsTable.sql" />
-    <None Remove="Migrations\Down\201810151611_CreateMapImageParts.sql" />
+    <None Remove="Migrations\Down\201810151611_CreateMapImagePartsTable.sql" />
     <None Remove="Migrations\Up\201810151550_CreateImagesTable.sql" />
     <None Remove="Migrations\Up\201810151553_CreateMapsTable.sql" />
-    <None Remove="Migrations\Up\201810151611_CreateMapImageParts.sql" />
+    <None Remove="Migrations\Up\201810151611_CreateMapImagePartsTable.sql" />
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="Migrations\Down\201810151550_CreateImagesTable.sql" />
     <EmbeddedResource Include="Migrations\Down\201810151553_CreateMapsTable.sql" />
-    <EmbeddedResource Include="Migrations\Down\201810151611_CreateMapImageParts.sql" />
+    <EmbeddedResource Include="Migrations\Down\201810151611_CreateMapImagePartsTable.sql" />
     <EmbeddedResource Include="Migrations\Up\201810151550_CreateImagesTable.sql" />
-    <EmbeddedResource Include="Migrations\Up\201810151611_CreateMapImageParts.sql" />
+    <EmbeddedResource Include="Migrations\Up\201810151611_CreateMapImagePartsTable.sql" />
     <EmbeddedResource Include="Migrations\Up\201810151553_CreateMapsTable.sql" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Simple.Migrations" Version="0.9.19" />
+    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.6" />
   </ItemGroup>
 
   <ItemGroup>
