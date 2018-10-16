@@ -11,10 +11,11 @@ namespace DistributedSystems.API.Adapters
 
     public class AzureBlobStorageAdapter : IFileStorageAdapter
     {
-        private CloudBlobContainer _blobContainer;
+        private readonly CloudBlobContainer _blobContainer;
+
         public AzureBlobStorageAdapter(IConfiguration config)
         {
-            _blobContainer = CloudStorageAccount.Parse("Azure:CloudStorageConnectionString")
+            _blobContainer = CloudStorageAccount.Parse(config.GetValue<string>("Azure:CloudStorageConnectionString"))
                 .CreateCloudBlobClient()
                 .GetContainerReference(config.GetValue<string>("Azure:CloudBlobContainerName"));
         }

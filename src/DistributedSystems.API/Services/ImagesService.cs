@@ -35,7 +35,7 @@ namespace DistributedSystems.API.Services
                 image.Location = await _storageAdapter.GetImageUriWithKey(image.Id);
                 await _queueAdapter.SendMessage(image);
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 return new UploadImageResult(false, null);
             }
