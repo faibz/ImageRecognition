@@ -12,6 +12,7 @@ namespace DistributedSystems.API.Repositories
         Task<Map> InsertMap(Map map);
         Task<Map> GetMapById(Guid mapId);
         Task<MapImagePart> GetMapImagePartByIdAndLocation(Guid mapId, int x, int y);
+        Task<MapImagePart> InsertMapImagePart(MapImagePart mapImagePart);
     }
 
     public class MapRepository : IMapRepository
@@ -26,7 +27,7 @@ namespace DistributedSystems.API.Repositories
         public async Task<Map> InsertMap(Map map)
         {
             await _connection.ExecuteAsync(
-                "INSERT INTO [dbo].[Maps] ([Id], [ColumnCnt], [RowCnt]) VALUES (@Id, @ColumnCount, @RowCount",
+                "INSERT INTO [dbo].[Maps] ([Id], [ColumnCnt], [RowCnt]) VALUES (@Id, @ColumnCount, @RowCount)",
                 new {map.Id, map.ColumnCount, map.RowCount});
 
             return map;
@@ -48,6 +49,13 @@ namespace DistributedSystems.API.Repositories
                 new { MapId = mapId, CoordinateX = x, CoordinateY = y });
 
             return (MapImagePart) mapImagePart;
+        }
+
+        public async Task<MapImagePart> InsertMapImagePart(MapImagePart mapImagePart)
+        {
+            await _connection.ExecuteAsync("INSERT INTO [dbo].[MapImageParts] ([MapId], [ImageId], [CoordinateX], [CoordinateY]) VALUES (@MapId, @ImageId, @CoordinateX, @CoordinateY)", new { mapImagePart.MapId, mapImagePart.ImageId, mapImagePart.CoordinateX, mapImagePart.CoordinateY });
+
+            return mapImagePart;
         }
     }
 }
