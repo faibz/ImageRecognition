@@ -9,16 +9,20 @@
     <None Remove="Migrations\Down\201810151550_CreateImagesTable.sql" />
     <None Remove="Migrations\Down\201810151553_CreateMapsTable.sql" />
     <None Remove="Migrations\Down\201810151611_CreateMapImagePartsTable.sql" />
+    <None Remove="Migrations\Down\201810221303_CreateImageTagsTable.sql" />
     <None Remove="Migrations\Up\201810151550_CreateImagesTable.sql" />
     <None Remove="Migrations\Up\201810151553_CreateMapsTable.sql" />
     <None Remove="Migrations\Up\201810151611_CreateMapImagePartsTable.sql" />
+    <None Remove="Migrations\Up\201810221303_CreateImageTagsTable.sql" />
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="Migrations\Down\201810151550_CreateImagesTable.sql" />
     <EmbeddedResource Include="Migrations\Down\201810151553_CreateMapsTable.sql" />
+    <EmbeddedResource Include="Migrations\Down\201810221303_CreateImageTagsTable.sql" />
     <EmbeddedResource Include="Migrations\Down\201810151611_CreateMapImagePartsTable.sql" />
     <EmbeddedResource Include="Migrations\Up\201810151550_CreateImagesTable.sql" />
+    <EmbeddedResource Include="Migrations\Up\201810221303_CreateImageTagsTable.sql" />
     <EmbeddedResource Include="Migrations\Up\201810151611_CreateMapImagePartsTable.sql" />
     <EmbeddedResource Include="Migrations\Up\201810151553_CreateMapsTable.sql" />
   </ItemGroup>

@@ -28,7 +28,7 @@ namespace DistributedSystems.API
             services.AddTransient<IImagesService, ImagesService>();
             services.AddTransient<IImageValidator, ImageValidator>();
             services.AddTransient<IMapRepository, MapRepository>();
-            services.AddTransient<IMapService, MapService>();
+            services.AddTransient<IMapsService, MapsService>();
             services.AddTransient<IMapValidator, MapValidator>();
             services.AddTransient<IFileStorageAdapter, AzureBlobStorageAdapter>();
             services.AddTransient<IQueueAdapter, ServiceBusAdapter>();
