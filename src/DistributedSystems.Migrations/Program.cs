@@ -1,11 +1,10 @@
 ﻿using SimpleMigrations;
 using SimpleMigrations.DatabaseProvider;
-using System;
 using System.Data.SqlClient;
 
 namespace DistributedSystems.Migrations
 {
-    class Program
+    public class Program
     {
         static void Main(string[] args)
         {
