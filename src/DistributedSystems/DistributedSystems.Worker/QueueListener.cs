@@ -10,6 +10,7 @@ namespace DistributedSystems.Worker
     public class QueueListener
     {
         private readonly IQueueClient _queueClient;
+        private ImageAnalyser _imageAnalyser;
 
         public QueueListener(IConfigurationRoot config)
         {
@@ -50,6 +51,11 @@ namespace DistributedSystems.Worker
         {
             // Process the message.
             Console.WriteLine($"Received message: SequenceNumber:{message.SystemProperties.SequenceNumber} Body:{Encoding.UTF8.GetString(message.Body)}");
+
+            _imageAnalyser = new ImageAnalyser(Encoding.UTF8.GetString(message.Body));
+            var analysedPicture = await _imageAnalyser.SendImageUrlToComputerVisionApiAsync();
+
+            Console.WriteLine(analysedPicture);
 
             // Complete the message so that it is not received again.
             // This can be done only if the queue Client is created in ReceiveMode.PeekLock mode (which is the default).
