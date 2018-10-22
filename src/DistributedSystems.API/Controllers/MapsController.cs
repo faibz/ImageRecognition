@@ -12,12 +12,12 @@ namespace DistributedSystems.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class MapController : ControllerBase
+    public class MapsController : ControllerBase
     {
         private readonly IMapValidator _mapValidator;
         private readonly IMapService _mapService;
 
-        public MapController(IMapValidator mapValidator, IMapService mapService)
+        public MapsController(IMapValidator mapValidator, IMapService mapService)
         {
             _mapValidator = mapValidator;
             _mapService = mapService;
