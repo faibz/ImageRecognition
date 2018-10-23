@@ -13,17 +13,17 @@ namespace DistributedSystems.API.Services
 
     public class MapsService : IMapsService
     {
-        private readonly IMapRepository _mapRepository;
+        private readonly IMapsRepository _mapsRepository;
 
-        public MapsService(IMapRepository mapRepository)
+        public MapsService(IMapsRepository mapsRepository)
         {
-            _mapRepository = mapRepository;
+            _mapsRepository = mapsRepository;
         }
 
         public async Task<Map> CreateNewImageMap(int columnCount, int rowCount) 
-            => await _mapRepository.InsertMap(new Map(columnCount, rowCount));
+            => await _mapsRepository.InsertMap(new Map(columnCount, rowCount));
 
         public async Task<MapImagePart> AddImageToMap(MapData mapData, Guid imageId) 
-            => await _mapRepository.InsertMapImagePart(new MapImagePart(mapData, imageId));
+            => await _mapsRepository.InsertMapImagePart(new MapImagePart(mapData, imageId));
     }
 }
