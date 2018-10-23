@@ -27,7 +27,7 @@ namespace DistributedSystems.API
 
             services.AddTransient<IImagesRepository, ImagesRepository>();
             services.AddTransient<ITagsRepository, TagsRepository>();
-            services.AddTransient<IMapRepository, MapRepository>();
+            services.AddTransient<IMapsRepository, MapsRepository>();
 
             services.AddTransient<IMapValidator, MapValidator>();
             services.AddTransient<IImageValidator, ImageValidator>();
