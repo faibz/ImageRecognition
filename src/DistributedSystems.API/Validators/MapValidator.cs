@@ -15,7 +15,7 @@ namespace DistributedSystems.API.Validators
 
     public class MapValidator : IMapValidator
     {
-        private IMapRepository _mapRepository;
+        private readonly IMapRepository _mapRepository;
 
         public MapValidator(IMapRepository mapRepository)
         {

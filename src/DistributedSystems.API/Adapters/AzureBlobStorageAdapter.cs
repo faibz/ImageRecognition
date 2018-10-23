@@ -20,11 +20,11 @@ namespace DistributedSystems.API.Adapters
                 .GetContainerReference(config.GetValue<string>("Azure:CloudBlobContainerName"));
         }
 
-        public async Task<string> UploadImage(Image image, MemoryStream memoryStream)
+        public async Task<string> UploadImage(Guid imageId, MemoryStream memoryStream)
         {
             await _blobContainer.CreateIfNotExistsAsync();
 
-            var blockBlob = _blobContainer.GetBlockBlobReference($"{image.Id.ToString()}.jpg");
+            var blockBlob = _blobContainer.GetBlockBlobReference($"{imageId.ToString()}.jpg");
             await blockBlob.UploadFromStreamAsync(memoryStream);
 
             return blockBlob.StorageUri.PrimaryUri.AbsoluteUri;

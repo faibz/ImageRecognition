@@ -36,7 +36,7 @@ namespace DistributedSystems.API.Controllers
 
             var imgStream = new MemoryStream(imageRequest.Image);
 
-            var uploadImageResult = await _imagesService.UploadImage(new Image(imageRequest), imgStream);
+            var uploadImageResult = await _imagesService.UploadImage(imgStream);
             if (!uploadImageResult.Success) return BadRequest();
 
             if (imageRequest.MapData != null) await _mapsService.AddImageToMap(imageRequest.MapData, uploadImageResult.Image.Id);

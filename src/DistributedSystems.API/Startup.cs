@@ -24,12 +24,18 @@ namespace DistributedSystems.API
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<IDbConnectionFactory, DbConnectionFactory>();
+
             services.AddTransient<IImagesRepository, ImagesRepository>();
-            services.AddTransient<IImagesService, ImagesService>();
-            services.AddTransient<IImageValidator, ImageValidator>();
+            services.AddTransient<ITagsRepository, TagsRepository>();
             services.AddTransient<IMapRepository, MapRepository>();
-            services.AddTransient<IMapsService, MapsService>();
+
             services.AddTransient<IMapValidator, MapValidator>();
+            services.AddTransient<IImageValidator, ImageValidator>();
+
+            services.AddTransient<IImagesService, ImagesService>();
+            services.AddTransient<ITagsService, TagsService>();
+            services.AddTransient<IMapsService, MapsService>();
+
             services.AddTransient<IFileStorageAdapter, AzureBlobStorageAdapter>();
             services.AddTransient<IQueueAdapter, ServiceBusAdapter>();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
