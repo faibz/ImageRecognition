@@ -10,7 +10,7 @@ namespace DistributedSystems.API.Services
 {
     public interface IImagesService
     {
-        Task<UploadImageResult> UploadImage(Image image, MemoryStream memoryStream);
+        Task<UploadImageResult> UploadImage(MemoryStream memoryStream);
     }
 
     public class ImagesService : IImagesService
@@ -26,16 +26,19 @@ namespace DistributedSystems.API.Services
             _storageAdapter = storageAdapter;
         }
 
-        public async Task<UploadImageResult> UploadImage(Image image, MemoryStream memoryStream)
+        public async Task<UploadImageResult> UploadImage(MemoryStream memoryStream)
         {
+            var image = new Image();
+
             try
             {
-                image.Location = await _storageAdapter.UploadImage(image, memoryStream);
+                image.Location = await _storageAdapter.UploadImage(image.Id, memoryStream);
                 await _imagesRepository.InsertImage(image);
                 image.Location = await _storageAdapter.GetImageUriWithKey(image.Id);
                 await _queueAdapter.SendMessage(image);
+
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return new UploadImageResult(false, null);
             }

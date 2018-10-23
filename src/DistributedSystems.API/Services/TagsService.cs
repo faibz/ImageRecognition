@@ -1,7 +1,9 @@
-﻿using DistributedSystems.API.Models;
+﻿using System;
+using DistributedSystems.API.Models;
 using System.Threading.Tasks;
+using DistributedSystems.API.Repositories;
 
-namespace DistributedSystems.API.Controllers
+namespace DistributedSystems.API.Services
 {
     public interface ITagsService
     {
@@ -20,7 +22,8 @@ namespace DistributedSystems.API.Controllers
         public async Task ProcessImageTags(ImageTagData imageTagData)
         {
             foreach (var tag in imageTagData.TagData)
-                await _tagsRepository.InsertImageTag(imageTagData.ImageId, tag);
+                await _tagsRepository.InsertImageTag(imageTagData.ImageId, tag,
+                    imageTagData.GetType() == typeof(MapTagData) ? ((MapTagData) imageTagData).MapId : (Guid?) null);
         }
     }
 }

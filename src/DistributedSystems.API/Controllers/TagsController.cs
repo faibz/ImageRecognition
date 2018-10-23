@@ -32,6 +32,8 @@ namespace DistributedSystems.API.Controllers
         [HttpPost("[action]")]
         public async Task<IActionResult> SubmitMapImagePartTags([FromBody] MapTagData mapTagData)
         {
+            await _tagService.ProcessImageTags(mapTagData);
+
             return Ok();
         }
     }

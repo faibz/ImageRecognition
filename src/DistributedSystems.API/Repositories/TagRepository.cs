@@ -5,11 +5,11 @@ using System;
 using System.Data;
 using System.Threading.Tasks;
 
-namespace DistributedSystems.API.Controllers
+namespace DistributedSystems.API.Repositories
 {
     public interface ITagsRepository
     {
-        Task InsertImageTag(Guid imageId, Tag tag);
+        Task InsertImageTag(Guid imageId, Tag tag, Guid? mapId);
     }
 
     public class TagsRepository : ITagsRepository
@@ -21,9 +21,11 @@ namespace DistributedSystems.API.Controllers
             _connection = dbConnectionFactory.GetDbConnection();
         }
 
-        public async Task InsertImageTag(Guid imageId, Tag tag)
+        public async Task InsertImageTag(Guid imageId, Tag tag, Guid? mapId)
         {
-            await _connection.ExecuteAsync("INSERT INTO [dbo].[ImageTags] ([ImageId], ) VALUES ()");
+            await _connection.ExecuteAsync(
+                "INSERT INTO [dbo].[ImageTags] ([ImageId], [Tag], [Confidence], [MapId]) VALUES (@ImageId, @Tag, @Confidence, @MapId)",
+                new {ImageId = imageId, Tag = tag.Name, Confidence = tag.Confidence, MapId = mapId});
         }
     }
 }
