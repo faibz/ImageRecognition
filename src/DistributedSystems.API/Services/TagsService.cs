@@ -14,10 +14,12 @@ namespace DistributedSystems.API.Services
     public class TagsService : ITagsService
     {
         private readonly ITagsRepository _tagsRepository;
+        private readonly IImagesRepository _imagesRepository;
 
-        public TagsService(ITagsRepository tagsRepository)
+        public TagsService(ITagsRepository tagsRepository, IImagesRepository imagesRepository)
         {
             _tagsRepository = tagsRepository;
+            _imagesRepository = imagesRepository;
         }
 
         public async Task ProcessImageTags(ImageTagData imageTagData)
@@ -29,7 +31,11 @@ namespace DistributedSystems.API.Services
 
         public async Task<bool> ValidateTagDataKey(ImageTagData tagData)
         {
-            var lx = await _tagsRepository.GetKeyById(tagData.ImageId);
+            if (string.IsNullOrEmpty(tagData.Key)) return false;
+
+            var imageKey = await _imagesRepository.GetImageKeyById(tagData.ImageId);
+
+            return tagData.Key == imageKey;
         }
     }
 }
