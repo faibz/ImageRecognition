@@ -1,22 +1,19 @@
 ﻿using System;
-using DistributedSystems.API.Models.Requests;
 
 namespace DistributedSystems.API.Models
 {
     public class Image
     {
-        //TODO: HOW WORTH IS THIS CONSTRUCTOR VS JUST SETTING DEFAULT ON ID TO NEW GUID? XD
-        //TODO: DEFINITELY NEED TO THINK ABOUT THAT MAP
-        //TODO: COULD ADD IN OTHER INFORMATION HERE LIKE DATE ETC OR JUST DO RIGHT BEFORE AN INSERT
-
-        public Image() { }
-
-        public Image(ImageRequest imageRequest)
+        public Image()
         {
             Id = Guid.NewGuid();
+            UploadedDate = DateTime.UtcNow;;
         }
 
-        public Guid Id { get; set; }
+        public Guid Id { get; }
         public string Location { get; set; }
+        public DateTime UploadedDate { get; set; }
+        public ImageStatus Status { get; set; } = ImageStatus.UploadComplete;
+        public string ImageKey { get; set; }
     }
 }

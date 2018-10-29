@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using DistributedSystems.API.Utils;
+using Newtonsoft.Json;
 
 namespace DistributedSystems.API.Models.Requests
 {

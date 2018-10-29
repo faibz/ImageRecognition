@@ -6,7 +6,7 @@ namespace DistributedSystems.Migrations
 {
     public class Program
     {
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             var migrationsAssembly = typeof(Program).Assembly;
             var connectionString = new SqlConnectionStringBuilder
