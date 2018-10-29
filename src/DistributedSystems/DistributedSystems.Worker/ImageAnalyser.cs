@@ -23,7 +23,7 @@ namespace DistributedSystems.Worker
         {
             var apiRequest = new HttpRequestMessage
             {
-                RequestUri = new Uri("https://uksouth.api.cognitive.microsoft.com/vision/v1.0/analyze/"),
+                RequestUri = new Uri("https://uksouth.api.cognitive.microsoft.com/vision/v2.0/tag"),
                 Method = HttpMethod.Post,
                 Content = new StringContent(JsonConvert.SerializeObject(new { url = _image.Location }),
                                             Encoding.UTF8, "application/json")
