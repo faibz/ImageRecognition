@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 using DistributedSystems.API.Adapters;
 using DistributedSystems.API.Models;
@@ -10,7 +11,7 @@ namespace DistributedSystems.API.Services
 {
     public interface IImagesService
     {
-        Task<UploadImageResult> UploadImage(Image image, MemoryStream memoryStream);
+        Task<UploadImageResult> UploadImage(MemoryStream memoryStream);
     }
 
     public class ImagesService : IImagesService
@@ -26,21 +27,75 @@ namespace DistributedSystems.API.Services
             _storageAdapter = storageAdapter;
         }
 
-        public async Task<UploadImageResult> UploadImage(Image image, MemoryStream memoryStream)
+        public async Task<UploadImageResult> UploadImage(MemoryStream memoryStream)
         {
-            try
+            //TODO:
+            // Probably should do:
+            // If the storage isn't available:
+            // - write all required information to a file so that it can be retried
+            // If the DB isn't available:
+            // - write all required information to a file so that it can be retried
+            // If the service bus isn't available:
+            // - write all required information to a file so that it can be retried
+
+            var image = new Image();
+
+            using (var md5 = MD5.Create())
             {
-                image.Location = await _storageAdapter.UploadImage(image, memoryStream);
-                await _imagesRepository.InsertImage(image);
-                image.Location = await _storageAdapter.GetImageUriWithKey(image.Id);
-                await _queueAdapter.SendMessage(image);
-            }
-            catch (Exception e)
-            {
-                return new UploadImageResult(false, null);
+                image.ImageKey = BitConverter.ToString(md5.ComputeHash(memoryStream)).Replace("-", "").ToLower();
             }
 
-            return new UploadImageResult(true, image);
+            image.Location = await _storageAdapter.UploadImage(image.Id, memoryStream);
+
+            if (string.IsNullOrEmpty(image.Location))
+            {
+                image.Status = ImageStatus.Errored;
+                await _imagesRepository.InsertImage(image);
+
+                //write to file
+
+                return UploadFailureResult();
+            }
+
+            if (!await _imagesRepository.InsertImage(image))
+            {
+                //write to file
+
+                return UploadFailureResult();
+            }
+
+            image.Location = await _storageAdapter.GetImageUriWithKey(image.Id);
+
+            if (string.IsNullOrEmpty(image.Location))
+            {
+                await _imagesRepository.UpdateImageStatus(image.Id, ImageStatus.Errored);
+
+                //write to file
+
+                return UploadFailureResult();
+            }
+
+            if (!await _queueAdapter.SendMessage(image))
+            {
+                await _imagesRepository.UpdateImageStatus(image.Id, ImageStatus.Errored);
+
+                //write to file
+
+                return UploadFailureResult();
+            }
+
+            if (!await _imagesRepository.UpdateImageStatus(image.Id, ImageStatus.AwaitingProcessing))
+            {
+                return UploadFailureResult();
+            }
+
+            return UploadSuccessResult(image);
         }
+
+        private UploadImageResult UploadSuccessResult(Image image)
+            => new UploadImageResult(true, image);
+
+        private UploadImageResult UploadFailureResult()
+            => new UploadImageResult(false, null);
     }
 }

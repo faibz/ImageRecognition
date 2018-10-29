@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Drawing;
 using System.Threading.Tasks;
 using DistributedSystems.API.Models;
@@ -15,11 +14,11 @@ namespace DistributedSystems.API.Validators
 
     public class MapValidator : IMapValidator
     {
-        private IMapRepository _mapRepository;
+        private readonly IMapsRepository _mapsRepository;
 
-        public MapValidator(IMapRepository mapRepository)
+        public MapValidator(IMapsRepository mapsRepository)
         {
-            _mapRepository = mapRepository;
+            _mapsRepository = mapsRepository;
         }
 
         public IList<Error> ValidateCreateImageMapRequest(int columnCount, int rowCount)
@@ -35,12 +34,12 @@ namespace DistributedSystems.API.Validators
         {
             var errors = new List<Error>();
 
-            var map = await _mapRepository.GetMapById(mapData.MapId);
+            var map = await _mapsRepository.GetMapById(mapData.MapId);
             if (map != null) errors.Add(new Error("map", "Could not find a map with that Id."));
 
             if (!PointWithinMap(mapData.Coordinates, map.ColumnCount, map.RowCount))
                 errors.Add(new Error("map", $"Selected map coordinate: ({mapData.Coordinates.X},{mapData.Coordinates.Y}) is not within the map boundaries."));
-            if (_mapRepository.GetMapImagePartByIdAndLocation(map.Id, mapData.Coordinates.X, mapData.Coordinates.Y) != null)
+            if (_mapsRepository.GetMapImagePartByIdAndLocation(map.Id, mapData.Coordinates.X, mapData.Coordinates.Y) != null)
                 errors.Add(new Error("map", $"Selected map coordinate: ({mapData.Coordinates.X},{mapData.Coordinates.Y}) is already occupied."));
 
             return errors;
