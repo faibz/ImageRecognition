@@ -45,6 +45,7 @@ namespace DistributedSystems.API.Services
                 image.ImageKey = BitConverter.ToString(md5.ComputeHash(memoryStream)).Replace("-", "").ToLower();
             }
 
+            memoryStream.Position = 0;
             image.Location = await _storageAdapter.UploadImage(image.Id, memoryStream);
 
             if (string.IsNullOrEmpty(image.Location))
