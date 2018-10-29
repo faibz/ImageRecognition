@@ -1,4 +1,5 @@
 ﻿using System;
+﻿using Newtonsoft.Json;
 
 namespace DistributedSystems.API.Models
 {
@@ -12,7 +13,9 @@ namespace DistributedSystems.API.Models
 
         public Guid Id { get; }
         public string Location { get; set; }
+        [JsonIgnore]
         public DateTime UploadedDate { get; set; }
+        [JsonIgnore]
         public ImageStatus Status { get; set; } = ImageStatus.UploadComplete;
         public string ImageKey { get; set; }
     }
