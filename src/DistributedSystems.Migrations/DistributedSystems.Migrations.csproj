@@ -12,12 +12,14 @@
     <None Remove="Migrations\Down\201810221303_CreateImageTagsTable.sql" />
     <None Remove="Migrations\Down\201810230927_CreateStatusesTable.sql" />
     <None Remove="Migrations\Down\201810230928_AddUploadedDateAndStatusToImagesTable.sql" />
+    <None Remove="Migrations\Down\201810291131_AddKeyToImagesTable.sql" />
     <None Remove="Migrations\Up\201810151550_CreateImagesTable.sql" />
     <None Remove="Migrations\Up\201810151553_CreateMapsTable.sql" />
     <None Remove="Migrations\Up\201810151611_CreateMapImagePartsTable.sql" />
     <None Remove="Migrations\Up\201810221303_CreateImageTagsTable.sql" />
     <None Remove="Migrations\Up\201810230927_CreateStatusesTable.sql" />
     <None Remove="Migrations\Up\201810230928_AddUploadedDateAndStatusToImagesTable.sql" />
+    <None Remove="Migrations\Up\201810291131_AddKeyToImagesTable.sql" />
   </ItemGroup>
 
   <ItemGroup>
@@ -27,8 +29,10 @@
     <EmbeddedResource Include="Migrations\Down\201810151611_CreateMapImagePartsTable.sql" />
     <EmbeddedResource Include="Migrations\Down\201810230927_CreateStatusesTable.sql" />
     <EmbeddedResource Include="Migrations\Down\201810230928_AddUploadedDateAndStatusToImagesTable.sql" />
+    <EmbeddedResource Include="Migrations\Down\201810291131_AddKeyToImagesTable.sql" />
     <EmbeddedResource Include="Migrations\Up\201810151550_CreateImagesTable.sql" />
     <EmbeddedResource Include="Migrations\Up\201810230927_CreateStatusesTable.sql" />
+    <EmbeddedResource Include="Migrations\Up\201810291131_AddKeyToImagesTable.sql" />
     <EmbeddedResource Include="Migrations\Up\201810230928_AddUploadedDateAndStatusToImagesTable.sql" />
     <EmbeddedResource Include="Migrations\Up\201810221303_CreateImageTagsTable.sql" />
     <EmbeddedResource Include="Migrations\Up\201810151611_CreateMapImagePartsTable.sql" />
