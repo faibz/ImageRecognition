@@ -8,5 +8,6 @@ namespace DistributedSystems.API.Models.DTOs
         public string Location { get; set; }
         public DateTime UploadedDate { get; set; }
         public ImageStatus Status { get; set; }
+        public string ImageKey { get; set; }
     }
 }

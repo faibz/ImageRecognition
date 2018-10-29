@@ -22,20 +22,35 @@ namespace DistributedSystems.API.Adapters
 
         public async Task<string> UploadImage(Guid imageId, MemoryStream memoryStream)
         {
-            await _blobContainer.CreateIfNotExistsAsync();
+            try
+            {
+                await _blobContainer.CreateIfNotExistsAsync();
 
-            var blockBlob = _blobContainer.GetBlockBlobReference($"{imageId.ToString()}.jpg");
-            await blockBlob.UploadFromStreamAsync(memoryStream);
+                var blockBlob = _blobContainer.GetBlockBlobReference($"{imageId.ToString()}.jpg");
+                await blockBlob.UploadFromStreamAsync(memoryStream);
 
-            return blockBlob.StorageUri.PrimaryUri.AbsoluteUri;
+                return blockBlob.StorageUri.PrimaryUri.AbsoluteUri;
+            }
+            catch (Exception)
+            { }
+
+            return null;
         }
 
         public async Task<string> GetImageUriWithKey(Guid imageId)
         {
-            if (!await _blobContainer.ExistsAsync()) return string.Empty;
+            try
+            {
+                if (!await _blobContainer.ExistsAsync()) return string.Empty;
 
-            var blockBlob = _blobContainer.GetBlockBlobReference($"{imageId.ToString()}.jpg");
-            return blockBlob.StorageUri.PrimaryUri.AbsoluteUri + GenerateSharedAccessSignature(blockBlob);
+                var blockBlob = _blobContainer.GetBlockBlobReference($"{imageId.ToString()}.jpg");
+                return blockBlob.StorageUri.PrimaryUri.AbsoluteUri + GenerateSharedAccessSignature(blockBlob);
+            }
+            catch (Exception)
+            { }
+
+            return null;
+
         }
 
         public string GenerateSharedAccessSignature(CloudBlockBlob blockBlob)

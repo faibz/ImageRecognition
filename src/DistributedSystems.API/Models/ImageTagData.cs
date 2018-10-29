@@ -7,5 +7,6 @@ namespace DistributedSystems.API.Models
         public Guid ImageId { get; set; }
         
         public Tag[] TagData { get; set; }
+        public string Key { get; set; }
     }
 } 
