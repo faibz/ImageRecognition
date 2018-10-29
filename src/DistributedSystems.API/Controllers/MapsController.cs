@@ -1,9 +1,5 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
-using DistributedSystems.API.Models;
-using DistributedSystems.API.Models.Requests;
 using DistributedSystems.API.Services;
 using DistributedSystems.API.Validators;
 using Microsoft.AspNetCore.Mvc;
@@ -15,12 +11,12 @@ namespace DistributedSystems.API.Controllers
     public class MapsController : ControllerBase
     {
         private readonly IMapValidator _mapValidator;
-        private readonly IMapService _mapService;
+        private readonly IMapsService _mapsService;
 
-        public MapsController(IMapValidator mapValidator, IMapService mapService)
+        public MapsController(IMapValidator mapValidator, IMapsService mapService)
         {
             _mapValidator = mapValidator;
-            _mapService = mapService;
+            _mapsService = mapService;
         }
 
         [HttpGet("[action]")]
@@ -29,7 +25,7 @@ namespace DistributedSystems.API.Controllers
             var validationErrors = _mapValidator.ValidateCreateImageMapRequest(columnCount, rowCount);
             if (validationErrors.Any()) return BadRequest(validationErrors);
 
-            var map = await _mapService.CreateNewImageMap(columnCount, rowCount);
+            var map = await _mapsService.CreateNewImageMap(columnCount, rowCount);
             
             return Ok(map);
         }

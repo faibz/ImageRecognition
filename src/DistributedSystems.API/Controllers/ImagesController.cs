@@ -17,14 +17,14 @@ namespace DistributedSystems.API.Controllers
         private readonly IImagesService _imagesService;
         private readonly IImageValidator _imageValidator;
         private readonly IMapValidator _mapValidator;
-        private readonly IMapService _mapService;
+        private readonly IMapsService _mapsService;
 
-        public ImagesController(IImagesService imagesService, IImageValidator imageValidator, IMapValidator mapValidator, IMapService mapService)
+        public ImagesController(IImagesService imagesService, IImageValidator imageValidator, IMapValidator mapValidator, IMapsService mapsService)
         {
             _imagesService = imagesService;
             _imageValidator = imageValidator;
             _mapValidator = mapValidator;
-            _mapService = mapService;
+            _mapsService = mapsService;
         }
 
         [HttpPost("[action]")]
@@ -36,9 +36,10 @@ namespace DistributedSystems.API.Controllers
 
             var imgStream = new MemoryStream(imageRequest.Image);
 
-            var uploadImageResult = await _imagesService.UploadImage(new Image(imageRequest), imgStream);
-
+            var uploadImageResult = await _imagesService.UploadImage(imgStream);
             if (!uploadImageResult.Success) return BadRequest();
+
+            if (imageRequest.MapData != null) await _mapsService.AddImageToMap(imageRequest.MapData, uploadImageResult.Image.Id);
 
             return Ok();
         }
