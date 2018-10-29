@@ -11,7 +11,7 @@ namespace DistributedSystems.API.Repositories
     {
         Task<bool> InsertImage(Image image);
         Task<bool> UpdateImageStatus(Guid imageId, ImageStatus imageStatus);
-        Task<string> GetKeyById(Guid imageId);
+        Task<string> GetImageKeyById(Guid imageId);
 
     }
 
@@ -53,9 +53,7 @@ namespace DistributedSystems.API.Repositories
             
         }
 
-        public async Task<string> GetKeyById(Guid imageId) 
+        public async Task<string> GetImageKeyById(Guid imageId) 
             => await _connection.QueryFirstAsync<string>("SELECT [Key] FROM [dbo].[Images] WHERE [Id] = @Id", new { Id = imageId });
-
-
     }
 }
