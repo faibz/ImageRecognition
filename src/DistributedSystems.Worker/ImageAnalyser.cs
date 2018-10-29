@@ -25,8 +25,7 @@ namespace DistributedSystems.Worker
             {
                 RequestUri = new Uri("https://uksouth.api.cognitive.microsoft.com/vision/v2.0/tag"),
                 Method = HttpMethod.Post,
-                Content = new StringContent(JsonConvert.SerializeObject(new { url = _image.Location }),
-                                            Encoding.UTF8, "application/json")
+                Content = new StringContent(JsonConvert.SerializeObject(new { url = _image.Location }), Encoding.UTF8, "application/json")
             };
             apiRequest.Headers.Add("Ocp-Apim-Subscription-Key", "1080c5eef7c04852b1623cc582b0faaf");
             apiRequest.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
