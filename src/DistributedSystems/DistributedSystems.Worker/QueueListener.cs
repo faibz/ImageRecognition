@@ -19,13 +19,10 @@ namespace DistributedSystems.Worker
 
         public async Task Run()
         {
-            Console.WriteLine("Press ENTER key to exit after receiving all the messages.");
-
             // Register the queue message handler and receive messages in a loop
             RegisterOnMessageHandlerAndReceiveMessages();
 
             Console.ReadKey();
-
             await _queueClient.CloseAsync();
         }
 
@@ -73,7 +70,9 @@ namespace DistributedSystems.Worker
             var context = exceptionReceivedEventArgs.ExceptionReceivedContext;
             Console.WriteLine("Exception context for troubleshooting:");
             Console.WriteLine($"- Endpoint: {context.Endpoint}");
+            Console.WriteLine();
             Console.WriteLine($"- Entity Path: {context.EntityPath}");
+            Console.WriteLine();
             Console.WriteLine($"- Executing Action: {context.Action}");
             return Task.CompletedTask;
         }
