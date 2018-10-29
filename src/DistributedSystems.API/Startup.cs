@@ -1,6 +1,8 @@
-﻿using DistributedSystems.API.Factories;
+﻿using DistributedSystems.API.Adapters;
+using DistributedSystems.API.Factories;
 using DistributedSystems.API.Repositories;
 using DistributedSystems.API.Services;
+using DistributedSystems.API.Validators;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -24,6 +26,12 @@ namespace DistributedSystems.API
             services.AddSingleton<IDbConnectionFactory, DbConnectionFactory>();
             services.AddTransient<IImagesRepository, ImagesRepository>();
             services.AddTransient<IImagesService, ImagesService>();
+            services.AddTransient<IImageValidator, ImageValidator>();
+            services.AddTransient<IMapRepository, MapRepository>();
+            services.AddTransient<IMapService, MapService>();
+            services.AddTransient<IMapValidator, MapValidator>();
+            services.AddTransient<IFileStorageAdapter, AzureBlobStorageAdapter>();
+            services.AddTransient<IQueueAdapter, ServiceBusAdapter>();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }
 

@@ -16,7 +16,7 @@ namespace DistributedSystems.API.Factories
 
         public DbConnectionFactory(IConfiguration config)
         {
-            _connection = new SqlConnection(config.GetValue<string>("meme"));
+            _connection = new SqlConnection(config.GetValue<string>("Azure:DatabaseConnectionString"));
             _connection.Open();
         }
 
