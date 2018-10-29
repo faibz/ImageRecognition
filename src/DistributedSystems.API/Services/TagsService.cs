@@ -8,6 +8,7 @@ namespace DistributedSystems.API.Services
     public interface ITagsService
     {
         Task ProcessImageTags(ImageTagData imageTagData);
+        Task<bool> ValidateTagDataKey(ImageTagData tagData);
     }
 
     public class TagsService : ITagsService
@@ -24,6 +25,11 @@ namespace DistributedSystems.API.Services
             foreach (var tag in imageTagData.TagData)
                 await _tagsRepository.InsertImageTag(imageTagData.ImageId, tag,
                     imageTagData.GetType() == typeof(MapTagData) ? ((MapTagData) imageTagData).MapId : (Guid?) null);
+        }
+
+        public async Task<bool> ValidateTagDataKey(ImageTagData tagData)
+        {
+            var lx = await _tagsRepository.GetKeyById(tagData.ImageId);
         }
     }
 }

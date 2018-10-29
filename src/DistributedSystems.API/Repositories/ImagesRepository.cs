@@ -9,8 +9,10 @@ namespace DistributedSystems.API.Repositories
 {
     public interface IImagesRepository
     {
-        Task<Image> InsertImage(Image image);
-        Task UpdateImageStatus(Guid imageId, ImageStatus imageStatus);
+        Task<bool> InsertImage(Image image);
+        Task<bool> UpdateImageStatus(Guid imageId, ImageStatus imageStatus);
+        Task<string> GetKeyById(Guid imageId);
+
     }
 
     public class ImagesRepository : IImagesRepository
@@ -22,17 +24,38 @@ namespace DistributedSystems.API.Repositories
             _connection = connectionFactory.GetDbConnection();
         }
 
-        public async Task<Image> InsertImage(Image image)
+        public async Task<bool> InsertImage(Image image)
         {
-            await _connection.ExecuteAsync("INSERT INTO [dbo].[Images] ([Id], [Location], [UploadedDate], [Status]) VALUES (@Id, @Location, @UploadedDate, @Status)", new { image.Id, image.Location, image.UploadedDate, image.Status });
+            try
+            {
+                await _connection.ExecuteAsync("INSERT INTO [dbo].[Images] ([Id], [Location], [UploadedDate], [Status]) VALUES (@Id, @Location, @UploadedDate, @Status)", new { image.Id, image.Location, image.UploadedDate, image.Status });
 
-            return image;
+                return true;
+            }
+            catch (Exception)
+            { }
+
+            return false;
         }
 
-        public async Task UpdateImageStatus(Guid imageId, ImageStatus imageStatus)
+        public async Task<bool> UpdateImageStatus(Guid imageId, ImageStatus imageStatus)
         {
-            await _connection.ExecuteAsync("UPDATE [dbo].[Images] SET [Status] = @Status WHERE [Id] = @Id",
-                new {Id = imageId, Status = imageStatus});
+            try
+            {
+                await _connection.ExecuteAsync("UPDATE [dbo].[Images] SET [Status] = @Status WHERE [Id] = @Id",
+                   new { Id = imageId, Status = imageStatus });
+                return true;
+            }
+            catch (Exception)
+            { }
+
+            return false;
+            
         }
+
+        public async Task<string> GetKeyById(Guid imageId) 
+            => await _connection.QueryFirstAsync<string>("SELECT [Key] FROM [dbo].[Images] WHERE [Id] = @Id", new { Id = imageId });
+
+
     }
 }

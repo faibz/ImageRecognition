@@ -4,7 +4,7 @@ namespace DistributedSystems.API.Adapters
 {
     public interface IQueueAdapter
     {
-        Task SendMessage(string message);
-        Task SendMessage(object obj);
+        Task<bool> SendMessage(string message);
+        Task<bool> SendMessage(object obj);
     }
 }

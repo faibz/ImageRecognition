@@ -20,11 +20,10 @@ namespace DistributedSystems.API.Controllers
             _tagsRepository = tagsRepository;
         }
         
-        //TODO: security? API key? data so we know we can trust response? image hash? key per image?
         [HttpPost("[action]")]
         public async Task<IActionResult> SubmitImageTags([FromBody] ImageTagData imageTagData)
         {
-            //SECURITY STUFF HERE. HOW CAN WE TRUST THIS DATA? MAYBE JUST ADD AUTH ATTRIBUTE AND SETUP IN STARTUP
+            if (!await _tagService.ValidateTagDataKey(imageTagData)) return Unauthorized();
 
             await _tagService.ProcessImageTags(imageTagData);
 
@@ -34,6 +33,8 @@ namespace DistributedSystems.API.Controllers
         [HttpPost("[action]")]
         public async Task<IActionResult> SubmitMapImagePartTags([FromBody] MapTagData mapTagData)
         {
+            if (!await _tagService.ValidateTagDataKey(mapTagData)) return Unauthorized();
+
             await _tagService.ProcessImageTags(mapTagData);
 
             return Ok();
@@ -41,8 +42,6 @@ namespace DistributedSystems.API.Controllers
 
         [HttpGet("[action]/{imageId:Guid}")]
         public async Task<IActionResult> GetTagsForImage(Guid imageId)
-        {
-            return Ok(await _tagsRepository.GetTagsByImageId(imageId));
-        }
+            => Ok(await _tagsRepository.GetTagsByImageId(imageId));
     }
 }

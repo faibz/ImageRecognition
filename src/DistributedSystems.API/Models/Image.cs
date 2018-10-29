@@ -14,5 +14,6 @@ namespace DistributedSystems.API.Models
         public string Location { get; set; }
         public DateTime UploadedDate { get; set; }
         public ImageStatus Status { get; set; } = ImageStatus.UploadComplete;
+        public string ImageKey { get; set; }
     }
 }
