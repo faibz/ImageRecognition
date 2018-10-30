@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using DistributedSystems.API.Models;
 using DistributedSystems.API.Repositories;
@@ -33,6 +33,8 @@ namespace DistributedSystems.API.Controllers
         [HttpPost("[action]")]
         public async Task<IActionResult> SubmitMapImagePartTags([FromBody] MapTagData mapTagData)
         {
+            //TODO: Add tag validator (?) to check whether a certain tag has already been entered for an image
+
             if (!await _tagService.ValidateTagDataKey(mapTagData)) return Unauthorized();
 
             await _tagService.ProcessImageTags(mapTagData);

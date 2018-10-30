@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Threading.Tasks;
 using DistributedSystems.API.Models;
@@ -35,17 +35,22 @@ namespace DistributedSystems.API.Validators
             var errors = new List<Error>();
 
             var map = await _mapsRepository.GetMapById(mapData.MapId);
-            if (map != null) errors.Add(new Error("map", "Could not find a map with that Id."));
+            if (map == null)
+            {
+                errors.Add(new Error("map", "Could not find a map with that Id."));
+
+                return errors;
+            }
 
             if (!PointWithinMap(mapData.Coordinates, map.ColumnCount, map.RowCount))
                 errors.Add(new Error("map", $"Selected map coordinate: ({mapData.Coordinates.X},{mapData.Coordinates.Y}) is not within the map boundaries."));
-            if (_mapsRepository.GetMapImagePartByIdAndLocation(map.Id, mapData.Coordinates.X, mapData.Coordinates.Y) != null)
+            if (await _mapsRepository.GetMapImagePartByIdAndLocation(map.Id, mapData.Coordinates.X, mapData.Coordinates.Y) != null)
                 errors.Add(new Error("map", $"Selected map coordinate: ({mapData.Coordinates.X},{mapData.Coordinates.Y}) is already occupied."));
 
             return errors;
         }
 
-        private bool PointWithinMap(Point coordinates, int mapColumns, int mapRows) 
+        private bool PointWithinMap(Coordinate coordinates, int mapColumns, int mapRows) 
             => !(coordinates.X < 1 || coordinates.Y < 1 || coordinates.X > mapColumns || coordinates.Y > mapRows);
     }
 }
