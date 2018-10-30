@@ -54,6 +54,6 @@ namespace DistributedSystems.API.Repositories
         }
 
         public async Task<string> GetImageKeyById(Guid imageId) 
-            => await _connection.QueryFirstAsync<string>("SELECT [Key] FROM [dbo].[Images] WHERE [Id] = @Id", new { Id = imageId });
+            => await _connection.QueryFirstAsync<string>("SELECT [ImageKey] FROM [dbo].[Images] WHERE [Id] = @Id", new { Id = imageId });
     }
 }
