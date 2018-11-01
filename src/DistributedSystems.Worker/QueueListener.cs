@@ -17,6 +17,7 @@ namespace DistributedSystems.Worker
         // TODO:
         // - check response from API before closing the queue,
         // - check if the confidence is satisfactory,
+        // - clean the code from Console.WriteLine's when debugging is no longer needed.
 
         private readonly HttpClient _httpClient;
         private readonly IQueueClient _queueClient;
@@ -58,25 +59,27 @@ namespace DistributedSystems.Worker
         async Task ProcessMessagesAsync(Message message, CancellationToken token)
         {
             var messageBodyString = Encoding.UTF8.GetString(message.Body);
-            var bob = JsonConvert.DeserializeObject<Image>(messageBodyString);
+            var messageBodyJson = JsonConvert.DeserializeObject<Image>(messageBodyString);
 
             // Process the message.
-            Console.WriteLine($"Received message: SequenceNumber:{message.SystemProperties.SequenceNumber} Body:{messageBodyString}");
+            Console.WriteLine($"Received message: SequenceNumber:{message.SystemProperties.SequenceNumber} Body:{messageBodyString}"); // DEBUG
 
             _imageAnalyser = new ImageAnalyser(messageBodyString);
             var analysedPicture = await _imageAnalyser.SendImageUrlToComputerVisionApiAsync();
-            var lx = JObject.Parse(analysedPicture);
-            var bob2 = (JArray)lx["tags"];
-            var tags = bob2.ToObject<Tag[]>();
+            Console.WriteLine(analysedPicture); // DEBUG
+            var analysedPictureJson = JObject.Parse(analysedPicture);
+            var tagsArray = (JArray)analysedPictureJson["tags"];
+            var tagsObject = tagsArray.ToObject<Tag[]>();
 
             var imageTagData = new ImageTagData
             {
-                ImageId = bob.Id,
-                TagData = tags,
-                Key = bob.ImageKey
+                ImageId = messageBodyJson.Id,
+                TagData = tagsObject,
+                Key = messageBodyJson.ImageKey
             };
 
-            Console.WriteLine(analysedPicture);
+            Console.WriteLine('\nImage tag data:\n'); // DEBUG
+            Console.WriteLine(imageTagData);
 
             var sendTagsRequest = new HttpRequestMessage
             {
