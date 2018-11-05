@@ -3,6 +3,7 @@ using System;
 using System.Linq;
 using System.ServiceModel;
 using System.ServiceProcess;
+using System.Threading.Tasks;
 using System.Timers;
 
 namespace DistributedSystems.WorkerManager
@@ -25,12 +26,12 @@ namespace DistributedSystems.WorkerManager
             log4net.Config.XmlConfigurator.Configure();
 
             _serviceBusManager = new ServiceBusManager(System.Configuration.ConfigurationManager.AppSettings["ServiceBusConnectionString"], System.Configuration.ConfigurationManager.AppSettings["ServiceBusQueueName"]);
-            _workerPoolMonitor = new WorkerPoolMonitor();
+            _workerPoolMonitor = new WorkerPoolMonitor(System.Configuration.ConfigurationManager.AppSettings["AzureAuthFileLocation"]);
         }
 
         protected override void OnStart(string[] args)
         {
-            _log.Info($"Service starting. Time (UTC): {DateTime.UtcNow}.");
+            _log.Info($"Service starting at {DateTime.UtcNow}.");
 
             if (_serviceHost != null) _serviceHost.Close();
 
@@ -38,9 +39,11 @@ namespace DistributedSystems.WorkerManager
             _serviceHost.AddServiceEndpoint(typeof(IManager), new BasicHttpBinding(), _baseAddress); // do I need this? does it replace config
             _serviceHost.Open();
 
-            _timer.Elapsed += new ElapsedEventHandler(DoAThing);
+            _timer.Elapsed += new ElapsedEventHandler(ManageWorkerPool);
             _timer.Interval = 5000;
             _timer.Enabled = true;
+
+            _log.Info($"Service started successfully at {DateTime.UtcNow}.");
         }
 
         protected override void OnStop()
@@ -52,38 +55,44 @@ namespace DistributedSystems.WorkerManager
                 _serviceHost.Close();
                 _serviceHost = null;
             }
+
+            _log.Info($"Service stopped successfully at {DateTime.UtcNow}.");
         }
 
-        private async void DoAThing(object sender, ElapsedEventArgs e)
+        private async void ManageWorkerPool(object sender, ElapsedEventArgs e)
         {
-            _log.Info($"Checking service bus. Time (UTC): {DateTime.UtcNow}.");
-
             var queueMessageCount = await _serviceBusManager.GetMessageCount();
             var activeWorkerCount = CurrentWorkerCount();
 
-            if (queueMessageCount > 1L && queueMessageCount < 10L)
-            {
-                _log.Info("Normal level");
-            }
+            _log.Info($"Checking service bus and workers. Time (UTC): {DateTime.UtcNow}. Amount of message in queues: {queueMessageCount}. Amount of active workers: {activeWorkerCount}.");
 
-            if (queueMessageCount >= 10L)
-            {
-                _log.Warn("Something or other");
+            var action = WorkerQueueEvaluator.AdviseAction(activeWorkerCount, queueMessageCount);
 
-                StartNewWorker();
+            switch(action)
+            {
+                case WorkerAction.Add:
+                    _log.Info($"Starting new worker at: {DateTime.UtcNow}.");
+                    await StartNewWorker();
+                    break;
+                case WorkerAction.Remove:
+                    _log.Info($"Shutting worker down at: {DateTime.UtcNow}.");
+                    await ShutWorkerDown();
+                    break;
+                default:
+                    break;
             }
         }
 
-        private void StartNewWorker() 
-            => _workerPoolMonitor.TotalWorkers.Where(worker => !worker.Active).First().TurnOn();
+        private async Task StartNewWorker() 
+            => await _workerPoolMonitor.Workers.Where(worker => !worker.Active).First().TurnOn();
 
-        private void ShutWorkerDown()
-            => _workerPoolMonitor.TotalWorkers.Where(worker => worker.Active).First().ShutDown();
+        private async Task ShutWorkerDown()
+            => await _workerPoolMonitor.Workers.Where(worker => worker.Active).First().ShutDown();
 
         public int TotalWorkerCount()
-            => _workerPoolMonitor.TotalWorkers.Count;
+            => _workerPoolMonitor.Workers.Count;
 
         public int CurrentWorkerCount() 
-            => _workerPoolMonitor.TotalWorkers.Where(worker => worker.Active).Count();
+            => _workerPoolMonitor.Workers.Where(worker => worker.Active).Count();
     }
 }
