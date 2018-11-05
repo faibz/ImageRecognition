@@ -14,8 +14,12 @@ namespace DistributedSystems.Worker
                 .AddJsonFile("appsettings.json");
             var configuration = builder.Build();
 
-            var queueListener = new QueueListener(configuration);
-            await queueListener.Run();
+            var queueListenerSingleImage = new QueueListenerSingleImage(configuration);
+            var queueListenerCompoundImage = new QueueListenerCompoundImage(configuration);
+
+            var singleImageListener = queueListenerSingleImage.Run();
+            var compoundImageListener = queueListenerCompoundImage.Run();
+            Task.WaitAll(new[] { singleImageListener, compoundImageListener });
         }
     }
 }

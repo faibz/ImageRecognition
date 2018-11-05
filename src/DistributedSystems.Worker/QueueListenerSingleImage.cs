@@ -12,29 +12,37 @@ using Newtonsoft.Json.Linq;
 
 namespace DistributedSystems.Worker
 {
-    public class QueueListener
+    public class QueueListenerSingleImage
     {
-        // TODO:
-        // - check response from API before closing the queue,
-        // - check if the confidence is satisfactory,
-        // - clean the code from Console.WriteLine's when debugging is no longer needed.
+        /* TODO:
+         * - DONE create new Service Bus for compound images,
+         * - update connection string and queue name in the configuration file,
+         * - DONE create QueueListenerMultipleImages class -- queue multi,
+         *          send stitched image to the Azure Vision;
+         *          send the tags to the API;
+         * - DONE rename QueueListener class to QueueListenerSingleImage -- queue single,
+         * - create ImageStitcher class
+         *          do stitching;
+         *          decrease quality/size;
+         * - DONE add another method to ImageAnalyser to send the stitched image.
+         *      - (why?) The current method uses the message string, not a new stitched thing.
+         */
 
         private readonly HttpClient _httpClient;
         private readonly IQueueClient _queueClient;
         private ImageAnalyser _imageAnalyser;
 
-        public QueueListener(IConfigurationRoot config)
+        public QueueListenerSingleImage(IConfigurationRoot config)
         {
             _httpClient = new HttpClient();
-            _queueClient = new QueueClient(config["ServiceBusConnectionString"], config["ServiceBusQueueName"]);
+            _queueClient = new QueueClient(config["SingleImageServiceBusConnectionString"], config["SingleImageServiceBusQueueName"]);
+            _imageAnalyser = new ImageAnalyser();
         }
 
         public async Task Run()
         {
             // Register the queue message handler and receive messages in a loop
             RegisterOnMessageHandlerAndReceiveMessages();
-
-            Console.ReadKey();
             await _queueClient.CloseAsync();
         }
 
@@ -59,27 +67,8 @@ namespace DistributedSystems.Worker
         async Task ProcessMessagesAsync(Message message, CancellationToken token)
         {
             var messageBodyString = Encoding.UTF8.GetString(message.Body);
-            var messageBodyJson = JsonConvert.DeserializeObject<Image>(messageBodyString);
 
-            // Process the message.
-            Console.WriteLine($"Received message: SequenceNumber:{message.SystemProperties.SequenceNumber} Body:{messageBodyString}"); // DEBUG
-
-            _imageAnalyser = new ImageAnalyser(messageBodyString);
-            var analysedPicture = await _imageAnalyser.SendImageUrlToComputerVisionApiAsync();
-            Console.WriteLine(analysedPicture); // DEBUG
-            var analysedPictureJson = JObject.Parse(analysedPicture);
-            var tagsArray = (JArray)analysedPictureJson["tags"];
-            var tagsObject = tagsArray.ToObject<Tag[]>();
-
-            var imageTagData = new ImageTagData
-            {
-                ImageId = messageBodyJson.Id,
-                TagData = tagsObject,
-                Key = messageBodyJson.ImageKey
-            };
-
-            Console.WriteLine('\nImage tag data:\n'); // DEBUG
-            Console.WriteLine(imageTagData);
+            var imageTagData = await _imageAnalyser.ProcessSingleImage(messageBodyString);
 
             var sendTagsRequest = new HttpRequestMessage
             {
@@ -90,16 +79,9 @@ namespace DistributedSystems.Worker
             sendTagsRequest.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
             var sendTagsResponse = await _httpClient.SendAsync(sendTagsRequest);
-            Console.WriteLine(sendTagsResponse.StatusCode);
-            Console.WriteLine(sendTagsResponse.ReasonPhrase);
 
-            // Complete the message so that it is not received again.
-            // This can be done only if the queue Client is created in ReceiveMode.PeekLock mode (which is the default).
-            await _queueClient.CompleteAsync(message.SystemProperties.LockToken);
-
-            // Note: Use the cancellationToken passed as necessary to determine if the queueClient has already been closed.
-            // If queueClient has already been closed, you can choose to not call CompleteAsync() or AbandonAsync() etc.
-            // to avoid unnecessary exceptions.
+            if (sendTagsResponse.StatusCode == System.Net.HttpStatusCode.OK)
+                await _queueClient.CompleteAsync(message.SystemProperties.LockToken);
         }
 
         // Use this handler to examine the exceptions received on the message pump.
