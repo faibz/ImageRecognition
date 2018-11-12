@@ -28,7 +28,7 @@ namespace DistributedSystems.API.Repositories
         {
             try
             {
-                await _connection.ExecuteAsync("INSERT INTO [dbo].[Images] ([Id], [Location], [UploadedDate], [Status]) VALUES (@Id, @Location, @UploadedDate, @Status)", new { image.Id, image.Location, image.UploadedDate, image.Status });
+                await _connection.ExecuteAsync("INSERT INTO [dbo].[Images] ([Id], [Location], [UploadedDate], [Status], [ImageKey]) VALUES (@Id, @Location, @UploadedDate, @Status, @ImageKey)", new { image.Id, image.Location, image.UploadedDate, image.Status, image.ImageKey });
 
                 return true;
             }
@@ -54,6 +54,6 @@ namespace DistributedSystems.API.Repositories
         }
 
         public async Task<string> GetImageKeyById(Guid imageId) 
-            => await _connection.QueryFirstAsync<string>("SELECT [Key] FROM [dbo].[Images] WHERE [Id] = @Id", new { Id = imageId });
+            => await _connection.QueryFirstAsync<string>("SELECT [ImageKey] FROM [dbo].[Images] WHERE [Id] = @Id", new { Id = imageId });
     }
 }
