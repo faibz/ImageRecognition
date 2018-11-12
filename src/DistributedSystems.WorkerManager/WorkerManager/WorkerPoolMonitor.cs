@@ -11,10 +11,11 @@ namespace DistributedSystems.WorkerManager
             var credentials = SdkContext.AzureCredentialsFactory.FromFile(azureAuthFileLocation);
             var azure = Azure.Configure().Authenticate(credentials).WithDefaultSubscription();
 
-            //TODO: store all vm names? get all vm names?
-            foreach (var item in new List<string>())
+            var vms = azure.VirtualMachines.ListByResourceGroup("distributed-systems");
+            
+            foreach (var vm in vms)
             {
-                Workers.Add(new Worker(azure.VirtualMachines.GetByResourceGroup("distributed-systems", item)));
+                Workers.Add(new Worker(vm));
             }
         }
 
