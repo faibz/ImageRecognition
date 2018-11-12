@@ -39,17 +39,16 @@ namespace DistributedSystems.Worker
         public async Task<Object> ProcessCompoundImage(string message)
         {
             var images = JsonConvert.DeserializeObject<TODO>(message); //TODO: set the correct type when wht API's ready.
-            var imageDataList = new List<MapTagData>();
+            var imageDataList = new List<CompoundImage>();
             var imagesList = new List<string>();
 
             foreach(var image in images.Images)
             {
-                var mapTagData = new MapTagData
+                var mapTagData = new CompoundImage
                 {
                     MapId = image.MapId,
                     ImageId = image.ImageId,
-                    TagData = image.TagData,
-                    Key = image.ImageKey
+                    Key = images.ImageKey
                 };
                 imageDataList.Add(mapTagData);
 
