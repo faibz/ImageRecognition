@@ -8,7 +8,7 @@ namespace DistributedSystems.API.Models
         public Image()
         {
             Id = Guid.NewGuid();
-            UploadedDate = DateTime.UtcNow;;
+            UploadedDate = DateTime.UtcNow;
         }
 
         public Guid Id { get; }

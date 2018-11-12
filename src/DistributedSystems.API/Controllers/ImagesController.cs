@@ -15,15 +15,15 @@ namespace DistributedSystems.API.Controllers
     public class ImagesController : ControllerBase
     {
         private readonly IImagesService _imagesService;
-        private readonly IImageValidator _imageValidator;
-        private readonly IMapValidator _mapValidator;
+        private readonly IImagesValidator _imageValidator;
+        private readonly IMapsValidator _mapsValidator;
         private readonly IMapsService _mapsService;
 
-        public ImagesController(IImagesService imagesService, IImageValidator imageValidator, IMapValidator mapValidator, IMapsService mapsService)
+        public ImagesController(IImagesService imagesService, IImagesValidator imagesValidator, IMapsValidator mapsValidator, IMapsService mapsService)
         {
             _imagesService = imagesService;
-            _imageValidator = imageValidator;
-            _mapValidator = mapValidator;
+            _imageValidator = imagesValidator;
+            _mapsValidator = mapsValidator;
             _mapsService = mapsService;
         }
 
@@ -31,7 +31,7 @@ namespace DistributedSystems.API.Controllers
         public async Task<IActionResult> SubmitImage([FromBody] ImageRequest imageRequest)
         {
             var validationErrors = (List<Error>)_imageValidator.ValidateImageRequest(imageRequest);
-            if (imageRequest.MapData != null) validationErrors.AddRange(await _mapValidator.ValidateMapEntry(imageRequest.MapData));
+            if (imageRequest.MapData != null) validationErrors.AddRange(await _mapsValidator.ValidateMapEntry(imageRequest.MapData));
             if (validationErrors.Any()) return BadRequest(validationErrors);
 
             var imgStream = new MemoryStream(imageRequest.Image);

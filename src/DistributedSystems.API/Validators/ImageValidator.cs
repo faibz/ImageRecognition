@@ -5,12 +5,12 @@ using DistributedSystems.API.Models.Requests;
 
 namespace DistributedSystems.API.Validators
 {
-    public interface IImageValidator
+    public interface IImagesValidator
     {
         IList<Error> ValidateImageRequest(ImageRequest imageRequest);
     }
 
-    public class ImageValidator : IImageValidator
+    public class ImagesValidator : IImagesValidator
     {
         private const int MaxFileLength = 4000000;
 
