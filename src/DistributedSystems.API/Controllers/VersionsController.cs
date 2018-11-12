@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
+using DistributedSystems.API.Utils;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace DistributedSystems.API.Controllers
 {
@@ -45,6 +47,7 @@ namespace DistributedSystems.API.Controllers
 
 public class WorkerClientVersionUpdateRequest
 {
+    [JsonConverter(typeof(Base64FileJsonConverter))]
     public byte[] ClientData { get; set; }
     public string Key { get; set; }
 }

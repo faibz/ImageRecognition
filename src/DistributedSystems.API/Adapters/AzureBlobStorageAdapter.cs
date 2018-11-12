@@ -1,6 +1,4 @@
-﻿using DistributedSystems.API.Models;
-using Microsoft.Extensions.Configuration;
-using Microsoft.WindowsAzure.Storage;
+﻿using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
 using System;
 using System.IO;
@@ -11,22 +9,23 @@ namespace DistributedSystems.API.Adapters
 
     public class AzureBlobStorageAdapter : IFileStorageAdapter
     {
-        private readonly CloudBlobContainer _blobContainer;
+        private readonly CloudBlobClient _blobClient;
 
-        public AzureBlobStorageAdapter(IConfiguration config)
+        public AzureBlobStorageAdapter(string connectionString, string containerName)
         {
-            _blobContainer = CloudStorageAccount.Parse(config.GetValue<string>("Azure:CloudStorageConnectionString"))
-                .CreateCloudBlobClient()
-                .GetContainerReference(config.GetValue<string>("Azure:CloudBlobContainerName"));
+            _blobClient = CloudStorageAccount.Parse(connectionString).CreateCloudBlobClient();
         }
 
-        public async Task<string> UploadImage(Guid imageId, MemoryStream memoryStream)
+        public async Task<string> UploadFile(string fileName, MemoryStream memoryStream, string containerName = null)
         {
+            if (string.IsNullOrEmpty(containerName)) return null;
+
             try
             {
-                await _blobContainer.CreateIfNotExistsAsync();
+                var blobContainer = _blobClient.GetContainerReference(containerName);
+                await blobContainer.CreateIfNotExistsAsync();
 
-                var blockBlob = _blobContainer.GetBlockBlobReference($"{imageId.ToString()}.jpg");
+                var blockBlob = blobContainer.GetBlockBlobReference(fileName);
                 await blockBlob.UploadFromStreamAsync(memoryStream);
 
                 return blockBlob.StorageUri.PrimaryUri.AbsoluteUri;
@@ -37,13 +36,16 @@ namespace DistributedSystems.API.Adapters
             return null;
         }
 
-        public async Task<string> GetImageUriWithKey(Guid imageId)
+        public async Task<string> GetFileUriWithKey(string fileName, string containerName = null)
         {
+            if (string.IsNullOrEmpty(containerName)) return null;
+
             try
             {
-                if (!await _blobContainer.ExistsAsync()) return string.Empty;
+                var blobContainer = _blobClient.GetContainerReference(containerName);
+                if (!await blobContainer.ExistsAsync()) return string.Empty;
 
-                var blockBlob = _blobContainer.GetBlockBlobReference($"{imageId.ToString()}.jpg");
+                var blockBlob = blobContainer.GetBlockBlobReference(fileName);
                 return blockBlob.StorageUri.PrimaryUri.AbsoluteUri + GenerateSharedAccessSignature(blockBlob);
             }
             catch (Exception)

@@ -4,6 +4,7 @@ using Dapper;
 using DistributedSystems.API.Factories;
 using DistributedSystems.API.Models;
 using System;
+using System.IO;
 
 namespace DistributedSystems.API.Repositories
 {
