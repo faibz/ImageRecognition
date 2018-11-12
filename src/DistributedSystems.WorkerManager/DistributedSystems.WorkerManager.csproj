@@ -237,26 +237,22 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="IManager.cs" />
-    <Compile Include="ProjectInstaller.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="WorkerManager\IManager.cs" />
+    <Compile Include="ProjectInstaller.cs" />
     <Compile Include="ProjectInstaller.Designer.cs">
       <DependentUpon>ProjectInstaller.cs</DependentUpon>
     </Compile>
-    <Compile Include="ServiceBusManager.cs" />
-    <Compile Include="Worker.cs" />
-    <Compile Include="WorkerAction.cs" />
-    <Compile Include="WorkerManagerService.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="WorkerManager\ServiceBusManager.cs" />
+    <Compile Include="WorkerManager\Worker.cs" />
+    <Compile Include="WorkerManager\WorkerAction.cs" />
+    <Compile Include="WorkerManagerService.cs" />
     <Compile Include="WorkerManagerService.Designer.cs">
       <DependentUpon>WorkerManagerService.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="WorkerPoolMonitor.cs" />
-    <Compile Include="WorkerQueueEvaluator.cs" />
+    <Compile Include="WorkerManager\WorkerPoolMonitor.cs" />
+    <Compile Include="WorkerManager\WorkerQueueEvaluator.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">
