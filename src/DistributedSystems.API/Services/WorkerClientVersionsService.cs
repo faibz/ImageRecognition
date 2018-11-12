@@ -7,6 +7,8 @@ namespace DistributedSystems.API.Controllers
     {
         Task<WorkerClientVersion> GetWorkerClientVersion(string clientVersion);
         Task<WorkerClientVersion> GetLatestWorkerClient();
+        Task<bool> ValidateUpdateKey(string updateKey);
+        Task UpdateWorkerClient(byte[] clientData);
     }
 
     public class WorkerClientVersionsService : IWorkerClientVersionsService
@@ -23,5 +25,17 @@ namespace DistributedSystems.API.Controllers
 
         public async Task<WorkerClientVersion> GetLatestWorkerClient()
             => await _workerVersionsRepository.GetLatestWorkerClient();
+
+        public async Task<bool> ValidateUpdateKey(string updateKey)
+        {
+            return true;
+        }
+
+        public async Task UpdateWorkerClient(byte[] clientData)
+        {
+            //TODO: 
+            //storage adapter upload
+            //database entry
+        }
     }
 }
