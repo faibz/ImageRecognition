@@ -30,5 +30,21 @@ namespace DistributedSystems.API.Controllers
 
             return Ok(workerClientVersion);
         }
+
+        [HttpPost("[action]")]
+        public async Task<IActionResult> UpdateWorkerClient([FromBody] WorkerClientVersionUpdateRequest workerClientVersionUpdate)
+        {
+            if (! await _workerVersionsService.ValidateUpdateKey(workerClientVersionUpdate.Key)) return Unauthorized();
+
+            await _workerVersionsService.UpdateWorkerClient(workerClientVersionUpdate.ClientData);
+
+            return Ok();
+        }
     }
+}
+
+public class WorkerClientVersionUpdateRequest
+{
+    public byte[] ClientData { get; set; }
+    public string Key { get; set; }
 }
