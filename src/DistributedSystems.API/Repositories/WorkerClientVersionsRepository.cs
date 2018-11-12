@@ -8,7 +8,7 @@ namespace DistributedSystems.API.Controllers
 {
     public interface IWorkerClientVersionsRepository
     {
-        Task<WorkerClientVersion> GetLatestWorkerClientInfo();
+        Task<WorkerClientVersion> GetLatestWorkerClient();
         Task<WorkerClientVersion> GetWorkerByVersion(string clientVersion);
     }
 
@@ -21,7 +21,7 @@ namespace DistributedSystems.API.Controllers
             _connection = dbConnectionFactory.GetDbConnection();
         }
 
-        public async Task<WorkerClientVersion> GetLatestWorkerClientInfo()
+        public async Task<WorkerClientVersion> GetLatestWorkerClient()
         {
             var latestClientVersion = await _connection.QueryFirstAsync<Models.DTOs.WorkerClientVersion>("SELECT [Version], [Location], [Hash] FROM [dbo].[WorkerClientVersion] ORDER BY [Version] DESC");
 
