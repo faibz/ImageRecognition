@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using DistributedSystems.API.Models;
 using DistributedSystems.API.Repositories;
 using DistributedSystems.API.Services;
+using DistributedSystems.API.Validators;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DistributedSystems.API.Controllers
@@ -13,11 +16,13 @@ namespace DistributedSystems.API.Controllers
     {
         private readonly ITagsService _tagService;
         private readonly ITagsRepository _tagsRepository;
+        private readonly ITagsValidator _tagsValidator;
 
-        public TagsController(ITagsService tagService, ITagsRepository tagsRepository)
+        public TagsController(ITagsService tagService, ITagsRepository tagsRepository, ITagsValidator tagsValidator)
         {
             _tagService = tagService;
             _tagsRepository = tagsRepository;
+            _tagsValidator = tagsValidator;
         }
         
         [HttpPost("[action]")]
@@ -33,11 +38,30 @@ namespace DistributedSystems.API.Controllers
         [HttpPost("[action]")]
         public async Task<IActionResult> SubmitMapImagePartTags([FromBody] MapTagData mapTagData)
         {
-            //TODO: Add tag validator (?) to check whether a certain tag has already been entered for an image
-
             if (!await _tagService.ValidateTagDataKey(mapTagData)) return Unauthorized();
 
+            var tagValidationErrors = await _tagsValidator.ValidateTagData(mapTagData);
+            if (tagValidationErrors.Any()) return BadRequest(tagValidationErrors);
+
             await _tagService.ProcessImageTags(mapTagData);
+
+            return Ok();
+        }
+
+        [HttpPost("[action]")]
+        public async Task<IActionResult> SubmitMapCompoundImageTags([FromBody] CompoundImageTagData compoundImageTagData)
+        {
+            if (!await _tagService.ValidateCompoundImageTagDataKey(compoundImageTagData)) return Unauthorized();
+
+            var validationErrors = new List<Error>();
+
+            foreach (var mapThing in compoundImageTagData.MapTagData)
+                validationErrors.AddRange(await _tagsValidator.ValidateTagData(mapThing));
+
+            if (validationErrors.Any()) return BadRequest(validationErrors);
+
+            foreach (var mapThing in compoundImageTagData.MapTagData)
+                await _tagService.ProcessImageTags(mapThing);
 
             return Ok();
         }
