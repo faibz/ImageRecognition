@@ -1,10 +1,12 @@
-﻿using System.Threading.Tasks;
+﻿using DistributedSystems.API.Models;
+using System.Threading.Tasks;
 
 namespace DistributedSystems.API.Controllers
 {
     public interface IWorkerClientVersionsService
     {
         Task<bool> IsValidWorkerClientVersion(string clientVersion);
+        Task<WorkerClientVersion> GetLatestWorkerClient();
     }
 
     public class WorkerClientVersionsService : IWorkerClientVersionsService
@@ -19,6 +21,11 @@ namespace DistributedSystems.API.Controllers
         public async Task<bool> IsValidWorkerClientVersion(string clientVersion)
         {
             return (await _workerVersionsRepository.GetWorkerByVersion(clientVersion)) == null;
+        }
+
+        public async Task<WorkerClientVersion> GetLatestWorkerClient()
+        {
+            return new WorkerClientVersion();
         }
     }
 }

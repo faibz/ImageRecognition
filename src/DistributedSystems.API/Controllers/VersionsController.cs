@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 
@@ -31,7 +29,7 @@ namespace DistributedSystems.API.Controllers
         {
             var lx = new { ReleaseDate = DateTime.UtcNow, Version = "1.0.22.4252.2", Hash = "bobmarley" };
 
-            var client = await _workerService.GetLatestWorkerClient();
+            var client = await _workerVersionsService.GetLatestWorkerClient();
 
             var xx = new { Client = client, ReleaseDate = "xd", Version = "111111.11111", Hash = "bbbbbbbbb" };
 
