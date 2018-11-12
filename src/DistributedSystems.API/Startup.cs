@@ -36,7 +36,7 @@ namespace DistributedSystems.API
             services.AddTransient<ITagsService, TagsService>();
             services.AddTransient<IMapsService, MapsService>();
 
-            services.AddTransient<IFileStorageAdapter, AzureBlobStorageAdapter>();
+            services.AddSingleton<IFileStorageAdapter, AzureBlobStorageAdapter>();
             services.AddTransient<IQueueAdapter, ServiceBusAdapter>();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }
