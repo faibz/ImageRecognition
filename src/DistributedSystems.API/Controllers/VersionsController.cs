@@ -18,30 +18,17 @@ namespace DistributedSystems.API.Controllers
         }
 
         [HttpGet("[action]")]
-        public async Task<IActionResult> GetLatestWorkerClientInfo()
-        {
-            return Ok(await _workerVersionsRepository.GetLatestWorkerClientInfo());
-        }
-
-
-        [HttpGet("[action]")]
-        public async Task<IActionResult> GetLatestWorkerClient()
-        {
-            var lx = new { ReleaseDate = DateTime.UtcNow, Version = "1.0.22.4252.2", Hash = "bobmarley" };
-
-            var client = await _workerVersionsService.GetLatestWorkerClient();
-
-            var xx = new { Client = client, ReleaseDate = "xd", Version = "111111.11111", Hash = "bbbbbbbbb" };
-
-            return Ok(xx);
-        }
+        public async Task<IActionResult> GetLatestWorkerClientVersion()
+            => Ok(await _workerVersionsService.GetLatestWorkerClient());
 
         [HttpGet("[action]")]
         public async Task<IActionResult> GetWorkerClientVersion(string clientVersion)
         {
-            if (!await _workerVersionsService.IsValidWorkerClientVersion(clientVersion)) BadRequest("Invalid WorkerClient version specified.");
+            var workerClientVersion = await _workerVersionsService.GetWorkerClientVersion(clientVersion);
 
-            return Ok();
+            if (workerClientVersion == null) return BadRequest("Invalid Worker Client version specified.");
+
+            return Ok(workerClientVersion);
         }
     }
 }

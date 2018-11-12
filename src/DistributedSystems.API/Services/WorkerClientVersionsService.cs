@@ -5,7 +5,7 @@ namespace DistributedSystems.API.Controllers
 {
     public interface IWorkerClientVersionsService
     {
-        Task<bool> IsValidWorkerClientVersion(string clientVersion);
+        Task<WorkerClientVersion> GetWorkerClientVersion(string clientVersion);
         Task<WorkerClientVersion> GetLatestWorkerClient();
     }
 
@@ -18,14 +18,10 @@ namespace DistributedSystems.API.Controllers
             _workerVersionsRepository = workerVersionsRepository;
         }
 
-        public async Task<bool> IsValidWorkerClientVersion(string clientVersion)
-        {
-            return (await _workerVersionsRepository.GetWorkerByVersion(clientVersion)) == null;
-        }
+        public async Task<WorkerClientVersion> GetWorkerClientVersion(string clientVersion)
+            => await _workerVersionsRepository.GetWorkerByVersion(clientVersion);
 
         public async Task<WorkerClientVersion> GetLatestWorkerClient()
-        {
-            return new WorkerClientVersion();
-        }
+            => await _workerVersionsRepository.GetLatestWorkerClient();
     }
 }
