@@ -9,6 +9,9 @@
 *.userosscache
 *.sln.docstates
 
+# Azure Auth File
+azureauth.properties
+
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 
