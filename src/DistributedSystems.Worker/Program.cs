@@ -23,3 +23,14 @@ namespace DistributedSystems.Worker
         }
     }
 }
+
+/* TODO:
+ * - update connection string and queue name in the configuration file;
+ * - version checker on startup;
+ * - increase MaxConcurrentCalls in both queue listeners;
+ * 
+ * - DONE? do stitching;
+ * - decrease quality/size if the size exceeds 4MB;
+ * - send stitched image to the Azure Vision;
+ * - send the tags to the API;
+ */
