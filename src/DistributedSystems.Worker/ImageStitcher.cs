@@ -19,10 +19,6 @@ namespace DistributedSystems.Worker
 
                 foreach (var image in images.Images)
                 {
-                    //TODO: Get the images out, add them to each other accordingly with the coordinates.
-                    //var ll =Image.FromFile(../ asd.bmp);
-                    //var lx = Graphics.From
-
                     System.Drawing.Bitmap bitmap = new System.Drawing.Bitmap(image);
 
                     //update the size of the final bitmap
@@ -38,7 +34,7 @@ namespace DistributedSystems.Worker
                 using (System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(compoundImage))
                 {
                     //set background color
-                    g.Clear(System.Drawing.Color.Black);
+                    g.Clear(System.Drawing.Color.Transparent);
 
                     //go through each image and draw it on the final image
                     int offset = 0;

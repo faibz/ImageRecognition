@@ -14,22 +14,6 @@ namespace DistributedSystems.Worker
 {
     public class QueueListenerSingleImage
     {
-        /* TODO:
-         * - DONE create new Service Bus for compound images,
-         * - update connection string and queue name in the configuration file,
-         * - DONE create QueueListenerMultipleImages class -- queue multi,
-         *          send stitched image to the Azure Vision;
-         *          send the tags to the API;
-         * - DONE rename QueueListener class to QueueListenerSingleImage -- queue single,
-         * - create ImageStitcher class
-         *          do stitching;
-         *          decrease quality/size;
-         * - DONE add another method to ImageAnalyser to send the stitched image.
-         *      - (why?) The current method uses the message string, not a new stitched thing.
-         * 
-         * - version checker on startup
-         */
-
         private readonly HttpClient _httpClient;
         private readonly IQueueClient _queueClient;
         private ImageAnalyser _imageAnalyser;
