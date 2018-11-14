@@ -26,6 +26,8 @@ namespace DistributedSystems.Worker
          *          decrease quality/size;
          * - DONE add another method to ImageAnalyser to send the stitched image.
          *      - (why?) The current method uses the message string, not a new stitched thing.
+         * 
+         * - version checker on startup
          */
 
         private readonly HttpClient _httpClient;
