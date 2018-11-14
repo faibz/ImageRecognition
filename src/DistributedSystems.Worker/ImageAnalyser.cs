@@ -38,33 +38,33 @@ namespace DistributedSystems.Worker
 
         public async Task<Object> ProcessCompoundImage(string message)
         {
-            var images = JsonConvert.DeserializeObject<TODO>(message); //TODO: set the correct type when wht API's ready.
-            var imageDataList = new List<CompoundImage>();
-            var imagesList = new List<string>();
+            var images = JsonConvert.DeserializeObject<CompoundImage>(message);
+            //var imageDataList = new List<CompoundImageTagData>();
+            //var imagesList = new List<string>();
 
-            foreach(var image in images.Images)
-            {
-                var mapTagData = new CompoundImage
-                {
-                    MapId = image.MapId,
-                    ImageId = image.ImageId,
-                    Key = images.ImageKey
-                };
-                imageDataList.Add(mapTagData);
+            //foreach(var image in images.Images)
+            //{
+            //    var mapTagData = new CompoundImage
+            //    {
+            //        MapId = image.MapId,
+            //        ImageId = image.ImageId,
+            //        Key = images.ImageKey
+            //    };
+            //    imageDataList.Add(mapTagData);
 
-                //DONE?: Add the images to a list/array that will be given to the ImageStitcher.
-                imagesList.Add(image.Location);
-            }
+            //    //DONE?: Add the images to a list/array that will be given to the ImageStitcher.
+            //    imagesList.Add(image.Location);
+            //}
 
             //DONE?: Call ImageStitcher method, pass the images list/array.
-            var stitchedImage = _imageStitcher.StitchImages(imagesList);
+            var stitchedImage = _imageStitcher.StitchImages(images);
 
             //TODO: make a POST request with the stitched image -- the below method only supports URL.
             var tags = await SendImageUrlToComputerVisionApiAsync(stitchedImage);
 
             var imageData = new
             {
-                oldMapTagData = imagesList,
+                //oldMapTagData = imagesList,
                 newTags = tags
             };
 
