@@ -19,18 +19,30 @@ namespace DistributedSystems.Worker
 
             var singleImageListener = queueListenerSingleImage.Run();
             var compoundImageListener = queueListenerCompoundImage.Run();
-            Task.WaitAll(new[] { singleImageListener, compoundImageListener });
+            Task.WaitAll(singleImageListener, compoundImageListener);
+            //Task.WaitAll(singleImageListener, compoundImageListener).Wait(10000);
         }
     }
 }
 
 /* TODO:
  * - update connection string and queue name in the configuration file;
+ * - double check the API endpoint in QueueListenerCompoundImage (appsettings.json);
  * - version checker on startup;
  * - increase MaxConcurrentCalls in both queue listeners;
  * 
+ * 
  * - DONE? do stitching;
+ *      - add conditions to stitching to not only stitch to the right;
  * - decrease quality/size if the size exceeds 4MB;
- * - send stitched image to the Azure Vision;
- * - send the tags to the API;
+ * - DONE? send stitched image to the Azure Vision;
+ *      - DONE? REWRITE ImageAnalyser FOR CompoundImage's TO USE THE SDK
+ *          - https://docs.microsoft.com/en-us/azure/cognitive-services/computer-vision/quickstarts-sdk/csharp-analyze-sdk
+ * - DONE? send the tags to the API;
+ * 
+ * 
+ * - remove test classes:
+ *      - CompoundImage
+ *      - CompoundImageTagData
+ * - remove old Api call from AzureVision class;
  */

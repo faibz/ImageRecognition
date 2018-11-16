@@ -1,17 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 
 namespace DistributedSystems.Worker
 {
     public class ImageStitcher
     {
+        List<Bitmap> _imagesList;
+        Bitmap _compoundImage; // Final, stitched image
+
         public ImageStitcher()
         {
-            List<System.Drawing.Bitmap> imagesList = new List<System.Drawing.Bitmap>();
-            System.Drawing.Bitmap compoundImage = null; // Final, stitched image
+            _imagesList = new List<Bitmap>();
+            _compoundImage = null;
         }
 
-        System.Drawing.Bitmap StitchImages(CompoundImage images)
+        public Bitmap StitchImages(CompoundImage images)
         {
             try
             {
@@ -19,45 +23,45 @@ namespace DistributedSystems.Worker
 
                 foreach (var image in images.Images)
                 {
-                    System.Drawing.Bitmap bitmap = new System.Drawing.Bitmap(image);
+                    Bitmap bitmap = new Bitmap(image);
 
                     //update the size of the final bitmap
                     width += bitmap.Width;
                     height = bitmap.Height > height ? bitmap.Height : height;
 
-                    imagesList.Add(bitmap);
+                    _imagesList.Add(bitmap);
                 }
 
-                compoundImage = new System.Drawing.Bitmap(width, height);
+                _compoundImage = new Bitmap(width, height);
 
                 //get a graphics object from the image so we can draw on it
-                using (System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(compoundImage))
+                using (Graphics g = Graphics.FromImage(_compoundImage))
                 {
                     //set background color
-                    g.Clear(System.Drawing.Color.Transparent);
+                    g.Clear(Color.Transparent);
 
                     //go through each image and draw it on the final image
                     int offset = 0;
-                    foreach (System.Drawing.Bitmap image in imagesList)
+                    foreach (Bitmap image in _imagesList)
                     {
-                        g.DrawImage(image, new System.Drawing.Rectangle(offset, 0, image.Width, image.Height));
+                        g.DrawImage(image, new Rectangle(offset, 0, image.Width, image.Height));
                         offset += image.Width;
                     }
                 }
 
-                return compoundImage;
+                return _compoundImage;
             }
             catch (Exception ex)
             {
-                if (compoundImage != null)
-                    compoundImage.Dispose();
+                if (_compoundImage != null)
+                    _compoundImage.Dispose();
 
                 throw ex;
             }
             finally
             {
                 //clean up memory
-                foreach (System.Drawing.Bitmap image in imagesList)
+                foreach (Bitmap image in _imagesList)
                 {
                     image.Dispose();
                 }

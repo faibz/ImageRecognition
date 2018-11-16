@@ -17,13 +17,15 @@ namespace DistributedSystems.Worker
     {
         private readonly HttpClient _httpClient;
         private readonly IQueueClient _queueClient;
-        private ImageAnalyser _imageAnalyser;
+        private AzureVision _imageAnalyser;
+        private string _apiSubmitEndpoint;
 
-        public QueueListenerCompoundImage()
+        public QueueListenerCompoundImage(IConfigurationRoot config)
         {
             _httpClient = new HttpClient();
             _queueClient = new QueueClient(config["CompoundImageServiceBusConnectionString"], config["CompoundImageServiceBusQueueName"]);
-            _imageAnalyser = new ImageAnalyser();
+            _imageAnalyser = new AzureVision(config);
+            _apiSubmitEndpoint = config["CompoundImageApiSubmitEndpoint"];
         }
 
         public async Task Run()
@@ -47,13 +49,13 @@ namespace DistributedSystems.Worker
         {
             var messageBodyString = Encoding.UTF8.GetString(message.Body);
             
-            var mapTagData = await _imageAnalyser.ProcessCompoundImage(messageBodyString);
+            var compoundImageTagData = await _imageAnalyser.ProcessCompoundImage(messageBodyString);
 
             var sendTagsRequest = new HttpRequestMessage
             {
-                RequestUri = new Uri("https://distsysimageapi.azurewebsites.net/api/Tags/SubmitImageTags"),
+                RequestUri = new Uri(_apiSubmitEndpoint),
                 Method = HttpMethod.Post,
-                Content = new StringContent(JsonConvert.SerializeObject(mapTagData), Encoding.UTF8, "application/json")
+                Content = new StringContent(JsonConvert.SerializeObject(compoundImageTagData), Encoding.UTF8, "application/json")
             };
             sendTagsRequest.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
