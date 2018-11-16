@@ -14,13 +14,13 @@ namespace DistributedSystems.API.Controllers
     [ApiController]
     public class TagsController : ControllerBase
     {
-        private readonly ITagsService _tagService;
+        private readonly ITagsService _tagsService;
         private readonly ITagsRepository _tagsRepository;
         private readonly ITagsValidator _tagsValidator;
 
-        public TagsController(ITagsService tagService, ITagsRepository tagsRepository, ITagsValidator tagsValidator)
+        public TagsController(ITagsService tagsService, ITagsRepository tagsRepository, ITagsValidator tagsValidator)
         {
-            _tagService = tagService;
+            _tagsService = tagsService;
             _tagsRepository = tagsRepository;
             _tagsValidator = tagsValidator;
         }
@@ -28,9 +28,9 @@ namespace DistributedSystems.API.Controllers
         [HttpPost("[action]")]
         public async Task<IActionResult> SubmitImageTags([FromBody] ImageTagData imageTagData)
         {
-            if (!await _tagService.ValidateTagDataKey(imageTagData)) return Unauthorized();
+            if (!await _tagsService.ValidateTagDataKey(imageTagData)) return Unauthorized();
 
-            await _tagService.ProcessImageTags(imageTagData);
+            await _tagsService.ProcessImageTags(imageTagData);
 
             return Ok();
         }
@@ -38,12 +38,13 @@ namespace DistributedSystems.API.Controllers
         [HttpPost("[action]")]
         public async Task<IActionResult> SubmitMapImagePartTags([FromBody] MapTagData mapTagData)
         {
-            if (!await _tagService.ValidateTagDataKey(mapTagData)) return Unauthorized();
+            if (!await _tagsService.ValidateTagDataKey(mapTagData)) return Unauthorized();
 
-            var tagValidationErrors = await _tagsValidator.ValidateTagData(mapTagData);
+            var tagValidationErrors = await _tagsValidator.ValidateMapTagData(mapTagData.TagData, mapTagData.MapId);
             if (tagValidationErrors.Any()) return BadRequest(tagValidationErrors);
 
-            await _tagService.ProcessImageTags(mapTagData);
+            await _tagsService.ProcessImageTags(mapTagData);
+            await _tagsService.CheckForCompoundImageRequestsFromSingleMapImage(mapTagData);
 
             return Ok();
         }
@@ -51,17 +52,14 @@ namespace DistributedSystems.API.Controllers
         [HttpPost("[action]")]
         public async Task<IActionResult> SubmitMapCompoundImageTags([FromBody] CompoundImageTagData compoundImageTagData)
         {
-            if (!await _tagService.ValidateCompoundImageTagDataKey(compoundImageTagData)) return Unauthorized();
+            if (!await _tagsService.ValidateCompoundImageTagDataKey(compoundImageTagData)) return Unauthorized();
 
             var validationErrors = new List<Error>();
-
-            foreach (var mapThing in compoundImageTagData.MapTagData)
-                validationErrors.AddRange(await _tagsValidator.ValidateTagData(mapThing));
-
+            validationErrors.AddRange(await _tagsValidator.ValidateMapTagData(compoundImageTagData.Tags, compoundImageTagData.MapId));
             if (validationErrors.Any()) return BadRequest(validationErrors);
 
-            foreach (var mapThing in compoundImageTagData.MapTagData)
-                await _tagService.ProcessImageTags(mapThing);
+            await _tagsService.ProcessCompoundImageTags(compoundImageTagData.CompoundImageId, compoundImageTagData.Tags);
+            await _tagsService.CheckForCompoundImageRequestFromCompoundImage(compoundImageTagData);
 
             return Ok();
         }
