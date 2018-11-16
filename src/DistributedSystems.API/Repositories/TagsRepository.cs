@@ -1,4 +1,4 @@
-﻿using Dapper;
+using Dapper;
 using DistributedSystems.API.Factories;
 using DistributedSystems.API.Models;
 using System;
