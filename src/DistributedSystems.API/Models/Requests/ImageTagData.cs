@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace DistributedSystems.API.Models
 {
@@ -6,7 +7,7 @@ namespace DistributedSystems.API.Models
     {
         public Guid ImageId { get; set; }
         
-        public Tag[] TagData { get; set; }
+        public IList<Tag> TagData { get; set; }
         public string Key { get; set; }
     }
 } 

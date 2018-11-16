@@ -1,5 +1,6 @@
 ﻿using DistributedSystems.API.Models;
 using DistributedSystems.API.Repositories;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -7,7 +8,7 @@ namespace DistributedSystems.API.Validators
 {
     public interface ITagsValidator
     {
-        Task<IList<Error>> ValidateTagData(MapTagData mapTagData);
+        Task<IList<Error>> ValidateMapTagData(IList<Tag> tag, Guid mapId);
     }
 
     public class TagsValidator : ITagsValidator
@@ -19,7 +20,7 @@ namespace DistributedSystems.API.Validators
             _tagsRepository = tagsRepository;
         }
 
-        public async Task<IList<Error>> ValidateTagData(MapTagData mapTagData)
+        public async Task<IList<Error>> ValidateMapTagData(IList<Tag> tags, Guid mapId)
         {
             //TODO: THIS LOL
             throw new System.NotImplementedException();

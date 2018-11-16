@@ -5,7 +5,9 @@ namespace DistributedSystems.API.Models
 {
     public class CompoundImageTagData
     {
-        public IList<MapTagData> MapTagData { get; set; }
+        public Guid CompoundImageId { get; set; }
+        public Guid MapId { get; set; }
+        public IList<Tag> Tags { get; set; }
         public string Key { get; set; }
     }
 } 
