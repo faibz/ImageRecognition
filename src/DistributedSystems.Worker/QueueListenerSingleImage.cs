@@ -16,13 +16,15 @@ namespace DistributedSystems.Worker
     {
         private readonly HttpClient _httpClient;
         private readonly IQueueClient _queueClient;
-        private ImageAnalyser _imageAnalyser;
+        private AzureVision _imageAnalyser;
+        private string _apiSubmitEndpoint;
 
         public QueueListenerSingleImage(IConfigurationRoot config)
         {
             _httpClient = new HttpClient();
             _queueClient = new QueueClient(config["SingleImageServiceBusConnectionString"], config["SingleImageServiceBusQueueName"]);
-            _imageAnalyser = new ImageAnalyser();
+            _imageAnalyser = new AzureVision(config);
+            _apiSubmitEndpoint = config["SingleImageApiSubmitEndpoint"];
         }
 
         public async Task Run()
@@ -58,7 +60,7 @@ namespace DistributedSystems.Worker
 
             var sendTagsRequest = new HttpRequestMessage
             {
-                RequestUri = new Uri("https://distsysimageapi.azurewebsites.net/api/Tags/SubmitImageTags"),
+                RequestUri = new Uri(_apiSubmitEndpoint),
                 Method = HttpMethod.Post,
                 Content = new StringContent(JsonConvert.SerializeObject(imageTagData), Encoding.UTF8, "application/json")
             };
