@@ -10,6 +10,7 @@ namespace DistributedSystems.API.Repositories
     public interface ICompoundImageMappingsRepository
     {
         Task<IList<Guid>> GetImageIdsByCompoundImageId(Guid compoundImageId);
+        Task InsertCompoundImageMapping(Guid imageId, Guid compoundImageId);
     }
 
     public class CompoundImageMappingsRepository : ICompoundImageMappingsRepository
@@ -26,6 +27,11 @@ namespace DistributedSystems.API.Repositories
             var imageIds = await _connection.QueryAsync<Guid>("SELECT [ImageId] FROM [dbo].[CompoundImageMappings] WHERE [CompoundImageId] = @CompoundImageId", new { CompoundImageId = compoundImageId });
 
             return imageIds.AsList();
+        }
+
+        public async Task InsertCompoundImageMapping(Guid imageId, Guid compoundImageId)
+        {
+            await _connection.ExecuteAsync("INSERT INTO [dbo].[CompoundImageMappings] ([ImageId], [CompoundImageId]) VALUES (@ImageId, @CompoundImageId)", new { ImageId = imageId, CompoundImageId = compoundImageId });
         }
     }
 }

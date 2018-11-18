@@ -54,15 +54,15 @@ namespace DistributedSystems.API.Services
         {
             if (mapTagData.TagData.Any(tag => tag.Confidence < 0.5m))
             {
-                await _imagesService.CreateNewCompoundImageFromSingleImage(mapTagData.MapId, mapTagData.ImageId);
-                await _queueAdapter.SendMessageSecondary(/*TODO*/"");
+                await _imagesService.CreateNewCompoundImage(mapTagData.MapId, new List<Guid> { mapTagData.ImageId });
             }
         }
 
-        //public Task CheckForCompoundImageRequests(CompoundImageTagData compoundImageTagData)
-        //{
-        //    if (compoundImageTagData.MapTagData.Any(tagData => tagData.TagData))
-        //}
+        public Task CheckForCompoundImageRequestFromCompoundImage(CompoundImageTagData compoundImageTagData)
+        {
+            //if (compoundImageTagData.MapTagData.Any(tagData => tagData.TagData))
+            throw new NotImplementedException();
+        }
 
         public async Task<bool> ValidateCompoundImageTagDataKey(CompoundImageTagData compoundImageTagData)
         {
@@ -90,9 +90,6 @@ namespace DistributedSystems.API.Services
             return tagData.Key == imageKey;
         }
 
-        public Task CheckForCompoundImageRequestFromCompoundImage(CompoundImageTagData compoundImageTagData)
-        {
-            throw new NotImplementedException();
-        }
+
     }
 }
