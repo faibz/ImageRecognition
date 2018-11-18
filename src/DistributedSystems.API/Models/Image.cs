@@ -11,6 +11,11 @@ namespace DistributedSystems.API.Models
             UploadedDate = DateTime.UtcNow;
         }
 
+        public Image(Guid id)
+        {
+            Id = id;
+        }
+
         public Guid Id { get; }
         public string Location { get; set; }
         [JsonIgnore]
