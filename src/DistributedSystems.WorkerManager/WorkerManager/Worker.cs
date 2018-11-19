@@ -3,7 +3,13 @@ using System.Threading.Tasks;
 
 namespace DistributedSystems.WorkerManager
 {
-    public class Worker
+    public interface IWorker
+    {
+        Task TurnOn();
+        Task TurnOff();
+    }
+
+    public class Worker : IWorker
     {
         private readonly IVirtualMachine _virtualMachine;
 
@@ -12,24 +18,24 @@ namespace DistributedSystems.WorkerManager
             _virtualMachine = virtualMachine;
         }
 
-        public bool Active { get; private set; } = false;
+        public bool PowerState { get; private set; } = false;
 
         public async Task TurnOn()
         {
-            if (Active) return;
-
-            Active = true;
+            if (PowerState) return;
 
             await _virtualMachine.StartAsync();
+
+            PowerState = _virtualMachine.PowerState.Value == "Starting" || _virtualMachine.PowerState.Value == "Running";
         }
 
-        public async Task ShutDown()
+        public async Task TurnOff()
         {
-            if (!Active) return;
-
-            Active = false;
+            if (!PowerState) return;
 
             await _virtualMachine.PowerOffAsync();
+
+            PowerState = !(_virtualMachine.PowerState.Value == "Stopping" || _virtualMachine.PowerState.Value == "Stopped");
         }
     }
 }

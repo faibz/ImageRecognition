@@ -66,9 +66,7 @@ namespace DistributedSystems.WorkerManager
 
             _log.Info($"Checking service bus and workers. Time (UTC): {DateTime.UtcNow}. Amount of message in queues: {queueMessageCount}. Amount of active workers: {activeWorkerCount}.");
 
-            var action = WorkerQueueEvaluator.AdviseAction(activeWorkerCount, queueMessageCount);
-
-            switch(action)
+            switch(WorkerQueueEvaluator.AdviseAction(activeWorkerCount, queueMessageCount))
             {
                 case WorkerAction.Add:
                     _log.Info($"Starting new worker at: {DateTime.UtcNow}.");
@@ -84,15 +82,15 @@ namespace DistributedSystems.WorkerManager
         }
 
         private async Task StartNewWorker() 
-            => await _workerPoolMonitor.Workers.Where(worker => !worker.Active).First().TurnOn();
+            => await _workerPoolMonitor.Workers.Where(worker => !worker.PowerState).First().TurnOn();
 
         private async Task ShutWorkerDown()
-            => await _workerPoolMonitor.Workers.Where(worker => worker.Active).First().ShutDown();
+            => await _workerPoolMonitor.Workers.Where(worker => worker.PowerState).First().TurnOff();
 
         public int TotalWorkerCount()
             => _workerPoolMonitor.Workers.Count;
 
         public int CurrentWorkerCount() 
-            => _workerPoolMonitor.Workers.Where(worker => worker.Active).Count();
+            => _workerPoolMonitor.Workers.Where(worker => worker.PowerState).Count();
     }
 }
