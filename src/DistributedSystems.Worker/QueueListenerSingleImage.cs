@@ -22,9 +22,9 @@ namespace DistributedSystems.Worker
         public QueueListenerSingleImage(IConfigurationRoot config)
         {
             _httpClient = new HttpClient();
-            _queueClient = new QueueClient(config["SingleImageServiceBusConnectionString"], config["SingleImageServiceBusQueueName"]);
+            _queueClient = new QueueClient(config["ServiceBusConnectionString"], config["SingleImageServiceBusQueueName"]);
             _imageAnalyser = new AzureVision(config);
-            _apiSubmitEndpoint = config["SingleImageApiSubmitEndpoint"];
+            _apiSubmitEndpoint = config["ApiSubmitEndpoint"];
         }
 
         public async Task Run()

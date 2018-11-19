@@ -1,51 +1,60 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 
 namespace DistributedSystems.Worker
 {
     public class ImageStitcher
     {
-        List<Bitmap> _imagesList;
-        Bitmap _compoundImage; // Final, stitched image
-
-        public ImageStitcher()
+        public Bitmap StitchImages(KeyedCompoundImage keyedCompoundImage)
         {
-            _imagesList = new List<Bitmap>();
-            _compoundImage = null;
-        }
-
-        public Bitmap StitchImages(CompoundImage images)
-        {
+            /* TODO:
+             *      - Adjust coordinates to start from 1 on the g object.
+             *      - Add changes from ImageTest.
+             */
             try
             {
-                int width = 0, height = 0;
+                List<int> _coordsX = new List<int>();
+                List<int> _coordsY = new List<int>();
+                Bitmap _compoundImage = null; // Final, stitched image
 
-                foreach (var image in images.Images)
+                // Minimum width and height assumming that every image has equal size.
+                Bitmap _anyImage = new Bitmap(keyedCompoundImage.Images[0].Location);
+                int _width = _anyImage.Width;
+                int _height = _anyImage.Height;
+
+                // Store coordinates of each image.
+                foreach (var image in keyedCompoundImage.Images)
                 {
-                    Bitmap bitmap = new Bitmap(image);
-
-                    //update the size of the final bitmap
-                    width += bitmap.Width;
-                    height = bitmap.Height > height ? bitmap.Height : height;
-
-                    _imagesList.Add(bitmap);
+                    _coordsX.Add(image.CoordinateX);
+                    _coordsY.Add(image.CoordinateY);
                 }
 
-                _compoundImage = new Bitmap(width, height);
+                _coordsX.OrderBy(coord => coord);
+                _coordsY.OrderBy(coord => coord);
 
-                //get a graphics object from the image so we can draw on it
+                // Calculate canvas dimensions using the images count on each axis.
+                _width  *= _coordsX[_coordsX.Count - 1] - _coordsX[0];
+                _height *= _coordsY[_coordsY.Count - 1] - _coordsY[0];
+                _compoundImage = new Bitmap(_width, _height); // Initialise canvas with the dimensions.
+
+                // Get a graphics object from the image so we can draw on it.
                 using (Graphics g = Graphics.FromImage(_compoundImage))
                 {
-                    //set background color
-                    g.Clear(Color.Transparent);
+                    g.Clear(Color.Transparent); // Set the background color.
+                    Bitmap _bitmap;
+                    var _offsetX;
+                    var _offsetY;
 
-                    //go through each image and draw it on the final image
-                    int offset = 0;
-                    foreach (Bitmap image in _imagesList)
+                    // Go through each image and draw it on the _compoundImage.
+                    foreach (var image in keyedCompoundImage.Images)
                     {
-                        g.DrawImage(image, new Rectangle(offset, 0, image.Width, image.Height));
-                        offset += image.Width;
+                        _bitmap = new Bitmap(image.Location);
+                        _offsetX = _bitmap.Width * image.CoordinateX - _bitmap.Width;
+                        _offsetY = _bitmap.Height * image.CoordinateY - _bitmap.Height;
+
+                        g.DrawImage(_bitmap, new Rectangle(_offsetX, _offsetY, _bitmap.Width, _bitmap.Height));
                     }
                 }
 
@@ -54,17 +63,18 @@ namespace DistributedSystems.Worker
             catch (Exception ex)
             {
                 if (_compoundImage != null)
+                {
+                    _anyImage.Dispose();
+                    _bitmap.Dispose();
                     _compoundImage.Dispose();
-
+                }
                 throw ex;
             }
             finally
             {
-                //clean up memory
-                foreach (Bitmap image in _imagesList)
-                {
-                    image.Dispose();
-                }
+                _anyImage.Dispose();
+                _bitmap.Dispose();
+                _compoundImage.Dispose();
             }
         }
     }

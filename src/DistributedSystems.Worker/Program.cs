@@ -26,8 +26,8 @@ namespace DistributedSystems.Worker
 }
 
 /* TODO:
- * - update connection string and queue name in the configuration file;
- * - double check the API endpoint in QueueListenerCompoundImage (appsettings.json);
+ * - DONE update connection string and queue name in the configuration file;
+ * - DONE double check the API endpoint in QueueListenerCompoundImage (appsettings.json);
  * - version checker on startup;
  * - increase MaxConcurrentCalls in both queue listeners;
  * 

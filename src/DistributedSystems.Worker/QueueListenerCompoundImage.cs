@@ -23,9 +23,9 @@ namespace DistributedSystems.Worker
         public QueueListenerCompoundImage(IConfigurationRoot config)
         {
             _httpClient = new HttpClient();
-            _queueClient = new QueueClient(config["CompoundImageServiceBusConnectionString"], config["CompoundImageServiceBusQueueName"]);
+            _queueClient = new QueueClient(config["ServiceBusConnectionString"], config["CompoundImageServiceBusQueueName"]);
             _imageAnalyser = new AzureVision(config);
-            _apiSubmitEndpoint = config["CompoundImageApiSubmitEndpoint"];
+            _apiSubmitEndpoint = config["ApiSubmitEndpoint"];
         }
 
         public async Task Run()

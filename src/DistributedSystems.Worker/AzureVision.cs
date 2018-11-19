@@ -49,9 +49,9 @@ namespace DistributedSystems.Worker
 
         public async Task<CompoundImageTagData> ProcessCompoundImage(string message)
         {
-            var images = JsonConvert.DeserializeObject<CompoundImage>(message);
+            var keyedCompoundImage = JsonConvert.DeserializeObject<KeyedCompoundImage>(message);
 
-            var stitchedImage = _imageStitcher.StitchImages(images);
+            var stitchedImage = _imageStitcher.StitchImages(keyedCompoundImage);
             var imageAnalysis = await AnalyseMemoryStreamImage(stitchedImage);
 
             // TODO: Parse the tags into CompoundImageTagData object before returning it.
