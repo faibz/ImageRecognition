@@ -1,5 +1,6 @@
 ﻿using DistributedSystems.API.Models;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace DistributedSystems.API.Utils
@@ -13,7 +14,9 @@ namespace DistributedSystems.API.Utils
     {
         public async Task<TagAnalysisAction> AnalyseTagConfidence(IList<Tag> tags)
         {
-            throw new System.NotImplementedException();
+            if (tags.Any(tag => tag.Confidence < 0.5m)) return TagAnalysisAction.RequestCompoundImage;
+
+            return TagAnalysisAction.Continue;
         }
     }
 }
