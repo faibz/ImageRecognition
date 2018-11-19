@@ -33,10 +33,20 @@ namespace DistributedSystems.API.Controllers
         }
 
         public async Task<WorkerClientVersion> GetWorkerClientVersion(string clientVersion)
-            => await _workerVersionsRepository.GetWorkerByVersion(clientVersion);
+        {
+            var workerVersion = await _workerVersionsRepository.GetWorkerByVersion(clientVersion);
+            workerVersion.Location = await _fileStorageAdapter.GetFileUriWithKey(workerVersion.Location);
+
+            return workerVersion;
+        }
 
         public async Task<WorkerClientVersion> GetLatestWorkerClient()
-            => await _workerVersionsRepository.GetLatestWorkerClient();
+        {
+            var workerVersion = await _workerVersionsRepository.GetLatestWorkerClient();
+            workerVersion.Location = await _fileStorageAdapter.GetFileUriWithKey(workerVersion.Location);
+
+            return workerVersion;
+        }
 
         public bool ValidateUpdateKey(string updateKey) 
             => updateKey == _workerUpdateKey;
