@@ -22,8 +22,8 @@ namespace DistributedSystems.API.Validators
 
         public async Task<IList<Error>> ValidateMapTagData(IList<Tag> tags, Guid mapId)
         {
-            //TODO: THIS LOL
-            throw new System.NotImplementedException();
+            //TODO: Decide on whether the clashing tags should be declined, removed from this list, or updated in the db.
+            throw new NotImplementedException();
         }
     }
 }
