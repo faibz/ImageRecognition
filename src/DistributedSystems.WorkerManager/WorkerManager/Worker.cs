@@ -18,15 +18,19 @@ namespace DistributedSystems.WorkerManager
             _virtualMachine = virtualMachine;
         }
 
-        public bool PowerState { get; private set; } = false;
+        public bool PowerState
+        {
+            get
+            {
+                return _virtualMachine.PowerState.Value == "Starting" || _virtualMachine.PowerState.Value == "Running";
+            }
+        }
 
         public async Task TurnOn()
         {
             if (PowerState) return;
 
             await _virtualMachine.StartAsync();
-
-            PowerState = _virtualMachine.PowerState.Value == "Starting" || _virtualMachine.PowerState.Value == "Running";
         }
 
         public async Task TurnOff()
@@ -34,8 +38,6 @@ namespace DistributedSystems.WorkerManager
             if (!PowerState) return;
 
             await _virtualMachine.PowerOffAsync();
-
-            PowerState = !(_virtualMachine.PowerState.Value == "Stopping" || _virtualMachine.PowerState.Value == "Stopped");
         }
     }
 }
