@@ -5,6 +5,7 @@ using DistributedSystems.API.Repositories;
 using System.Linq;
 using System.Collections.Generic;
 using DistributedSystems.API.Adapters;
+using DistributedSystems.API.Utils;
 
 namespace DistributedSystems.API.Services
 {
@@ -26,8 +27,9 @@ namespace DistributedSystems.API.Services
         private readonly IQueueAdapter _queueAdapter;
         private readonly ICompoundImageMappingsRepository _compoundImageMappingsRepository;
         private readonly IImagesService _imagesService;
+        private readonly ITagsAnalyser _tagsAnalyser;
 
-        public TagsService(ITagsRepository tagsRepository, IImagesRepository imagesRepository, ICompoundImageTagsRepository compoundImageTagsRepository, IQueueAdapter queueAdapter, ICompoundImageMappingsRepository compoundImageMappingsRepository, IImagesService imagesService)
+        public TagsService(ITagsRepository tagsRepository, IImagesRepository imagesRepository, ICompoundImageTagsRepository compoundImageTagsRepository, IQueueAdapter queueAdapter, ICompoundImageMappingsRepository compoundImageMappingsRepository, IImagesService imagesService, ITagsAnalyser tagsAnalyser)
         {
             _tagsRepository = tagsRepository;
             _imagesRepository = imagesRepository;
@@ -35,7 +37,7 @@ namespace DistributedSystems.API.Services
             _queueAdapter = queueAdapter;
             _compoundImageMappingsRepository = compoundImageMappingsRepository;
             _imagesService = imagesService;
-
+            _tagsAnalyser = tagsAnalyser;
         }
 
         public async Task ProcessImageTags(ImageTagData imageTagData)
@@ -44,24 +46,27 @@ namespace DistributedSystems.API.Services
                 await _tagsRepository.InsertImageTag(imageTagData.ImageId, tag,
                     imageTagData.GetType() == typeof(MapTagData) ? ((MapTagData) imageTagData).MapId : (Guid?) null);
         }
-        public Task ProcessCompoundImageTags(Guid compoundImageId, IList<Tag> tags)
+        public async Task ProcessCompoundImageTags(Guid compoundImageId, IList<Tag> tags)
         {
-            //TODO 
-            throw new NotImplementedException();
+            foreach (var tag in tags)
+            {
+                await _compoundImageTagsRepository.InsertCompoundImageTag(compoundImageId, tag);
+            }
         }
 
         public async Task CheckForCompoundImageRequestsFromSingleMapImage(MapTagData mapTagData)
         {
-            if (mapTagData.TagData.Any(tag => tag.Confidence < 0.5m))
-            {
+            if (await _tagsAnalyser.AnalyseTagConfidence(mapTagData.TagData) == TagAnalysisAction.RequestCompoundImage)
                 await _imagesService.CreateNewCompoundImage(mapTagData.MapId, new List<Guid> { mapTagData.ImageId });
-            }
         }
 
-        public Task CheckForCompoundImageRequestFromCompoundImage(CompoundImageTagData compoundImageTagData)
+        public async Task CheckForCompoundImageRequestFromCompoundImage(CompoundImageTagData compoundImageTagData)
         {
-            //if (compoundImageTagData.MapTagData.Any(tagData => tagData.TagData))
-            throw new NotImplementedException();
+            if (await _tagsAnalyser.AnalyseTagConfidence(compoundImageTagData.Tags) == TagAnalysisAction.RequestCompoundImage)
+            {
+                var images = await _compoundImageMappingsRepository.GetImageIdsByCompoundImageId(compoundImageTagData.CompoundImageId);
+                await _imagesService.CreateNewCompoundImage(compoundImageTagData.MapId, images);
+            }
         }
 
         public async Task<bool> ValidateCompoundImageTagDataKey(CompoundImageTagData compoundImageTagData)
@@ -85,11 +90,7 @@ namespace DistributedSystems.API.Services
         {
             if (string.IsNullOrEmpty(tagData.Key)) return false;
 
-            var imageKey = await _imagesRepository.GetImageKeyById(tagData.ImageId);
-
-            return tagData.Key == imageKey;
+            return tagData.Key == await _imagesRepository.GetImageKeyById(tagData.ImageId);
         }
-
-
     }
 }
