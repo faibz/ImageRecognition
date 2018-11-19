@@ -13,7 +13,7 @@ namespace DistributedSystems.WorkerManager
     {
         private readonly IVirtualMachine _virtualMachine;
 
-        public Worker(IVirtualMachine virtualMachine)
+        public IWorker(IVirtualMachine virtualMachine)
         {
             _virtualMachine = virtualMachine;
         }

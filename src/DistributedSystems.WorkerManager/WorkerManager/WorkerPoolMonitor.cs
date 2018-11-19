@@ -19,7 +19,7 @@ namespace DistributedSystems.WorkerManager
             }
         }
 
-        public IList<Worker> Workers { get; private set; } = new List<Worker>();
+        public IList<IWorker> Workers { get; private set; } = new List<IWorker>();
         //https://docs.chef.io/azure_portal.html
     }
 }
