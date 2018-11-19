@@ -7,13 +7,14 @@ namespace DistributedSystems.WorkerManager
     {
         Task TurnOn();
         Task TurnOff();
+        bool PowerState { get; }
     }
 
     public class Worker : IWorker
     {
         private readonly IVirtualMachine _virtualMachine;
 
-        public IWorker(IVirtualMachine virtualMachine)
+        public Worker(IVirtualMachine virtualMachine)
         {
             _virtualMachine = virtualMachine;
         }
