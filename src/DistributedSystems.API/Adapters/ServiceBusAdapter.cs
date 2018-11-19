@@ -15,7 +15,7 @@ namespace DistributedSystems.API.Adapters
         public ServiceBusAdapter(IConfiguration config)
         {
             _queueClientPrimary = new QueueClient(config.GetValue<string>("Azure:ServiceBusConnectionString"), config.GetValue<string>("Azure:ServiceBusQueueName"));
-            _queueClientPrimary = new QueueClient(config.GetValue<string>("Azure:ServiceBusConnectionString"), config.GetValue<string>("Azure:ServiceBusQueueNameSecondary"));
+            _queueClientSecondary = new QueueClient(config.GetValue<string>("Azure:ServiceBusConnectionString"), config.GetValue<string>("Azure:ServiceBusQueueNameSecondary"));
         }
 
         public async Task<bool> SendMessage(string message)
