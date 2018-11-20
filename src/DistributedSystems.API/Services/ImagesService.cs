@@ -167,8 +167,11 @@ namespace DistributedSystems.API.Services
 
             foreach (var imageId in imageIds)
             {
-                var compoundImagePart = new CompoundImagePart(await _mapsRepository.GetMapImagePartByImageId(imageId));
-                compoundImagePart.Image.Location = await _storageAdapter.GetImageUriWithKey(imageId);
+                compoundImageParts.Add(
+                    new CompoundImagePart(await _mapsRepository.GetMapImagePartByImageId(imageId))
+                    {
+                        Image = {Location = await _storageAdapter.GetFileUriWithKey($"{imageId}.jpg")}
+                    });
             }
 
             return compoundImageParts;
