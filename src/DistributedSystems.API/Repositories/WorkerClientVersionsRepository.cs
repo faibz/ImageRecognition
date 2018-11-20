@@ -4,7 +4,7 @@ using System.Data;
 using System.Threading.Tasks;
 using Dapper;
 
-namespace DistributedSystems.API.Controllers
+namespace DistributedSystems.API.Repositories
 {
     public interface IWorkerClientVersionsRepository
     {
@@ -24,14 +24,14 @@ namespace DistributedSystems.API.Controllers
 
         public async Task<WorkerClientVersion> GetLatestWorkerClient()
         {
-            var latestClientVersion = await _connection.QueryFirstAsync<Models.DTOs.WorkerClientVersion>("SELECT [Version], [Location], [Hash] FROM [dbo].[WorkerClientVersion] ORDER BY [Version] DESC");
+            var latestClientVersion = await _connection.QueryFirstOrDefaultAsync<Models.DTOs.WorkerClientVersion>("SELECT [Version], [ReleaseDate], [Location], [Hash] FROM [dbo].[WorkerClientVersions] ORDER BY [Version] DESC");
 
-            return (WorkerClientVersion) latestClientVersion;
+            return latestClientVersion == null ? null : (WorkerClientVersion) latestClientVersion;
         }
 
         public async Task<WorkerClientVersion> GetWorkerByVersion(string clientVersion)
         {
-            var workerClient = await _connection.QueryFirstOrDefaultAsync<Models.DTOs.WorkerClientVersion>("SELECT [Version] FROM [dbo].[WorkerClientVersions] WHERE [Version] = @Version", new { Version = clientVersion });
+            var workerClient = await _connection.QueryFirstOrDefaultAsync<Models.DTOs.WorkerClientVersion>("SELECT [Version], [ReleaseDate], [Location], [Hash] FROM [dbo].[WorkerClientVersions] WHERE [Version] = @Version", new { Version = clientVersion });
 
             return workerClient == null ? null : (WorkerClientVersion) workerClient;
         }

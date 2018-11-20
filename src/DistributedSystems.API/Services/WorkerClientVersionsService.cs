@@ -3,17 +3,19 @@ using DistributedSystems.API.Models;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.IO;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
+using DistributedSystems.API.Repositories;
 
-namespace DistributedSystems.API.Controllers
+namespace DistributedSystems.API.Services
 {
     public interface IWorkerClientVersionsService
     {
         Task<WorkerClientVersion> GetWorkerClientVersion(string clientVersion);
         Task<WorkerClientVersion> GetLatestWorkerClient();
         bool ValidateUpdateKey(string updateKey);
-        Task UpdateWorkerClient(byte[] clientData);
+        Task<WorkerClientVersion> UpdateWorkerClient(byte[] clientData);
     }
 
     public class WorkerClientVersionsService : IWorkerClientVersionsService
@@ -35,7 +37,10 @@ namespace DistributedSystems.API.Controllers
         public async Task<WorkerClientVersion> GetWorkerClientVersion(string clientVersion)
         {
             var workerVersion = await _workerVersionsRepository.GetWorkerByVersion(clientVersion);
-            workerVersion.Location = await _fileStorageAdapter.GetFileUriWithKey(workerVersion.Location);
+
+            if (workerVersion == null) return null;
+
+            workerVersion.Location = await _fileStorageAdapter.GetFileUriWithKey($"WorkerClient_v{workerVersion.Version}.exe", _storageContainerName);
 
             return workerVersion;
         }
@@ -43,7 +48,10 @@ namespace DistributedSystems.API.Controllers
         public async Task<WorkerClientVersion> GetLatestWorkerClient()
         {
             var workerVersion = await _workerVersionsRepository.GetLatestWorkerClient();
-            workerVersion.Location = await _fileStorageAdapter.GetFileUriWithKey(workerVersion.Location);
+
+            if (workerVersion == null) return null;
+
+            workerVersion.Location = await _fileStorageAdapter.GetFileUriWithKey($"WorkerClient_v{workerVersion.Version}.exe", _storageContainerName);
 
             return workerVersion;
         }
@@ -51,10 +59,10 @@ namespace DistributedSystems.API.Controllers
         public bool ValidateUpdateKey(string updateKey) 
             => updateKey == _workerUpdateKey;
 
-        public async Task UpdateWorkerClient(byte[] clientData)
+        public async Task<WorkerClientVersion> UpdateWorkerClient(byte[] clientData)
         {
             var memoryStream = new MemoryStream(clientData);
-            var clientUpdate = new WorkerClientVersion(int.Parse((await _workerVersionsRepository.GetLatestWorkerClient()).Version) + 1);
+            var clientUpdate = new WorkerClientVersion(int.Parse((await _workerVersionsRepository.GetLatestWorkerClient())?.Version ?? "0") + 1);
 
             using (var md5 = MD5.Create())
                 clientUpdate.Hash = BitConverter.ToString(md5.ComputeHash(memoryStream)).Replace("-", "").ToLower();
@@ -62,9 +70,11 @@ namespace DistributedSystems.API.Controllers
             memoryStream.Position = 0;
             clientUpdate.Location = await _fileStorageAdapter.UploadFile($"WorkerClient_v{clientUpdate.Version}.exe", memoryStream, _storageContainerName);
 
-            if (string.IsNullOrEmpty(clientUpdate.Location)) return;
+            if (string.IsNullOrEmpty(clientUpdate.Location)) return null;
 
             await _workerVersionsRepository.InsertWorkerClientVersion(clientUpdate);
+
+            return clientUpdate;
         }
     }
 }
