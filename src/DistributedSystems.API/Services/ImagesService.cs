@@ -9,6 +9,7 @@ using DistributedSystems.API.Models;
 using DistributedSystems.API.Models.Results;
 using DistributedSystems.API.Repositories;
 using DistributedSystems.API.Utils;
+using Microsoft.Extensions.Configuration;
 
 namespace DistributedSystems.API.Services
 {
@@ -27,8 +28,9 @@ namespace DistributedSystems.API.Services
         private readonly ICompoundImageMappingsRepository _compoundImageMappingsRepository;
         private readonly IMapsAnalyser _mapsAnalyser;
         private readonly IMapsRepository _mapsRepository;
+        private readonly string _storageContainerName;
 
-        public ImagesService(IImagesRepository imagesRepository, IFileStorageAdapter storageAdapter, IQueueAdapter queueAdapter, ICompoundImagesRepository compoundImagesRepository, ICompoundImageMappingsRepository compoundImageMappingsRepository, IMapsAnalyser mapsAnalyser, IMapsRepository mapsRepository)
+        public ImagesService(IImagesRepository imagesRepository, IFileStorageAdapter storageAdapter, IQueueAdapter queueAdapter, ICompoundImagesRepository compoundImagesRepository, ICompoundImageMappingsRepository compoundImageMappingsRepository, IMapsAnalyser mapsAnalyser, IMapsRepository mapsRepository, IConfiguration configuration)
         {
             _imagesRepository = imagesRepository;
             _queueAdapter = queueAdapter;
@@ -37,6 +39,7 @@ namespace DistributedSystems.API.Services
             _compoundImageMappingsRepository = compoundImageMappingsRepository;
             _mapsAnalyser = mapsAnalyser;
             _mapsRepository = mapsRepository;
+            _storageContainerName = configuration.GetValue<string>("Azure:CloudBlobImageContainerName");
         }
 
         public async Task<UploadImageResult> UploadImage(MemoryStream memoryStream)
@@ -58,7 +61,7 @@ namespace DistributedSystems.API.Services
             }
 
             memoryStream.Position = 0;
-            image.Location = await _storageAdapter.UploadImage(image.Id, memoryStream);
+            image.Location = await _storageAdapter.UploadFile($"{image.Id}.jpg", memoryStream, _storageContainerName);
 
             if (string.IsNullOrEmpty(image.Location))
             {
@@ -77,7 +80,7 @@ namespace DistributedSystems.API.Services
                 return UploadFailureResult();
             }
 
-            image.Location = await _storageAdapter.GetImageUriWithKey(image.Id);
+            image.Location = await _storageAdapter.GetFileUriWithKey($"{image.Id}.jpg", _storageContainerName);
 
             if (string.IsNullOrEmpty(image.Location))
             {

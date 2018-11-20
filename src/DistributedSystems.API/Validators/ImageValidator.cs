@@ -1,16 +1,16 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.IO;
 using DistributedSystems.API.Models;
 using DistributedSystems.API.Models.Requests;
 
 namespace DistributedSystems.API.Validators
 {
-    public interface IImagesValidator
+    public interface IImageValidator
     {
         IList<Error> ValidateImageRequest(ImageRequest imageRequest);
     }
 
-    public class ImagesValidator : IImagesValidator
+    public class ImageValidator : IImageValidator
     {
         private const int MaxFileLength = 4000000;
 

@@ -28,6 +28,7 @@ namespace DistributedSystems.API
             services.AddTransient<IImagesRepository, ImagesRepository>();
             services.AddTransient<ITagsRepository, TagsRepository>();
             services.AddTransient<IMapsRepository, MapsRepository>();
+            services.AddTransient<IWorkerClientVersionsRepository, WorkerClientVersionsRepository>();
 
             services.AddTransient<IMapsValidator, MapsValidator>();
             services.AddTransient<IImagesValidator, ImagesValidator>();
@@ -35,8 +36,9 @@ namespace DistributedSystems.API
             services.AddTransient<IImagesService, ImagesService>();
             services.AddTransient<ITagsService, TagsService>();
             services.AddTransient<IMapsService, MapsService>();
+            services.AddTransient<IWorkerClientVersionsService, WorkerClientVersionsService>();
 
-            services.AddTransient<IFileStorageAdapter, AzureBlobStorageAdapter>();
+            services.AddSingleton<IFileStorageAdapter, AzureBlobStorageAdapter>();
             services.AddTransient<IQueueAdapter, ServiceBusAdapter>();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }
