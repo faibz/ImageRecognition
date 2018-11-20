@@ -6,6 +6,7 @@ using DistributedSystems.API.Adapters;
 using DistributedSystems.API.Models;
 using DistributedSystems.API.Models.Results;
 using DistributedSystems.API.Repositories;
+using Microsoft.Extensions.Configuration;
 
 namespace DistributedSystems.API.Services
 {
@@ -19,12 +20,14 @@ namespace DistributedSystems.API.Services
         private readonly IImagesRepository _imagesRepository;
         private readonly IFileStorageAdapter _storageAdapter;
         private readonly IQueueAdapter _queueAdapter;
+        private readonly string _storageContainerName;
 
-        public ImagesService(IImagesRepository imagesRepository, IFileStorageAdapter storageAdapter, IQueueAdapter queueAdapter)
+        public ImagesService(IImagesRepository imagesRepository, IFileStorageAdapter storageAdapter, IQueueAdapter queueAdapter, IConfiguration configuration)
         {
             _imagesRepository = imagesRepository;
             _queueAdapter = queueAdapter;
             _storageAdapter = storageAdapter;
+            _storageContainerName = configuration.GetValue<string>("Azure:CloudBlobImageContainerName");
         }
 
         public async Task<UploadImageResult> UploadImage(MemoryStream memoryStream)
@@ -46,7 +49,7 @@ namespace DistributedSystems.API.Services
             }
 
             memoryStream.Position = 0;
-            image.Location = await _storageAdapter.UploadImage(image.Id, memoryStream);
+            image.Location = await _storageAdapter.UploadFile($"{image.Id}.jpg", memoryStream, _storageContainerName);
 
             if (string.IsNullOrEmpty(image.Location))
             {
@@ -65,7 +68,7 @@ namespace DistributedSystems.API.Services
                 return UploadFailureResult();
             }
 
-            image.Location = await _storageAdapter.GetImageUriWithKey(image.Id);
+            image.Location = await _storageAdapter.GetFileUriWithKey($"{image.Id}.jpg", _storageContainerName);
 
             if (string.IsNullOrEmpty(image.Location))
             {
