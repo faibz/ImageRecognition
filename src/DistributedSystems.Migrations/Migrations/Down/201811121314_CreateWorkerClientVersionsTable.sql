@@ -1,0 +1,4 @@
+﻿IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'WorkerClientVersions')
+BEGIN
+    DROP TABLE WorkerClientVersions;
+END
