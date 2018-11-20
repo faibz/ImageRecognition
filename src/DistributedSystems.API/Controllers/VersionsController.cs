@@ -1,8 +1,7 @@
-﻿using System;
-using System.Threading.Tasks;
-using DistributedSystems.API.Utils;
+﻿using System.Threading.Tasks;
+using DistributedSystems.API.Models;
+using DistributedSystems.API.Services;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 
 namespace DistributedSystems.API.Controllers
 {
@@ -10,25 +9,29 @@ namespace DistributedSystems.API.Controllers
     [ApiController]
     public class VersionsController : ControllerBase
     {
-        private readonly IWorkerClientVersionsRepository _workerVersionsRepository;
         private readonly IWorkerClientVersionsService _workerVersionsService;
 
-        public VersionsController(IWorkerClientVersionsRepository workerVersionsRepository, IWorkerClientVersionsService workerVersionsService)
+        public VersionsController(IWorkerClientVersionsService workerVersionsService)
         {
-            _workerVersionsRepository = workerVersionsRepository;
             _workerVersionsService = workerVersionsService;
         }
 
         [HttpGet("[action]")]
         public async Task<IActionResult> GetLatestWorkerClientVersion()
-            => Ok(await _workerVersionsService.GetLatestWorkerClient());
+        {
+            var workerClientversion = await _workerVersionsService.GetLatestWorkerClient();
+
+            if (workerClientversion == null) return NotFound("There are currently no worker clients available.");
+
+            return Ok(workerClientversion);
+        }
 
         [HttpGet("[action]")]
         public async Task<IActionResult> GetWorkerClientVersion(string clientVersion)
         {
             var workerClientVersion = await _workerVersionsService.GetWorkerClientVersion(clientVersion);
 
-            if (workerClientVersion == null) return BadRequest("Invalid Worker Client version specified.");
+            if (workerClientVersion == null) return BadRequest("Invalid client version specified.");
 
             return Ok(workerClientVersion);
         }
@@ -36,18 +39,16 @@ namespace DistributedSystems.API.Controllers
         [HttpPost("[action]")]
         public async Task<IActionResult> UpdateWorkerClient([FromBody] WorkerClientVersionUpdateRequest workerClientVersionUpdate)
         {
+            if (workerClientVersionUpdate == null) return BadRequest();
+
             if (!_workerVersionsService.ValidateUpdateKey(workerClientVersionUpdate.Key)) return Unauthorized();
 
-            await _workerVersionsService.UpdateWorkerClient(workerClientVersionUpdate.ClientData);
+            var workerClient = await _workerVersionsService.UpdateWorkerClient(workerClientVersionUpdate.ClientData);
 
-            return Ok();
+            if (string.IsNullOrEmpty(workerClient.Location))
+                return UnprocessableEntity("Failed to process worker client update.");
+
+            return Ok(workerClient);
         }
     }
-}
-
-public class WorkerClientVersionUpdateRequest
-{
-    [JsonConverter(typeof(Base64FileJsonConverter))]
-    public byte[] ClientData { get; set; }
-    public string Key { get; set; }
 }

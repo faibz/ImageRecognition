@@ -3,6 +3,7 @@ using Microsoft.WindowsAzure.Storage.Blob;
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 
 namespace DistributedSystems.API.Adapters
 {
@@ -11,9 +12,9 @@ namespace DistributedSystems.API.Adapters
     {
         private readonly CloudBlobClient _blobClient;
 
-        public AzureBlobStorageAdapter(string connectionString, string containerName)
+        public AzureBlobStorageAdapter(IConfiguration configuration)
         {
-            _blobClient = CloudStorageAccount.Parse(connectionString).CreateCloudBlobClient();
+            _blobClient = CloudStorageAccount.Parse(configuration.GetValue<string>("Azure:CloudStorageConnectionString")).CreateCloudBlobClient();
         }
 
         public async Task<string> UploadFile(string fileName, MemoryStream memoryStream, string containerName = null)
