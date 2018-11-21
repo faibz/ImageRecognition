@@ -1,8 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using DistributedSystems.API.Models;
+using DistributedSystems.API.Models.Requests;
 using DistributedSystems.API.Repositories;
 using DistributedSystems.API.Services;
+using DistributedSystems.API.Validators;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DistributedSystems.API.Controllers
@@ -11,21 +15,23 @@ namespace DistributedSystems.API.Controllers
     [ApiController]
     public class TagsController : ControllerBase
     {
-        private readonly ITagsService _tagService;
+        private readonly ITagsService _tagsService;
         private readonly ITagsRepository _tagsRepository;
+        private readonly ITagsValidator _tagsValidator;
 
-        public TagsController(ITagsService tagService, ITagsRepository tagsRepository)
+        public TagsController(ITagsService tagsService, ITagsRepository tagsRepository, ITagsValidator tagsValidator)
         {
-            _tagService = tagService;
+            _tagsService = tagsService;
             _tagsRepository = tagsRepository;
+            _tagsValidator = tagsValidator;
         }
         
         [HttpPost("[action]")]
         public async Task<IActionResult> SubmitImageTags([FromBody] ImageTagData imageTagData)
         {
-            if (!await _tagService.ValidateTagDataKey(imageTagData)) return Unauthorized();
+            if (!await _tagsService.ValidateTagDataKey(imageTagData)) return Unauthorized();
 
-            await _tagService.ProcessImageTags(imageTagData);
+            await _tagsService.ProcessImageTags(imageTagData);
 
             return Ok();
         }
@@ -33,11 +39,23 @@ namespace DistributedSystems.API.Controllers
         [HttpPost("[action]")]
         public async Task<IActionResult> SubmitMapImagePartTags([FromBody] MapTagData mapTagData)
         {
-            //TODO: Add tag validator (?) to check whether a certain tag has already been entered for an image
+            if (!await _tagsService.ValidateTagDataKey(mapTagData)) return Unauthorized();
 
-            if (!await _tagService.ValidateTagDataKey(mapTagData)) return Unauthorized();
+            await _tagsValidator.ValidateImageTagData(mapTagData.TagData, mapTagData.ImageId);
+            await _tagsService.ProcessImageTags(mapTagData);
+            await _tagsService.CheckForCompoundImageRequestsFromSingleMapImage(mapTagData);
 
-            await _tagService.ProcessImageTags(mapTagData);
+            return Ok();
+        }
+
+        [HttpPost("[action]")]
+        public async Task<IActionResult> SubmitMapCompoundImageTags([FromBody] CompoundImageTagData compoundImageTagData)
+        {
+            if (!await _tagsService.ValidateCompoundImageTagDataKey(compoundImageTagData)) return Unauthorized();
+
+            await _tagsValidator.ValidateCompoundImageTagData(compoundImageTagData.Tags, compoundImageTagData.CompoundImageId);
+            await _tagsService.ProcessCompoundImageTags(compoundImageTagData.CompoundImageId, compoundImageTagData.Tags);
+            await _tagsService.CheckForCompoundImageRequestFromCompoundImage(compoundImageTagData);
 
             return Ok();
         }

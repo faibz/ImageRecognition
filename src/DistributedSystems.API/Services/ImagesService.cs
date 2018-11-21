@@ -1,11 +1,14 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 using DistributedSystems.API.Adapters;
 using DistributedSystems.API.Models;
 using DistributedSystems.API.Models.Results;
 using DistributedSystems.API.Repositories;
+using DistributedSystems.API.Utils;
 using Microsoft.Extensions.Configuration;
 
 namespace DistributedSystems.API.Services
@@ -13,6 +16,7 @@ namespace DistributedSystems.API.Services
     public interface IImagesService
     {
         Task<UploadImageResult> UploadImage(MemoryStream memoryStream);
+        Task CreateNewCompoundImage(Guid mapId, IList<Guid> imageIdd);
     }
 
     public class ImagesService : IImagesService
@@ -20,13 +24,21 @@ namespace DistributedSystems.API.Services
         private readonly IImagesRepository _imagesRepository;
         private readonly IFileStorageAdapter _storageAdapter;
         private readonly IQueueAdapter _queueAdapter;
+        private readonly ICompoundImagesRepository _compoundImagesRepository;
+        private readonly ICompoundImageMappingsRepository _compoundImageMappingsRepository;
+        private readonly IMapsAnalyser _mapsAnalyser;
+        private readonly IMapsRepository _mapsRepository;
         private readonly string _storageContainerName;
 
-        public ImagesService(IImagesRepository imagesRepository, IFileStorageAdapter storageAdapter, IQueueAdapter queueAdapter, IConfiguration configuration)
+        public ImagesService(IImagesRepository imagesRepository, IFileStorageAdapter storageAdapter, IQueueAdapter queueAdapter, ICompoundImagesRepository compoundImagesRepository, ICompoundImageMappingsRepository compoundImageMappingsRepository, IMapsAnalyser mapsAnalyser, IMapsRepository mapsRepository, IConfiguration configuration)
         {
             _imagesRepository = imagesRepository;
             _queueAdapter = queueAdapter;
             _storageAdapter = storageAdapter;
+            _compoundImagesRepository = compoundImagesRepository;
+            _compoundImageMappingsRepository = compoundImageMappingsRepository;
+            _mapsAnalyser = mapsAnalyser;
+            _mapsRepository = mapsRepository;
             _storageContainerName = configuration.GetValue<string>("Azure:CloudBlobImageContainerName");
         }
 
@@ -101,5 +113,60 @@ namespace DistributedSystems.API.Services
 
         private UploadImageResult UploadFailureResult()
             => new UploadImageResult(false, null);
+
+        public async Task CreateNewCompoundImage(Guid mapId, IList<Guid> imageIds)
+        {
+            var nextImageId = await _mapsAnalyser.SelectNextImageId(mapId, imageIds);
+
+            if (nextImageId == Guid.Empty) return;
+
+            imageIds.Add(nextImageId);
+
+            var compoundImage = new CompoundImage { MapId = mapId };
+            await _compoundImagesRepository.InsertCompoundImage(compoundImage);
+
+            foreach (var imageId in imageIds)
+            {
+                await _compoundImageMappingsRepository.InsertCompoundImageMapping(imageId, compoundImage.Id);
+            }
+
+            var queueCompoundImage = new KeyedCompoundImage
+            {
+                CompoundImageId = compoundImage.Id,
+                ImageKey = await GetCompoundKeyFromImageIds(imageIds),
+                MapId = mapId,
+                Images = await GetCompoundImagePartsFromIds(mapId, imageIds)
+            };
+
+            await _queueAdapter.SendMessageSecondary(queueCompoundImage);
+        }
+
+        private async Task<IList<CompoundImagePart>> GetCompoundImagePartsFromIds(Guid mapId, IList<Guid> imageIds)
+        {
+            var compoundImageParts = new List<CompoundImagePart>();
+
+            foreach (var imageId in imageIds)
+            {
+                compoundImageParts.Add(
+                    new CompoundImagePart(await _mapsRepository.GetMapImagePartByImageId(imageId))
+                    {
+                        Image = {Location = await _storageAdapter.GetFileUriWithKey($"{imageId}.jpg", _storageContainerName)}
+                    });
+            }
+
+            return compoundImageParts;
+        }
+
+        private async Task<string> GetCompoundKeyFromImageIds(IList<Guid> imageIds)
+        {
+            var key = "";
+
+            foreach(var id in imageIds)
+            {
+                key += await _imagesRepository.GetImageKeyById(id);
+            }
+
+            return key;
+        }
     }
 }
