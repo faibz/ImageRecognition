@@ -24,7 +24,6 @@ namespace DistributedSystems.API.Services
         private readonly ITagsRepository _tagsRepository;
         private readonly IImagesRepository _imagesRepository;
         private readonly ICompoundImageTagsRepository _compoundImageTagsRepository;
-        private readonly IQueueAdapter _queueAdapter;
         private readonly ICompoundImageMappingsRepository _compoundImageMappingsRepository;
         private readonly IImagesService _imagesService;
         private readonly ITagsAnalyser _tagsAnalyser;
@@ -34,7 +33,6 @@ namespace DistributedSystems.API.Services
             _tagsRepository = tagsRepository;
             _imagesRepository = imagesRepository;
             _compoundImageTagsRepository = compoundImageTagsRepository;
-            _queueAdapter = queueAdapter;
             _compoundImageMappingsRepository = compoundImageMappingsRepository;
             _imagesService = imagesService;
             _tagsAnalyser = tagsAnalyser;
@@ -49,9 +47,7 @@ namespace DistributedSystems.API.Services
         public async Task ProcessCompoundImageTags(Guid compoundImageId, IList<Tag> tags)
         {
             foreach (var tag in tags)
-            {
                 await _compoundImageTagsRepository.InsertCompoundImageTag(compoundImageId, tag);
-            }
         }
 
         public async Task CheckForCompoundImageRequestsFromSingleMapImage(MapTagData mapTagData)
@@ -79,9 +75,7 @@ namespace DistributedSystems.API.Services
             var imageIds = await _compoundImageMappingsRepository.GetImageIdsByCompoundImageId(compoundImageTagData.CompoundImageId);
 
             foreach (var imageId in imageIds)
-            {
                 imageKey += await _imagesRepository.GetImageKeyById(imageId);
-            }
 
             return suppliedKey == imageKey;
         }
