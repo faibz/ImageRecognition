@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using DistributedSystems.API.Repositories;
 using System.Collections.Generic;
 using DistributedSystems.API.Adapters;
+using DistributedSystems.API.Models.Requests;
 using DistributedSystems.API.Utils;
 
 namespace DistributedSystems.API.Services
