@@ -7,10 +7,4 @@ namespace DistributedSystems.API.Models
         public Guid MapId { get; set; }
         public Coordinate Coordinates { get; set; }
     }
-
-    public class Coordinate
-    {
-        public int X { get; set; }
-        public int Y { get; set; }
-    }
 }

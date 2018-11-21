@@ -1,6 +1,6 @@
-﻿using System;
+using System;
 
-namespace DistributedSystems.API.Models
+namespace DistributedSystems.API.Models.Requests
 {
     public class MapTagData : ImageTagData
     {

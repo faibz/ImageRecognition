@@ -14,6 +14,10 @@
     <None Remove="Migrations\Down\201810230928_AddUploadedDateAndStatusToImagesTable.sql" />
     <None Remove="Migrations\Down\201810291131_AddKeyToImagesTable.sql" />
     <None Remove="Migrations\Down\201810301734_RenameColumnAndRowCountColumns.sql" />
+    <None Remove="Migrations\Down\201811161725_CreateCompoundImagesTable.sql" />
+    <None Remove="Migrations\Down\201811161731_CreateCompoundImageMappingsTable.sql" />
+    <None Remove="Migrations\Down\201811161733_CreateCompoundImageTagsTable.sql" />
+    <None Remove="Migrations\Down\201811121314_CreateWorkerClientVersionsTable.sql" />
     <None Remove="Migrations\Up\201810151550_CreateImagesTable.sql" />
     <None Remove="Migrations\Up\201810151553_CreateMapsTable.sql" />
     <None Remove="Migrations\Up\201810151611_CreateMapImagePartsTable.sql" />
@@ -22,6 +26,10 @@
     <None Remove="Migrations\Up\201810230928_AddUploadedDateAndStatusToImagesTable.sql" />
     <None Remove="Migrations\Up\201810291131_AddKeyToImagesTable.sql" />
     <None Remove="Migrations\Up\201810301734_RenameColumnAndRowCountColumns.sql" />
+    <None Remove="Migrations\Up\201811161725_CreateCompoundImagesTable.sql" />
+    <None Remove="Migrations\Up\201811161731_CreateCompoundImageMappingsTable.sql" />
+    <None Remove="Migrations\Up\201811161733_CreateCompoundImageTagsTable.sql" />
+    <None Remove="Migrations\Up\201811121314_CreateWorkerClientVersionsTable.sql" />
   </ItemGroup>
 
   <ItemGroup>
@@ -33,8 +41,16 @@
     <EmbeddedResource Include="Migrations\Down\201810230928_AddUploadedDateAndStatusToImagesTable.sql" />
     <EmbeddedResource Include="Migrations\Down\201810291131_AddKeyToImagesTable.sql" />
     <EmbeddedResource Include="Migrations\Down\201810301734_RenameColumnAndRowCountColumns.sql" />
+    <EmbeddedResource Include="Migrations\Down\201811161725_CreateCompoundImagesTable.sql" />
+    <EmbeddedResource Include="Migrations\Down\201811161731_CreateCompoundImageMappingsTable.sql" />
+    <EmbeddedResource Include="Migrations\Down\201811161733_CreateCompoundImageTagsTable.sql" />
+    <EmbeddedResource Include="Migrations\Down\201811121314_CreateWorkerClientVersionsTable.sql" />
     <EmbeddedResource Include="Migrations\Up\201810151550_CreateImagesTable.sql" />
+    <EmbeddedResource Include="Migrations\Up\201811121314_CreateWorkerClientVersionsTable.sql" />
     <EmbeddedResource Include="Migrations\Up\201810230927_CreateStatusesTable.sql" />
+    <EmbeddedResource Include="Migrations\Up\201811161733_CreateCompoundImageTagsTable.sql" />
+    <EmbeddedResource Include="Migrations\Up\201811161731_CreateCompoundImageMappingsTable.sql" />
+    <EmbeddedResource Include="Migrations\Up\201811161725_CreateCompoundImagesTable.sql" />
     <EmbeddedResource Include="Migrations\Up\201810301734_RenameColumnAndRowCountColumns.sql" />
     <EmbeddedResource Include="Migrations\Up\201810291131_AddKeyToImagesTable.sql" />
     <EmbeddedResource Include="Migrations\Up\201810230928_AddUploadedDateAndStatusToImagesTable.sql" />

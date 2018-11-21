@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 
 namespace DistributedSystems.API.Adapters
 {
@@ -6,5 +6,7 @@ namespace DistributedSystems.API.Adapters
     {
         Task<bool> SendMessage(string message);
         Task<bool> SendMessage(object obj);
+        Task<bool> SendMessageSecondary(string message);
+        Task<bool> SendMessageSecondary(object obj);
     }
 }
