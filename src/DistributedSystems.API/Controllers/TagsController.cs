@@ -54,7 +54,6 @@ namespace DistributedSystems.API.Controllers
             if (!await _tagsService.ValidateCompoundImageTagDataKey(compoundImageTagData)) return Unauthorized();
 
             await _tagsValidator.ValidateCompoundImageTagData(compoundImageTagData.Tags, compoundImageTagData.CompoundImageId);
-
             await _tagsService.ProcessCompoundImageTags(compoundImageTagData.CompoundImageId, compoundImageTagData.Tags);
             await _tagsService.CheckForCompoundImageRequestFromCompoundImage(compoundImageTagData);
 
