@@ -1,4 +1,5 @@
-﻿using DistributedSystems.API.Models.DTOs;
+﻿using System;
+using DistributedSystems.API.Models.DTOs;
 
 namespace DistributedSystems.API.Models
 {
@@ -13,6 +14,15 @@ namespace DistributedSystems.API.Models
             {
                 Name = imageTag.Tag,
                 Confidence = imageTag.Confidence
+            };
+        }
+
+        public static explicit operator Tag(CompoundImageTag compoundImageTag)
+        {
+            return new Tag
+            {
+                Name = compoundImageTag.Tag,
+                Confidence = compoundImageTag.Confidence
             };
         }
     }

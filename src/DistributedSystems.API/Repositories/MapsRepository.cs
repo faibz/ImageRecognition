@@ -1,10 +1,9 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using System.Data;
 using Dapper;
 using DistributedSystems.API.Factories;
 using DistributedSystems.API.Models;
 using System;
-using System.IO;
 
 namespace DistributedSystems.API.Repositories
 {
@@ -14,6 +13,7 @@ namespace DistributedSystems.API.Repositories
         Task<Map> GetMapById(Guid mapId);
         Task<MapImagePart> GetMapImagePartByIdAndLocation(Guid mapId, int x, int y);
         Task<MapImagePart> InsertMapImagePart(MapImagePart mapImagePart);
+        Task<MapImagePart> GetMapImagePartByImageId(Guid imageId);
     }
 
     public class MapsRepository : IMapsRepository
@@ -59,6 +59,13 @@ namespace DistributedSystems.API.Repositories
             await _connection.ExecuteAsync("INSERT INTO [dbo].[MapImageParts] ([MapId], [ImageId], [CoordinateX], [CoordinateY]) VALUES (@MapId, @ImageId, @CoordinateX, @CoordinateY)", new { mapImagePart.MapId, mapImagePart.ImageId, mapImagePart.CoordinateX, mapImagePart.CoordinateY });
 
             return mapImagePart;
+        }
+
+        public async Task<MapImagePart> GetMapImagePartByImageId(Guid imageId)
+        {
+            var mapImagePart = await _connection.QueryFirstOrDefaultAsync<Models.DTOs.MapImagePart>("SELECT TOP 1 [MapId], [ImageId], [CoordinateX], [CoordinateY] FROM [dbo].[MapImageParts] WHERE [ImageId] = @ImageId", new { ImageId = imageId });
+
+            return (MapImagePart) mapImagePart;
         }
     }
 }
