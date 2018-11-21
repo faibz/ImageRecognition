@@ -2,6 +2,7 @@
 using DistributedSystems.API.Factories;
 using DistributedSystems.API.Repositories;
 using DistributedSystems.API.Services;
+using DistributedSystems.API.Utils;
 using DistributedSystems.API.Validators;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -29,9 +30,16 @@ namespace DistributedSystems.API
             services.AddTransient<ITagsRepository, TagsRepository>();
             services.AddTransient<IMapsRepository, MapsRepository>();
             services.AddTransient<IWorkerClientVersionsRepository, WorkerClientVersionsRepository>();
+            services.AddTransient<ICompoundImageMappingsRepository, CompoundImageMappingsRepository>();
+            services.AddTransient<ICompoundImagesRepository, CompoundImagesRepository>();
+            services.AddTransient<ICompoundImageTagsRepository, CompoundImageTagsRepository>();
 
             services.AddTransient<IMapsValidator, MapsValidator>();
             services.AddTransient<IImagesValidator, ImagesValidator>();
+            services.AddTransient<ITagsValidator, TagsValidator>();
+
+            services.AddTransient<IMapsAnalyser, MapsAnalyser>();
+            services.AddTransient<ITagsAnalyser, TagsAnalyser>();
 
             services.AddTransient<IImagesService, ImagesService>();
             services.AddTransient<ITagsService, TagsService>();
