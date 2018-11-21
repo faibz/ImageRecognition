@@ -12,11 +12,7 @@ namespace DistributedSystems.API.Utils
 
     public class TagsAnalyser : ITagsAnalyser
     {
-        public async Task<TagAnalysisAction> AnalyseTagConfidence(IList<Tag> tags)
-        {
-            if (tags.Any(tag => tag.Confidence < 0.5m)) return TagAnalysisAction.RequestCompoundImage;
-
-            return TagAnalysisAction.Continue;
-        }
+        public async Task<TagAnalysisAction> AnalyseTagConfidence(IList<Tag> tags) 
+            => tags.Any(tag => tag.Confidence < 0.5m) ? TagAnalysisAction.RequestCompoundImage : TagAnalysisAction.Continue;
     }
 }

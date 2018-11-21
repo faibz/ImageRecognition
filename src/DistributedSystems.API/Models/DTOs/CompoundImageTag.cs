@@ -6,6 +6,6 @@ namespace DistributedSystems.API.Models.DTOs
     {
         public Guid CompoundImageId { get; set; }
         public string Tag { get; set; }
-        public float Confidence { get; set; }
+        public decimal Confidence { get; set; }
     }
 }

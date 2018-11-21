@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using DistributedSystems.API.Models;
+using DistributedSystems.API.Models.Requests;
 using DistributedSystems.API.Repositories;
 using DistributedSystems.API.Services;
 using DistributedSystems.API.Validators;
@@ -40,9 +41,7 @@ namespace DistributedSystems.API.Controllers
         {
             if (!await _tagsService.ValidateTagDataKey(mapTagData)) return Unauthorized();
 
-            var tagValidationErrors = await _tagsValidator.ValidateMapTagData(mapTagData.TagData, mapTagData.MapId);
-            if (tagValidationErrors.Any()) return BadRequest(tagValidationErrors);
-
+            await _tagsValidator.ValidateImageTagData(mapTagData.TagData, mapTagData.ImageId);
             await _tagsService.ProcessImageTags(mapTagData);
             await _tagsService.CheckForCompoundImageRequestsFromSingleMapImage(mapTagData);
 
@@ -54,9 +53,7 @@ namespace DistributedSystems.API.Controllers
         {
             if (!await _tagsService.ValidateCompoundImageTagDataKey(compoundImageTagData)) return Unauthorized();
 
-            var validationErrors = new List<Error>();
-            validationErrors.AddRange(await _tagsValidator.ValidateMapTagData(compoundImageTagData.Tags, compoundImageTagData.MapId));
-            if (validationErrors.Any()) return BadRequest(validationErrors);
+            await _tagsValidator.ValidateCompoundImageTagData(compoundImageTagData.Tags, compoundImageTagData.CompoundImageId);
 
             await _tagsService.ProcessCompoundImageTags(compoundImageTagData.CompoundImageId, compoundImageTagData.Tags);
             await _tagsService.CheckForCompoundImageRequestFromCompoundImage(compoundImageTagData);
