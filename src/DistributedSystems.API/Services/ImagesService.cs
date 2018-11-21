@@ -114,27 +114,6 @@ namespace DistributedSystems.API.Services
         private UploadImageResult UploadFailureResult()
             => new UploadImageResult(false, null);
 
-        //public async Task CreateNewCompoundImageFromIds(Guid mapId, Guid imageId)
-        //{
-        //    var nextImageId = await _mapsAnalyser.SelectNextImageId(mapId, new List<Guid> { imageId });
-
-        //    if (nextImageId == Guid.Empty) return;
-
-        //    var compoundImage = new CompoundImage { MapId = mapId };
-        //    await _compoundImagesRepository.InsertCompoundImage(compoundImage);
-        //    await _compoundImageMappingsRepository.InsertCompoundImageMapping(imageId, compoundImage.Id);
-        //    await _compoundImageMappingsRepository.InsertCompoundImageMapping(nextImageId, compoundImage.Id);
-
-        //    var queueCompoundImage = new KeyedCompoundImage
-        //    {
-        //        ImageKey = await GetCompoundKeyFromImageIds(new List<Guid> { imageId, nextImageId }),
-        //        MapId = mapId,
-        //        Images = await GetCompoundImagePartsFromIds(mapId, new List<Guid> { imageId, nextImageId })
-        //    };
-            
-        //    await _queueAdapter.SendMessageSecondary(queueCompoundImage);
-        //}
-
         public async Task CreateNewCompoundImage(Guid mapId, IList<Guid> imageIds)
         {
             var nextImageId = await _mapsAnalyser.SelectNextImageId(mapId, imageIds);
@@ -153,6 +132,7 @@ namespace DistributedSystems.API.Services
 
             var queueCompoundImage = new KeyedCompoundImage
             {
+                CompoundImageId = compoundImage.Id,
                 ImageKey = await GetCompoundKeyFromImageIds(imageIds),
                 MapId = mapId,
                 Images = await GetCompoundImagePartsFromIds(mapId, imageIds)
@@ -170,7 +150,7 @@ namespace DistributedSystems.API.Services
                 compoundImageParts.Add(
                     new CompoundImagePart(await _mapsRepository.GetMapImagePartByImageId(imageId))
                     {
-                        Image = {Location = await _storageAdapter.GetFileUriWithKey($"{imageId}.jpg")}
+                        Image = {Location = await _storageAdapter.GetFileUriWithKey($"{imageId}.jpg", _storageContainerName)}
                     });
             }
 
