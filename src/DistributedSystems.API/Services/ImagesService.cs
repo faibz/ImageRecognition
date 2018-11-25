@@ -17,6 +17,8 @@ namespace DistributedSystems.API.Services
     {
         Task<UploadImageResult> UploadImage(MemoryStream memoryStream);
         Task CreateNewCompoundImage(Guid mapId, IList<Guid> imageIdd);
+        Task CompleteImageProcessing(Guid imageId);
+        Task<ImageStatusResult> GetImageStatus(Guid imageId);
     }
 
     public class ImagesService : IImagesService
@@ -167,6 +169,19 @@ namespace DistributedSystems.API.Services
             }
 
             return key;
+        }
+
+        public async Task CompleteImageProcessing(Guid imageId)
+        {
+            await _imagesRepository.UpdateImageProcessedDate(imageId, DateTime.UtcNow);
+            await _imagesRepository.UpdateImageStatus(imageId, ImageStatus.Complete);
+        }
+
+        public async Task<ImageStatusResult> GetImageStatus(Guid imageId)
+        {
+            var img = await _imagesRepository.GetById(imageId);
+
+            return (ImageStatusResult) img;
         }
     }
 }

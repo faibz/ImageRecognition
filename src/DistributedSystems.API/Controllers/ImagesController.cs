@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -41,7 +42,11 @@ namespace DistributedSystems.API.Controllers
 
             if (imageRequest.MapData != null) await _mapsService.AddImageToMap(imageRequest.MapData, uploadImageResult.Image.Id);
 
-            return Ok();
+            return Ok(new { ImageId = uploadImageResult.Image.Id, UploadedDate = uploadImageResult.Image.UploadedDate, Status = uploadImageResult.Image.Status });
         }
+
+        [HttpGet("[action]/{imageId:Guid}")]
+        public async Task<IActionResult> ImageStatus(Guid imageId) 
+            => Ok(await _imagesService.GetImageStatus(imageId));
     }
 }
