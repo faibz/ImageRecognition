@@ -6,17 +6,17 @@ using DistributedSystems.API.Repositories;
 
 namespace DistributedSystems.API.Validators
 {
-    public interface IMapValidator
+    public interface IMapsValidator
     {
         IList<Error> ValidateCreateImageMapRequest(int columnCount, int rowCount);
         Task<IList<Error>> ValidateMapEntry(MapData mapData);
     }
 
-    public class MapValidator : IMapValidator
+    public class MapsValidator : IMapsValidator
     {
         private readonly IMapsRepository _mapsRepository;
 
-        public MapValidator(IMapsRepository mapsRepository)
+        public MapsValidator(IMapsRepository mapsRepository)
         {
             _mapsRepository = mapsRepository;
         }
