@@ -52,7 +52,7 @@ namespace DistributedSystems.Worker
                     {
                         _bitmap = new Bitmap(image.Location);
                         _offsetX = _bitmap.Width * image.CoordinateX - _bitmap.Width;
-                        _offsetY = _bitmap.Height * image.CoordinateY - _bitmap.Height;
+                        _offsetY = _height - (image.Height * image.CoordinateY - _bitmap.Height) - _bitmap.Height;
 
                         g.DrawImage(_bitmap, new Rectangle(_offsetX, _offsetY, _bitmap.Width, _bitmap.Height));
                     }
