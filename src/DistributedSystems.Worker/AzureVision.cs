@@ -5,6 +5,7 @@ using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
 using DistributedSystems.API.Models;
+using DistributedSystems.API.Models.Requests;
 using Microsoft.Azure.CognitiveServices.Vision.ComputerVision;
 using Microsoft.Azure.CognitiveServices.Vision.ComputerVision.Models;
 using Microsoft.Extensions.Configuration;
@@ -53,14 +54,15 @@ namespace DistributedSystems.Worker
 
             var stitchedImage = _imageStitcher.StitchImages(keyedCompoundImage);
             var imageAnalysis = await AnalyseMemoryStreamImage(stitchedImage);
+            stitchedImage.Dispose();
 
             // TODO: Parse the tags into CompoundImageTagData object before returning it.
             return new CompoundImageTagData
             {
-                CompoundImageId = idk,
-                MapId = idk,
+                CompoundImageId = keyedCompoundImage.CompoundImageId,
+                MapId = keyedCompoundImage.MapId,
                 Tags = (IList<Tag>)imageAnalysis.Tags,
-                Key = idk
+                Key = keyedCompoundImage.ImageKey
             };
         }
 
