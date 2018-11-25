@@ -14,7 +14,7 @@ namespace DistributedSystems.Worker
             List<int> _coordsY = new List<int>();
             Bitmap _compoundImage = null; // Final, stitched image
 
-            // Minimum width and height assumming that every image has equal size.
+            // Get width and height assumming that every image has equal dimensions.
             Bitmap _anyImage = new Bitmap(keyedCompoundImage.Images[0].Image.Location);
             int _width = _anyImage.Width;
             int _height = _anyImage.Height;
@@ -52,7 +52,7 @@ namespace DistributedSystems.Worker
 
                     g.DrawImage(_bitmap, new Rectangle(_offsetX, _offsetY, _bitmap.Width, _bitmap.Height));
 
-                    _bitmap.Dispose();
+                    _bitmap.Dispose(); // TODO: Possible pitfall.
                 }
             }
 
