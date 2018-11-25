@@ -16,7 +16,7 @@ namespace DistributedSystems.Worker
 {
     public class AzureVision
     {
-        private readonly HttpClient _httpClient;
+        //private readonly HttpClient _httpClient;
         private ImageStitcher _imageStitcher;
         private static ComputerVisionClient _computerVision;
         private static readonly List<VisualFeatureTypes> _features = new List<VisualFeatureTypes>()
@@ -26,7 +26,7 @@ namespace DistributedSystems.Worker
 
         public AzureVision(IConfigurationRoot config)
         {
-            _httpClient = new HttpClient();
+            //_httpClient = new HttpClient();
             _imageStitcher = new ImageStitcher();
 
             _computerVision = new ComputerVisionClient(
@@ -56,7 +56,7 @@ namespace DistributedSystems.Worker
             var imageAnalysis = await AnalyseMemoryStreamImage(stitchedImage);
             stitchedImage.Dispose();
 
-            // TODO: Parse the tags into CompoundImageTagData object before returning it.
+            // TODO: Make sure the data is passed correctly.
             return new CompoundImageTagData
             {
                 CompoundImageId = keyedCompoundImage.CompoundImageId,

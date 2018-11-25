@@ -32,6 +32,7 @@ namespace DistributedSystems.Worker
  * - increase MaxConcurrentCalls in both queue listeners and see if the Worker blows up;
  * - decrease quality/size if the size exceeds 4MB;
  * - version checker on startup;
+ * - throw exception at the bottom of ProcessMessagesAsync in QueueListener's when response is a bad request?
  * 
  * 
  * - DONE? do stitching;
@@ -50,5 +51,6 @@ namespace DistributedSystems.Worker
  * - TEST the whole thing;
  * 
  * 
+ * - remove TODO from ImageStitcher: line 55;
  * - remove this TODO;
  */
