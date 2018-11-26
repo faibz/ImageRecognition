@@ -88,7 +88,11 @@ namespace DistributedSystems.API.Services
         {
             if (string.IsNullOrEmpty(tagData.Key)) return false;
 
-            return tagData.Key == await _imagesRepository.GetImageKeyById(tagData.ImageId);
+            var imageKey = await _imagesRepository.GetImageKeyById(tagData.ImageId);
+
+            if (string.IsNullOrEmpty(imageKey)) return false;
+
+            return tagData.Key == imageKey;
         }
 
         public async Task<IList<Tag>> GetCompoundImageTagsByMapId(Guid mapId)
