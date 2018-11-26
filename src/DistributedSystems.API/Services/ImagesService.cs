@@ -5,6 +5,7 @@ using System.Security.Cryptography;
 using System.Threading.Tasks;
 using DistributedSystems.API.Adapters;
 using DistributedSystems.API.Models;
+using DistributedSystems.API.Models.Requests;
 using DistributedSystems.API.Models.Results;
 using DistributedSystems.API.Repositories;
 using DistributedSystems.API.Utils;
@@ -15,7 +16,7 @@ namespace DistributedSystems.API.Services
     public interface IImagesService
     {
         Task<UploadImageResult> UploadImage(MemoryStream memoryStream);
-        Task CreateNewCompoundImage(Guid mapId, IList<Guid> imageIdd);
+        Task CreateNewCompoundImage(Guid mapId, IList<Guid> imageIds);
         Task CompleteImageProcessing(Guid imageId);
         Task<ImageStatusResult> GetImageStatus(Guid imageId);
         Task CompleteCompoundImageProcessing(Guid compoundImageId);
@@ -44,7 +45,7 @@ namespace DistributedSystems.API.Services
             _storageContainerName = configuration.GetValue<string>("Azure:CloudBlobImageContainerName");
         }
 
-        public async Task<UploadImageResult> UploadImage(MemoryStream memoryStream)
+        public async Task<UploadImageResult> UploadImage(MemoryStream memoryStream, Guid mapId)
         {
             //TODO:
             // Probably should do:
@@ -93,7 +94,7 @@ namespace DistributedSystems.API.Services
                 return UploadFailureResult();
             }
 
-            if (!await _queueAdapter.SendMessage(image))
+            if (!await _queueAdapter.SendMessage(new ImageProcessRequest(image, mapId)))
             {
                 await _imagesRepository.UpdateImageStatus(image.Id, ImageStatus.Errored);
 
@@ -109,12 +110,6 @@ namespace DistributedSystems.API.Services
 
             return UploadSuccessResult(image);
         }
-
-        private UploadImageResult UploadSuccessResult(Image image)
-            => new UploadImageResult(true, image);
-
-        private UploadImageResult UploadFailureResult()
-            => new UploadImageResult(false, null);
 
         public async Task CreateNewCompoundImage(Guid mapId, IList<Guid> imageIds)
         {
@@ -137,13 +132,13 @@ namespace DistributedSystems.API.Services
                 CompoundImageId = compoundImage.Id,
                 ImageKey = await GetCompoundKeyFromImageIds(imageIds),
                 MapId = mapId,
-                Images = await GetCompoundImagePartsFromIds(mapId, imageIds)
+                Images = await GetCompoundImagePartsFromIds(imageIds)
             };
 
             await _queueAdapter.SendMessageSecondary(queueCompoundImage);
         }
 
-        private async Task<IList<CompoundImagePart>> GetCompoundImagePartsFromIds(Guid mapId, IList<Guid> imageIds)
+        private async Task<IList<CompoundImagePart>> GetCompoundImagePartsFromIds(IEnumerable<Guid> imageIds)
         {
             var compoundImageParts = new List<CompoundImagePart>();
 
@@ -159,7 +154,7 @@ namespace DistributedSystems.API.Services
             return compoundImageParts;
         }
 
-        private async Task<string> GetCompoundKeyFromImageIds(IList<Guid> imageIds)
+        private async Task<string> GetCompoundKeyFromImageIds(IEnumerable<Guid> imageIds)
         {
             var key = "";
 
@@ -182,5 +177,11 @@ namespace DistributedSystems.API.Services
 
         public async Task CompleteCompoundImageProcessing(Guid compoundImageId) 
             => await _compoundImagesRepository.UpdateCompoundImageProcessedDate(compoundImageId, DateTime.UtcNow);
+
+        private UploadImageResult UploadSuccessResult(Image image)
+            => new UploadImageResult(true, image);
+
+        private UploadImageResult UploadFailureResult()
+            => new UploadImageResult(false, null);
     }
 }

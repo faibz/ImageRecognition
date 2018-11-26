@@ -33,7 +33,7 @@ namespace DistributedSystems.API.Models
                 Id = image.Id,
                 Location = image.Location,
                 UploadedDate = image.UploadedDate,
-                ProcessedDate = image.ProcessedDate ?? null,
+                ProcessedDate = image.ProcessedDate,
                 Status = image.Status,
                 ImageKey = image.ImageKey
             };
