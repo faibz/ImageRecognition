@@ -6,5 +6,7 @@ namespace DistributedSystems.API.Models.DTOs
     {
         public Guid Id { get; set; }
         public Guid MapId { get; set; }
+        public DateTime UploadedDate { get; set; }
+        public DateTime? ProcessedDate { get; set; }
     }
 }
