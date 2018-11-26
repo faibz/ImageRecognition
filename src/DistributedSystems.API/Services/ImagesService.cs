@@ -15,7 +15,7 @@ namespace DistributedSystems.API.Services
 {
     public interface IImagesService
     {
-        Task<UploadImageResult> UploadImage(MemoryStream memoryStream);
+        Task<UploadImageResult> UploadImage(MemoryStream memoryStream, Guid mapId);
         Task CreateNewCompoundImage(Guid mapId, IList<Guid> imageIds);
         Task CompleteImageProcessing(Guid imageId);
         Task<ImageStatusResult> GetImageStatus(Guid imageId);
