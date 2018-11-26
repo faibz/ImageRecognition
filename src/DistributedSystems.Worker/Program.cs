@@ -6,8 +6,8 @@ namespace DistributedSystems.Worker
 {
     class Program
     {
-        //public static async Task Main(string[] args)
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
+        //public static void Main(string[] args)
         {
             // Apply the appsettings.json
             var builder = new ConfigurationBuilder()
@@ -18,9 +18,10 @@ namespace DistributedSystems.Worker
             var queueListenerSingleImage = new QueueListenerSingleImage(configuration);
             var queueListenerCompoundImage = new QueueListenerCompoundImage(configuration);
 
-            var singleImageListener = queueListenerSingleImage.Run();
-            var compoundImageListener = queueListenerCompoundImage.Run();
-            Task.WaitAll(singleImageListener, compoundImageListener);
+            await queueListenerSingleImage.Run();
+            //var singleImageListener = queueListenerSingleImage.Run();
+            //var compoundImageListener = queueListenerCompoundImage.Run();
+            //Task.WaitAll(singleImageListener, compoundImageListener);
             //Task.WaitAll(singleImageListener, compoundImageListener).Wait(10000);
         }
     }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using DistributedSystems.API.Models;
@@ -39,11 +40,12 @@ namespace DistributedSystems.Worker
         {
             var image = JsonConvert.DeserializeObject<DistributedSystems.API.Models.Image>(message);
             var imageAnalysis = await AnalyseRemoteImage(image.Location);
+            var coolTags = imageAnalysis.Tags.Select(tag => new Tag {Name = tag.Name, Confidence = (decimal)tag.Confidence }).ToList();
 
             return new ImageTagData
             {
                 ImageId = image.Id,
-                TagData = ((JArray)imageAnalysis.Tags).ToObject<Tag[]>(),
+                TagData = coolTags,
                 Key = image.ImageKey
             };
         }
