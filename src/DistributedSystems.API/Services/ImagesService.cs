@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 using DistributedSystems.API.Adapters;
@@ -19,6 +18,7 @@ namespace DistributedSystems.API.Services
         Task CreateNewCompoundImage(Guid mapId, IList<Guid> imageIdd);
         Task CompleteImageProcessing(Guid imageId);
         Task<ImageStatusResult> GetImageStatus(Guid imageId);
+        Task CompleteCompoundImageProcessing(Guid compoundImageId);
     }
 
     public class ImagesService : IImagesService
@@ -177,11 +177,10 @@ namespace DistributedSystems.API.Services
             await _imagesRepository.UpdateImageStatus(imageId, ImageStatus.Complete);
         }
 
-        public async Task<ImageStatusResult> GetImageStatus(Guid imageId)
-        {
-            var img = await _imagesRepository.GetById(imageId);
+        public async Task<ImageStatusResult> GetImageStatus(Guid imageId) 
+            => (ImageStatusResult) await _imagesRepository.GetById(imageId);
 
-            return (ImageStatusResult) img;
-        }
+        public async Task CompleteCompoundImageProcessing(Guid compoundImageId) 
+            => await _compoundImagesRepository.UpdateCompoundImageProcessedDate(compoundImageId, DateTime.UtcNow);
     }
 }

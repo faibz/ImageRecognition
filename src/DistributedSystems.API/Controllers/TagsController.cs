@@ -60,6 +60,7 @@ namespace DistributedSystems.API.Controllers
 
             await _tagsValidator.ValidateCompoundImageTagData(compoundImageTagData.Tags, compoundImageTagData.CompoundImageId);
             await _tagsService.ProcessCompoundImageTags(compoundImageTagData.CompoundImageId, compoundImageTagData.Tags);
+            await _imagesService.CompleteCompoundImageProcessing(compoundImageTagData.CompoundImageId);
             await _tagsService.CheckForCompoundImageRequestFromCompoundImage(compoundImageTagData);
 
             return Ok();
