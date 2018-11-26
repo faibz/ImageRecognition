@@ -29,9 +29,10 @@ namespace DistributedSystems.API.Services
         private readonly ICompoundImageTagsRepository _compoundImageTagsRepository;
         private readonly ICompoundImageMappingsRepository _compoundImageMappingsRepository;
         private readonly IImagesService _imagesService;
+        private readonly IMapsService _mapsService;
         private readonly ITagsAnalyser _tagsAnalyser;
 
-        public TagsService(ITagsRepository tagsRepository, IImagesRepository imagesRepository, ICompoundImagesRepository compoundImagesRepository, ICompoundImageTagsRepository compoundImageTagsRepository, IQueueAdapter queueAdapter, ICompoundImageMappingsRepository compoundImageMappingsRepository, IImagesService imagesService, ITagsAnalyser tagsAnalyser)
+        public TagsService(ITagsRepository tagsRepository, IImagesRepository imagesRepository, ICompoundImagesRepository compoundImagesRepository, ICompoundImageTagsRepository compoundImageTagsRepository, IQueueAdapter queueAdapter, ICompoundImageMappingsRepository compoundImageMappingsRepository, IImagesService imagesService, ITagsAnalyser tagsAnalyser, IMapsService mapsService)
         {
             _tagsRepository = tagsRepository;
             _imagesRepository = imagesRepository;
@@ -40,6 +41,7 @@ namespace DistributedSystems.API.Services
             _compoundImageMappingsRepository = compoundImageMappingsRepository;
             _imagesService = imagesService;
             _tagsAnalyser = tagsAnalyser;
+            _mapsService = mapsService;
         }
 
         public async Task ProcessImageTags(ImageTagData imageTagData)
@@ -56,7 +58,7 @@ namespace DistributedSystems.API.Services
 
         public async Task CheckForCompoundImageRequestsFromSingleMapImage(MapTagData mapTagData)
         {
-            if (await _tagsAnalyser.AnalyseTagConfidence(mapTagData.TagData) == TagAnalysisAction.RequestCompoundImage)
+            if (await _tagsAnalyser.AnalyseTagConfidence(mapTagData.TagData) == TagAnalysisAction.RequestCompoundImage && await _mapsService.VerifyMapCompletion(mapTagData.MapId))
                 await _imagesService.CreateNewCompoundImage(mapTagData.MapId, new List<Guid> { mapTagData.ImageId });
         }
 
