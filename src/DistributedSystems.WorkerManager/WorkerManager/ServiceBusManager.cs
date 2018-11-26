@@ -7,25 +7,25 @@ namespace DistributedSystems.WorkerManager
     public class ServiceBusManager
     {
         private ManagementClient _serviceBusManager;
-        private readonly List<string> _queueNames;
+        public List<string> QueueNames { get; private set; }
 
         public ServiceBusManager(string connectionString, string queueName)
         {
             _serviceBusManager = new ManagementClient(connectionString);
-            _queueNames = new List<string> { queueName };
+            QueueNames = new List<string> { queueName };
         }
 
         public ServiceBusManager(string connectionString, List<string> queueNames)
         {
             _serviceBusManager = new ManagementClient(connectionString);
-            _queueNames = queueNames;
+            QueueNames = queueNames;
         }
 
         public async Task<long> GetMessageCount()
         {
             var messageCount = 0L;
 
-            foreach (var queue in _queueNames)
+            foreach (var queue in QueueNames)
             {
                 try
                 {

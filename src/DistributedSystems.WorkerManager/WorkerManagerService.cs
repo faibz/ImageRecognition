@@ -1,6 +1,8 @@
 ﻿using log4net;
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.ServiceModel;
 using System.ServiceProcess;
 using System.Threading.Tasks;
@@ -12,9 +14,11 @@ namespace DistributedSystems.WorkerManager
     {
         private ServiceHost _serviceHost = null;
         private string _baseAddress = "http://localhost/WorkerManagerService";
+        private int _targetProcessingSla;
 
         private ILog _log;
         private Timer _timer = new Timer();
+        private HttpClient _httpClient = new HttpClient();
 
         private readonly ServiceBusManager _serviceBusManager;
         private readonly WorkerPoolMonitor _workerPoolMonitor;
@@ -25,7 +29,9 @@ namespace DistributedSystems.WorkerManager
             _log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
             log4net.Config.XmlConfigurator.Configure();
 
-            _serviceBusManager = new ServiceBusManager(System.Configuration.ConfigurationManager.AppSettings["ServiceBusConnectionString"], System.Configuration.ConfigurationManager.AppSettings["ServiceBusQueueName"]);
+            _targetProcessingSla = int.Parse(System.Configuration.ConfigurationManager.AppSettings["TargetProcessingSla"]);
+            _httpClient.BaseAddress = new Uri(System.Configuration.ConfigurationManager.AppSettings["ImageAPIBaseAddress"]);
+            _serviceBusManager = new ServiceBusManager(System.Configuration.ConfigurationManager.AppSettings["ServiceBusConnectionString"], new List<string>() { System.Configuration.ConfigurationManager.AppSettings["ServiceBusQueueNamePrimary"], System.Configuration.ConfigurationManager.AppSettings["ServiceBusQueueNameSecondary"] } );
             _workerPoolMonitor = new WorkerPoolMonitor(System.Configuration.ConfigurationManager.AppSettings["AzureAuthFileLocation"]);
         }
 
@@ -66,7 +72,7 @@ namespace DistributedSystems.WorkerManager
 
             _log.Info($"Checking service bus and workers. Time (UTC): {DateTime.UtcNow}. Amount of message in queues: {queueMessageCount}. Amount of active workers: {activeWorkerCount}.");
 
-            switch(WorkerQueueEvaluator.AdviseAction(activeWorkerCount, queueMessageCount))
+            switch(await WorkerQueueEvaluator.AdviseAction(activeWorkerCount, queueMessageCount, _targetProcessingSla, _httpClient))
             {
                 case WorkerAction.Add:
                     _log.Info($"Starting new worker at: {DateTime.UtcNow}.");
