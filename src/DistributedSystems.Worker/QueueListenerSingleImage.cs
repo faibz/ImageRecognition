@@ -29,6 +29,8 @@ namespace DistributedSystems.Worker
         {
             // Register the queue message handler and receive messages in a loop
             RegisterOnMessageHandlerAndReceiveMessages();
+            Console.WriteLine("1: finished RegisterOnMessageHandlerAndReceiveMessages");
+            Console.ReadKey();
             await _queueClient.CloseAsync();
         }
 
@@ -48,13 +50,16 @@ namespace DistributedSystems.Worker
 
             // Register the function that processes messages.
             _queueClient.RegisterMessageHandler(ProcessMessagesAsync, messageHandlerOptions);
+            Console.WriteLine("2: finished ProcessMessagesAsync");
         }
 
         async Task ProcessMessagesAsync(Message message, CancellationToken token)
         {
+            Console.WriteLine("5: got into ProcessMessagesAsync");
             var messageBodyString = Encoding.UTF8.GetString(message.Body);
 
             var imageTagData = await _imageAnalyser.ProcessSingleImage(messageBodyString);
+            Console.WriteLine("3: finished ProcessSingleImage");
 
             var sendTagsRequest = new HttpRequestMessage
             {
@@ -65,6 +70,7 @@ namespace DistributedSystems.Worker
             sendTagsRequest.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
             var sendTagsResponse = await _httpClient.SendAsync(sendTagsRequest);
+            Console.WriteLine("4: sent stuff to the API");
 
             if (sendTagsResponse.StatusCode == System.Net.HttpStatusCode.OK)
                 await _queueClient.CompleteAsync(message.SystemProperties.LockToken);
