@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using DistributedSystems.API.Models;
 using System.Threading.Tasks;
 using DistributedSystems.API.Repositories;
@@ -17,21 +18,24 @@ namespace DistributedSystems.API.Services
         Task CheckForCompoundImageRequestFromCompoundImage(CompoundImageTagData compoundImageTagData);
         Task<bool> ValidateTagDataKey(ImageTagData tagData);
         Task<bool> ValidateCompoundImageTagDataKey(CompoundImageTagData compoundImageTagData);
+        Task<IList<Tag>> GetCompoundImageTagsByMapId(Guid mapId);
     }
 
     public class TagsService : ITagsService
     {
         private readonly ITagsRepository _tagsRepository;
         private readonly IImagesRepository _imagesRepository;
+        private readonly ICompoundImagesRepository _compoundImagesRepository;
         private readonly ICompoundImageTagsRepository _compoundImageTagsRepository;
         private readonly ICompoundImageMappingsRepository _compoundImageMappingsRepository;
         private readonly IImagesService _imagesService;
         private readonly ITagsAnalyser _tagsAnalyser;
 
-        public TagsService(ITagsRepository tagsRepository, IImagesRepository imagesRepository, ICompoundImageTagsRepository compoundImageTagsRepository, IQueueAdapter queueAdapter, ICompoundImageMappingsRepository compoundImageMappingsRepository, IImagesService imagesService, ITagsAnalyser tagsAnalyser)
+        public TagsService(ITagsRepository tagsRepository, IImagesRepository imagesRepository, ICompoundImagesRepository compoundImagesRepository, ICompoundImageTagsRepository compoundImageTagsRepository, IQueueAdapter queueAdapter, ICompoundImageMappingsRepository compoundImageMappingsRepository, IImagesService imagesService, ITagsAnalyser tagsAnalyser)
         {
             _tagsRepository = tagsRepository;
             _imagesRepository = imagesRepository;
+            _compoundImagesRepository = compoundImagesRepository;
             _compoundImageTagsRepository = compoundImageTagsRepository;
             _compoundImageMappingsRepository = compoundImageMappingsRepository;
             _imagesService = imagesService;
@@ -84,7 +88,26 @@ namespace DistributedSystems.API.Services
         {
             if (string.IsNullOrEmpty(tagData.Key)) return false;
 
-            return tagData.Key == await _imagesRepository.GetImageKeyById(tagData.ImageId);
+            var imageKey = await _imagesRepository.GetImageKeyById(tagData.ImageId);
+
+            if (string.IsNullOrEmpty(imageKey)) return false;
+
+            return tagData.Key == imageKey;
+        }
+
+        public async Task<IList<Tag>> GetCompoundImageTagsByMapId(Guid mapId)
+        {
+            var compoundImagesUnderMap = await _compoundImagesRepository.GetByMapId(mapId);
+            var tags = new List<Tag>();
+
+            foreach (var compoundImage in compoundImagesUnderMap)
+            {
+                var tagsForCompoundImages = await _compoundImageTagsRepository.GetTagsByCompoundImageId(compoundImage.Id);
+                
+                tags.AddRange(tagsForCompoundImages.Select(tag => (Tag) tag));
+            }
+
+            return tags;
         }
     }
 }

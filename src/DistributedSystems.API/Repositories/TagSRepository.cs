@@ -14,6 +14,7 @@ namespace DistributedSystems.API.Repositories
     {
         Task InsertImageTag(Guid imageId, Tag tag, Guid? mapId);
         Task<IList<Tag>> GetTagsByImageId(Guid imageId);
+        Task<IList<Tag>> GetTagsByMapId(Guid mapId);
     }
 
     public class TagsRepository : ITagsRepository
@@ -35,6 +36,13 @@ namespace DistributedSystems.API.Repositories
         public async Task<IList<Tag>> GetTagsByImageId(Guid imageId)
         {
             var dbTags = await _connection.QueryAsync<ImageTag>("SELECT [Tag], [Confidence] FROM [dbo].[ImageTags] WHERE [ImageId] = @ImageId", new { ImageId = imageId });
+
+            return dbTags.Select(tag => (Tag) tag).ToList();
+        }
+
+        public async Task<IList<Tag>> GetTagsByMapId(Guid mapId)
+        {
+            var dbTags = await _connection.QueryAsync<ImageTag>("SELECT [Tag], [Confidence] FROM [dbo].[ImageTags] WHERE [MapId] = @MapId", new { MapId = mapId });
 
             return dbTags.Select(tag => (Tag) tag).ToList();
         }
