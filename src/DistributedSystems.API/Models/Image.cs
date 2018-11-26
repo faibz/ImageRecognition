@@ -16,7 +16,7 @@ namespace DistributedSystems.API.Models
             Id = id;
         }
 
-        public Guid Id { get; private set; }
+        public Guid Id { get; set; }
         public string Location { get; set; }
         [JsonIgnore]
         public DateTime UploadedDate { get; set; }
