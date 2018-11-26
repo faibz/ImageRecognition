@@ -42,7 +42,7 @@ namespace DistributedSystems.API.Controllers
 
             if (imageRequest.MapData != null) await _mapsService.AddImageToMap(imageRequest.MapData, uploadImageResult.Image.Id);
 
-            return Ok(new { ImageId = uploadImageResult.Image.Id, UploadedDate = uploadImageResult.Image.UploadedDate, Status = uploadImageResult.Image.Status });
+            return Ok(new { ImageId = uploadImageResult.Image.Id, UploadedDate = uploadImageResult.Image.UploadedDate });
         }
 
         [HttpGet("[action]/{imageId:Guid}")]
