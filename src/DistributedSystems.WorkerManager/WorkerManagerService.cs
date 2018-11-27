@@ -52,11 +52,11 @@ namespace DistributedSystems.WorkerManager
             switch (await WorkerQueueEvaluator.AdviseAction(activeWorkerCount, totalWorkerCount, queueMessageCount, _targetProcessingSla, _httpClient))
             {
                 case WorkerAction.Add:
-                    _log.Info($"Starting new worker.");
+                    _log.Info("Starting new worker.");
                     await StartNewWorker();
                     break;
                 case WorkerAction.Remove:
-                    _log.Info($"Shutting worker down.");
+                    _log.Info("Shutting worker down.");
                     await ShutWorkerDown();
                     break;
                 default:
