@@ -9,12 +9,6 @@ namespace DistributedSystems.WorkerManager.WorkerManager
         private readonly ManagementClient _serviceBusManager;
         public List<string> QueueNames { get; }
 
-        public ServiceBusManager(string connectionString, string queueName)
-        {
-            _serviceBusManager = new ManagementClient(connectionString);
-            QueueNames = new List<string> { queueName };
-        }
-
         public ServiceBusManager(string connectionString, List<string> queueNames)
         {
             _serviceBusManager = new ManagementClient(connectionString);
