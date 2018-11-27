@@ -32,7 +32,7 @@ namespace DistributedSystems.WorkerManager
         public void Start()
         {
             _timer.Elapsed += ManageWorkerPool;
-            _timer.Interval = 10000;
+            _timer.Interval = 30000;
             _timer.Enabled = true;
         }
 
