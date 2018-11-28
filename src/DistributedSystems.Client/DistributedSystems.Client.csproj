@@ -57,6 +57,7 @@
     <Compile Include="ImageSenderForm.Designer.cs">
       <DependentUpon>ImageSenderForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Models\Map.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="ImageSenderForm.resx">
@@ -84,12 +85,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\DistributedSystems.API\DistributedSystems.API.csproj">
-      <Project>{2d984370-51b7-43e8-8af6-b0c036ac9d89}</Project>
-      <Name>DistributedSystems.API</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
