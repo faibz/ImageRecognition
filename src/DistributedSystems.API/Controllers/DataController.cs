@@ -25,6 +25,9 @@ namespace DistributedSystems.API.Controllers
         public async Task<IActionResult> ImageProcessingTime()
         {
             var recentProcessedImages = await _imagesRepository.GetRecentProcessedImageDates();
+
+            if (recentProcessedImages.Count == 0) return Ok(new TimeSpan(50000000)); //50m ticks = 5 seconds
+
             var dateTimeDeltas = new List<TimeSpan>();
 
             foreach(var img in recentProcessedImages)
@@ -41,6 +44,9 @@ namespace DistributedSystems.API.Controllers
         public async Task<IActionResult> CompoundImageProcessingTime()
         {
             var recentProcessedImages = await _compoundImagesRepository.GetRecentProcessedImageDates();
+
+            if (recentProcessedImages.Count == 0) return Ok(new TimeSpan(50000000)); //50m ticks = 5 seconds
+
             var dateTimeDeltas = new List<TimeSpan>();
 
             foreach (var img in recentProcessedImages)
