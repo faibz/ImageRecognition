@@ -21,8 +21,8 @@ namespace DistributedSystems.WorkerManager
                 configurator.RunAsLocalSystem();
                 configurator.UseLog4Net();
                 configurator.SetServiceName("WorkerManagerService");
-                configurator.SetDisplayName("WorkerManagerService");
-                configurator.SetDescription("Service to manager the worker pool for Distributed Systems.");
+                configurator.SetDisplayName("Worker Manager Service (Distributed Systems)");
+                configurator.SetDescription("Service to manage the worker VM pool. (Distributed Systems)");
             });
         }
     }
