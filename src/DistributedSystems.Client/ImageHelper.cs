@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using DistributedSystems.Shared.Models;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace DistributedSystems.Client
 {
@@ -27,24 +28,24 @@ namespace DistributedSystems.Client
             var result = await _httpClient.GetAsync($"Maps/CreateImageMap?columnCount={colCount}&rowCount={rowCount}");
             var map = JsonConvert.DeserializeObject<Map>(await result.Content.ReadAsStringAsync());
 
-            var tiles = new List<Bitmap>();
+            var tiles = new List<((int columnIndex, int rowIndex) coordinate, Bitmap bmp)>();
 
             using (var graphics = Graphics.FromImage(originalImage))
             {
-                for (int colIndex = 0; colIndex < colCount; colIndex++)
+                for (int colIndex = 1; colIndex <= colCount; colIndex++)
                 {
-                    for (int rowIndex = 0; rowIndex < rowCount; rowIndex++)
+                    for (int rowIndex = 1; rowIndex <= rowCount; rowIndex++)
                     {
                         var bmp = new Bitmap(500, 500);
 
                         graphics.DrawImage(bmp, new Rectangle(colIndex * 500, rowIndex * 500, 500, 500));
 
-                        tiles.Add(bmp);
+                        tiles.Add(((colIndex, rowIndex), bmp));
                     }
                 }
             }
 
-
+            //tiles.Sort(tile => tile.coordinate.rowIndex);
         }
 
         private static int CalculateColRowCount(int imageDimension)
