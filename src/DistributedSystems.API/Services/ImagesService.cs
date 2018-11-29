@@ -94,7 +94,7 @@ namespace DistributedSystems.API.Services
                 return UploadFailureResult();
             }
 
-            if (!await _queueAdapter.SendMessage(new ImageProcessRequest(image, mapId)))
+            if (!await _queueAdapter.SendMessage(new ImageProcessRequest(image, mapId), "single-image"))
             {
                 await _imagesRepository.UpdateImageStatus(image.Id, ImageStatus.Errored);
 
@@ -135,7 +135,7 @@ namespace DistributedSystems.API.Services
                 Images = await GetCompoundImagePartsFromIds(imageIds)
             };
 
-            await _queueAdapter.SendMessageSecondary(queueCompoundImage);
+            await _queueAdapter.SendMessage(queueCompoundImage, "compound-image");
         }
 
         private async Task<IList<CompoundImagePart>> GetCompoundImagePartsFromIds(IEnumerable<Guid> imageIds)
