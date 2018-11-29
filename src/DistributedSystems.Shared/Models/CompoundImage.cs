@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace DistributedSystems.API.Models
+namespace DistributedSystems.Shared.Models
 {
     public class CompoundImage
     {
@@ -19,16 +19,5 @@ namespace DistributedSystems.API.Models
         public Guid MapId { get; set; }
         public DateTime UploadedDate { get; set; }
         public DateTime? ProcessedDate { get; set; }
-
-        public static explicit operator CompoundImage(DTOs.CompoundImage compoundImage)
-        {
-            return new CompoundImage
-            {
-                Id = compoundImage.Id,
-                MapId = compoundImage.MapId,
-                UploadedDate = compoundImage.UploadedDate,
-                ProcessedDate = compoundImage.ProcessedDate ?? null
-            };
-        }
     }
 }

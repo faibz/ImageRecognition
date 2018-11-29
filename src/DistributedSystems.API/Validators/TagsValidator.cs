@@ -1,5 +1,5 @@
-﻿using DistributedSystems.API.Models;
-using DistributedSystems.API.Repositories;
+﻿using DistributedSystems.API.Repositories;
+using DistributedSystems.Shared.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;

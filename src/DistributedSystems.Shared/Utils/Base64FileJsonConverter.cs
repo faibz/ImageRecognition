@@ -1,7 +1,7 @@
 ﻿using System;
 using Newtonsoft.Json;
 
-namespace DistributedSystems.API.Utils
+namespace DistributedSystems.Shared.Utils
 {
     public class Base64FileJsonConverter : JsonConverter
     {

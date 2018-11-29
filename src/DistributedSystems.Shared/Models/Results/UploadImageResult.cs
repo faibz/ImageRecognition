@@ -1,4 +1,4 @@
-﻿namespace DistributedSystems.API.Models.Results
+﻿namespace DistributedSystems.Shared.Models.Results
 {
     public class UploadImageResult
     {

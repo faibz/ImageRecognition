@@ -1,4 +1,4 @@
-﻿namespace DistributedSystems.API.Models
+﻿namespace DistributedSystems.Shared.Models
 {
     public enum ImageStatus
     {

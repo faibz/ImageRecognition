@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
-using DistributedSystems.API.Models;
 using DistributedSystems.API.Services;
+using DistributedSystems.Shared.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DistributedSystems.API.Controllers

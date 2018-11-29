@@ -1,7 +1,7 @@
-﻿using DistributedSystems.API.Utils;
+﻿using DistributedSystems.Shared.Utils;
 using Newtonsoft.Json;
 
-namespace DistributedSystems.API.Models.Requests
+namespace DistributedSystems.Shared.Models.Requests
 {
     public class ImageRequest
     {
