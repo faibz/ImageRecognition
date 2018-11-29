@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace DistributedSystems.API.Models.Requests
+namespace DistributedSystems.Shared.Models.Requests
 {
     public class CompoundImageTagData
     {

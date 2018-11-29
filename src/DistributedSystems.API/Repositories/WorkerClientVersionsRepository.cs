@@ -1,8 +1,8 @@
 ﻿using DistributedSystems.API.Factories;
-using DistributedSystems.API.Models;
 using System.Data;
 using System.Threading.Tasks;
 using Dapper;
+using DistributedSystems.Shared.Models;
 
 namespace DistributedSystems.API.Repositories
 {

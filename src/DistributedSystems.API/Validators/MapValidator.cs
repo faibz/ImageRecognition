@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
-using System.Drawing;
 using System.Threading.Tasks;
-using DistributedSystems.API.Models;
 using DistributedSystems.API.Repositories;
+using DistributedSystems.Shared.Models;
 
 namespace DistributedSystems.API.Validators
 {
@@ -42,10 +41,10 @@ namespace DistributedSystems.API.Validators
                 return errors;
             }
 
-            if (!PointWithinMap(mapData.Coordinates, map.ColumnCount, map.RowCount))
-                errors.Add(new Error("map", $"Selected map coordinate: ({mapData.Coordinates.X},{mapData.Coordinates.Y}) is not within the map boundaries."));
-            if (await _mapsRepository.GetMapImagePartByIdAndLocation(map.Id, mapData.Coordinates.X, mapData.Coordinates.Y) != null)
-                errors.Add(new Error("map", $"Selected map coordinate: ({mapData.Coordinates.X},{mapData.Coordinates.Y}) is already occupied."));
+            if (!PointWithinMap(mapData.Coordinate, map.ColumnCount, map.RowCount))
+                errors.Add(new Error("map", $"Selected map coordinate: ({mapData.Coordinate.X},{mapData.Coordinate.Y}) is not within the map boundaries."));
+            if (await _mapsRepository.GetMapImagePartByIdAndLocation(map.Id, mapData.Coordinate.X, mapData.Coordinate.Y) != null)
+                errors.Add(new Error("map", $"Selected map coordinate: ({mapData.Coordinate.X},{mapData.Coordinate.Y}) is already occupied."));
 
             return errors;
         }

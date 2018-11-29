@@ -6,6 +6,7 @@ using Dapper;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using DistributedSystems.Shared.Models;
 
 namespace DistributedSystems.API.Repositories
 {

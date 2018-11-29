@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
-using DistributedSystems.API.Models;
-using DistributedSystems.API.Models.Requests;
+using DistributedSystems.Shared.Models;
+using DistributedSystems.Shared.Models.Requests;
 
 namespace DistributedSystems.API.Validators
 {

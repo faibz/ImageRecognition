@@ -3,7 +3,8 @@ using System.Drawing;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using DistributedSystems.Client.Models;
+using DistributedSystems.Shared.Models;
+using System.Collections.Generic;
 
 namespace DistributedSystems.Client
 {
@@ -18,12 +19,32 @@ namespace DistributedSystems.Client
 
         public async Task DoImageStuff(string file)
         {
-            var image = new Bitmap(file);
-            var columns = CalculateColRowCount(image.Width);
-            var rows = CalculateColRowCount(image.Height);
+            var originalImage = new Bitmap(file);
+            var colCount = CalculateColRowCount(originalImage.Width);
+            var rowCount = CalculateColRowCount(originalImage.Height);
+            var adjustedImage = new Bitmap(originalImage, colCount * 500, rowCount * 500);
 
-            var result = await _httpClient.GetAsync($"Maps/CreateImageMap?columnCount={columns}&rowCount={rows}");
+            var result = await _httpClient.GetAsync($"Maps/CreateImageMap?columnCount={colCount}&rowCount={rowCount}");
             var map = JsonConvert.DeserializeObject<Map>(await result.Content.ReadAsStringAsync());
+
+            var tiles = new List<Bitmap>();
+
+            using (var graphics = Graphics.FromImage(originalImage))
+            {
+                for (int colIndex = 0; colIndex < colCount; colIndex++)
+                {
+                    for (int rowIndex = 0; rowIndex < rowCount; rowIndex++)
+                    {
+                        var bmp = new Bitmap(500, 500);
+
+                        graphics.DrawImage(bmp, new Rectangle(colIndex * 500, rowIndex * 500, 500, 500));
+
+                        tiles.Add(bmp);
+                    }
+                }
+            }
+
+
         }
 
         private static int CalculateColRowCount(int imageDimension)

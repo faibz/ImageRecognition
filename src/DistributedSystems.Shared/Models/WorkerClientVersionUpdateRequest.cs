@@ -1,7 +1,7 @@
-﻿using DistributedSystems.API.Utils;
+﻿using DistributedSystems.Shared.Utils;
 using Newtonsoft.Json;
 
-namespace DistributedSystems.API.Models
+namespace DistributedSystems.Shared.Models
 {
     public class WorkerClientVersionUpdateRequest
     {

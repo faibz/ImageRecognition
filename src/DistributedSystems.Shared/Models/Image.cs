@@ -1,7 +1,8 @@
 ﻿using System;
-﻿using Newtonsoft.Json;
+using DistributedSystems.Shared.Models.Results;
+using Newtonsoft.Json;
 
-namespace DistributedSystems.API.Models
+namespace DistributedSystems.Shared.Models
 {
     public class Image
     {
@@ -26,16 +27,12 @@ namespace DistributedSystems.API.Models
         public ImageStatus Status { get; set; } = ImageStatus.UploadComplete;
         public string ImageKey { get; set; }
 
-        public static explicit operator Image(DTOs.Image image)
+        public static explicit operator ImageStatusResult(Image image)
         {
-            return new Image
+            return new ImageStatusResult
             {
-                Id = image.Id,
-                Location = image.Location,
-                UploadedDate = image.UploadedDate,
-                ProcessedDate = image.ProcessedDate,
-                Status = image.Status,
-                ImageKey = image.ImageKey
+                ImageId = image.Id,
+                ImageStatus = image.Status
             };
         }
     }

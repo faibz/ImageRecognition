@@ -1,12 +1,12 @@
 ﻿using Dapper;
 using DistributedSystems.API.Factories;
-using DistributedSystems.API.Models;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using DistributedSystems.API.Models.DTOs;
+using DistributedSystems.Shared.Models;
 
 namespace DistributedSystems.API.Repositories
 {

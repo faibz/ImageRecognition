@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace DistributedSystems.API.Models
+namespace DistributedSystems.Shared.Models
 {
     public class Map
     {
@@ -16,15 +16,5 @@ namespace DistributedSystems.API.Models
         public Guid Id { get; set; }
         public int ColumnCount { get; set; }
         public int RowCount { get; set; }
-
-        public static explicit operator Map(DTOs.Map map)
-        {
-            return new Map
-            {
-                Id = map.Id,
-                ColumnCount = map.ColumnCount,
-                RowCount = map.RowCount
-            };
-        }
     }
 }

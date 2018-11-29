@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace DistributedSystems.API.Models
+namespace DistributedSystems.Shared.Models
 {
     public class KeyedCompoundImage
     {
