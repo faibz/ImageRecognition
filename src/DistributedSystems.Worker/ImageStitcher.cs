@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Drawing.Imaging;
+using System.IO;
 using System.Linq;
 using DistributedSystems.API.Models;
 
@@ -56,7 +59,48 @@ namespace DistributedSystems.Worker
                 }
             }
 
+            Stream compoundImageStream = null;
+            _compoundImage.Save(compoundImageStream, ImageFormat.Jpeg);
+
+            // If stitched image is greater than 4MB
+            if (compoundImageStream.Length > 4000000)
+            {
+                do
+                {
+                    _compoundImage = ResizeImage(new Bitmap(compoundImageStream), Convert.ToInt32(_compoundImage.Width * 0.9), Convert.ToInt32(_compoundImage.Height * 0.9));
+                }
+                while (compoundImageStream.Length > 4000000);
+
+                return _compoundImage;
+            }
+
             return _compoundImage;
         }
+
+        private static Bitmap ResizeImage(System.Drawing.Image image, int width, int height)
+        {
+            var destRect = new Rectangle(0, 0, width, height);
+            var destImage = new Bitmap(width, height);
+
+            destImage.SetResolution(image.HorizontalResolution, image.VerticalResolution);
+
+            using (var graphics = Graphics.FromImage(destImage))
+            {
+                graphics.CompositingMode = CompositingMode.SourceCopy;
+                graphics.CompositingQuality = CompositingQuality.HighQuality;
+                graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                graphics.SmoothingMode = SmoothingMode.HighQuality;
+                graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
+
+                using (var wrapMode = new ImageAttributes())
+                {
+                    wrapMode.SetWrapMode(WrapMode.TileFlipXY);
+                    graphics.DrawImage(image, destRect, 0, 0, image.Width, image.Height, GraphicsUnit.Pixel, wrapMode);
+                }
+            }
+
+            return destImage;
+        }
+
     }
 }

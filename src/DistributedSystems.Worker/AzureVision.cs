@@ -40,12 +40,13 @@ namespace DistributedSystems.Worker
         {
             var image = JsonConvert.DeserializeObject<DistributedSystems.API.Models.Image>(message);
             var imageAnalysis = await AnalyseRemoteImage(image.Location);
-            var coolTags = imageAnalysis.Tags.Select(tag => new Tag {Name = tag.Name, Confidence = (decimal)tag.Confidence }).ToList();
+            //TODO: See if this tagData gets processed properly.
+            var tagData = imageAnalysis.Tags.Select(tag => new Tag {Name = tag.Name, Confidence = (decimal)tag.Confidence }).ToList();
 
             return new ImageTagData
             {
                 ImageId = image.Id,
-                TagData = coolTags,
+                TagData = tagData,
                 Key = image.ImageKey
             };
         }

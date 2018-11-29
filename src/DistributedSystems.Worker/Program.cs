@@ -6,8 +6,8 @@ namespace DistributedSystems.Worker
 {
     class Program
     {
-        public static async Task Main(string[] args)
-        //public static void Main(string[] args)
+        //public static async Task Main(string[] args)
+        public static void Main(string[] args)
         {
             // Apply the appsettings.json
             var builder = new ConfigurationBuilder()
@@ -18,10 +18,9 @@ namespace DistributedSystems.Worker
             var queueListenerSingleImage = new QueueListenerSingleImage(configuration);
             var queueListenerCompoundImage = new QueueListenerCompoundImage(configuration);
 
-            await queueListenerSingleImage.Run();
-            //var singleImageListener = queueListenerSingleImage.Run();
-            //var compoundImageListener = queueListenerCompoundImage.Run();
-            //Task.WaitAll(singleImageListener, compoundImageListener);
+            var singleImageListener = queueListenerSingleImage.Run();
+            var compoundImageListener = queueListenerCompoundImage.Run();
+            Task.WaitAll(singleImageListener, compoundImageListener);
             //Task.WaitAll(singleImageListener, compoundImageListener).Wait(10000);
         }
     }
@@ -31,9 +30,8 @@ namespace DistributedSystems.Worker
  * - DONE update connection string and queue name in the configuration file;
  * - DONE double check the API endpoint in QueueListenerCompoundImage (appsettings.json);
  * - increase MaxConcurrentCalls in both queue listeners and see if the Worker blows up;
- * - decrease quality/size if the size exceeds 4MB;
+ * - DONE? decrease quality/size if the size exceeds 4MB;
  * - version checker on startup;
- * - throw exception at the bottom of ProcessMessagesAsync in QueueListener's when response is a bad request?
  * 
  * 
  * - DONE? do stitching;

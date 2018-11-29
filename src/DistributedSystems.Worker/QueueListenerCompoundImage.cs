@@ -31,6 +31,7 @@ namespace DistributedSystems.Worker
         public async Task Run()
         {
             RegisterOnMessageHandlerAndReceiveMessages();
+            Console.ReadKey();
             await _queueClient.CloseAsync();
         }
 
