@@ -8,8 +8,7 @@ using System.Collections.Generic;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
-using DistributedSystems.Shared.Models.Requests;
-using Image = System.Drawing.Image;
+using System.Text;
 
 namespace DistributedSystems.Client
 {
@@ -53,12 +52,14 @@ namespace DistributedSystems.Client
 
             foreach (var tile in orderedTiles)
             {
-                byte[] imageData;
+                string imageData;
 
                 using (var memoryStream = new MemoryStream())
                 {
                     tile.bmp.Save(memoryStream, ImageFormat.Jpeg);
-                    imageData = memoryStream.ToArray();
+                    memoryStream.Position = 0;
+                    var base64String = Convert.ToBase64String(memoryStream.ToArray());
+                    imageData = base64String;
                 }
 
                 var lx = new ImageRequest
@@ -66,11 +67,12 @@ namespace DistributedSystems.Client
                     Image = imageData,
                     MapData = new MapData
                     {
+                        MapId = map.Id,
                         Coordinate = new Coordinate(tile.coordinate.columnIndex, rowCount + 1 - tile.coordinate.rowIndex)
                     }
                 };
 
-                await _httpClient.PostAsync("Images/SubmitImage", new StringContent(JsonConvert.SerializeObject(lx)));
+                var response = await _httpClient.PostAsync("Images/SubmitImage", new StringContent(JsonConvert.SerializeObject(lx)));
             }
         }
 
