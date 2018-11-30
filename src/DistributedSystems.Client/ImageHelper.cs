@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Text;
 
 namespace DistributedSystems.Client
@@ -18,7 +19,8 @@ namespace DistributedSystems.Client
 
         public ImageHelper()
         {
-            _httpClient.BaseAddress = new Uri("https://distsysimageapi.azurewebsites.net/api/"); // requests using this must have not have a '/' at the start of path
+            //_httpClient.BaseAddress = new Uri("https://distsysimageapi.azurewebsites.net/api/"); // requests using this must have not have a '/' at the start of path
+            _httpClient.BaseAddress = new Uri("http://localhost:54127/api/");
         }
 
         public async Task DoImageStuff(string file)
@@ -33,18 +35,13 @@ namespace DistributedSystems.Client
 
             var tiles = new List<((int columnIndex, int rowIndex) coordinate, Bitmap bmp)>();
 
-            using (var graphics = Graphics.FromImage(adjustedImage))
+            for (var colIndex = 1; colIndex <= colCount; colIndex++)
             {
-                for (var colIndex = 1; colIndex <= colCount; colIndex++)
+                for (var rowIndex = 1; rowIndex <= rowCount; rowIndex++)
                 {
-                    for (var rowIndex = 1; rowIndex <= rowCount; rowIndex++)
-                    {
-                        var bmp = new Bitmap(500, 500);
-
-                        graphics.DrawImage(bmp, new Rectangle(colIndex * 500, rowIndex * 500, 500, 500));
-
-                        tiles.Add(((colIndex, rowIndex), bmp));
-                    }
+                    tiles.Add(((colIndex, rowIndex),
+                        adjustedImage.Clone(new Rectangle((colIndex - 1) * 500, (rowIndex - 1) * 500, 500, 500),
+                            adjustedImage.PixelFormat)));
                 }
             }
 
@@ -72,7 +69,14 @@ namespace DistributedSystems.Client
                     }
                 };
 
-                var response = await _httpClient.PostAsync("Images/SubmitImage", new StringContent(JsonConvert.SerializeObject(lx)));
+                var request = new HttpRequestMessage
+                {
+                    RequestUri = new Uri("http://localhost:54127/api/Images/SubmitImage"),
+                    Method = HttpMethod.Post,
+                    Content = new StringContent(JsonConvert.SerializeObject(lx), Encoding.UTF8, "application/json")
+                };
+                request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                var response = await _httpClient.SendAsync(request);
             }
         }
 
