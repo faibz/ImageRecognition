@@ -1,4 +1,4 @@
-﻿namespace DistributedSystems.WorkerManager
+﻿namespace DistributedSystems.WorkerManager.WorkerManager
 {
     internal enum WorkerAction
     {

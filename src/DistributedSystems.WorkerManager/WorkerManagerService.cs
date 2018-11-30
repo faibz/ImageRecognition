@@ -25,7 +25,7 @@ namespace DistributedSystems.WorkerManager
             _log = LogManager.GetLogger(typeof(WorkerManagerService));
             _targetProcessingSla = int.Parse(System.Configuration.ConfigurationManager.AppSettings["TargetProcessingSla"]);
             _httpClient.BaseAddress = new Uri(System.Configuration.ConfigurationManager.AppSettings["ImageAPIBaseAddress"]);
-            _serviceBusManager = new ServiceBusManager(System.Configuration.ConfigurationManager.AppSettings["ServiceBusConnectionString"], new List<string> { System.Configuration.ConfigurationManager.AppSettings["ServiceBusQueueNamePrimary"], System.Configuration.ConfigurationManager.AppSettings["ServiceBusQueueNameSecondary"] });
+            _serviceBusManager = new ServiceBusManager(System.Configuration.ConfigurationManager.AppSettings["ServiceBusConnectionString"], System.Configuration.ConfigurationManager.AppSettings["ServiceBusQueueName"]);
             _workerPoolMonitor = new WorkerPoolMonitor(System.Configuration.ConfigurationManager.AppSettings["AzureAuthFileLocation"]);
         }
 
