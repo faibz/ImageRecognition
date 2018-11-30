@@ -5,7 +5,11 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using DistributedSystems.Shared.Models;
 using System.Collections.Generic;
+using System.Drawing.Imaging;
+using System.IO;
 using System.Linq;
+using DistributedSystems.Shared.Models.Requests;
+using Image = System.Drawing.Image;
 
 namespace DistributedSystems.Client
 {
@@ -30,11 +34,11 @@ namespace DistributedSystems.Client
 
             var tiles = new List<((int columnIndex, int rowIndex) coordinate, Bitmap bmp)>();
 
-            using (var graphics = Graphics.FromImage(originalImage))
+            using (var graphics = Graphics.FromImage(adjustedImage))
             {
-                for (int colIndex = 1; colIndex <= colCount; colIndex++)
+                for (var colIndex = 1; colIndex <= colCount; colIndex++)
                 {
-                    for (int rowIndex = 1; rowIndex <= rowCount; rowIndex++)
+                    for (var rowIndex = 1; rowIndex <= rowCount; rowIndex++)
                     {
                         var bmp = new Bitmap(500, 500);
 
@@ -45,7 +49,29 @@ namespace DistributedSystems.Client
                 }
             }
 
-            //tiles.Sort(tile => tile.coordinate.rowIndex);
+            var orderedTiles =  tiles.OrderByDescending(tuple => tuple.coordinate.rowIndex);
+
+            foreach (var tile in orderedTiles)
+            {
+                byte[] imageData;
+
+                using (var memoryStream = new MemoryStream())
+                {
+                    tile.bmp.Save(memoryStream, ImageFormat.Jpeg);
+                    imageData = memoryStream.ToArray();
+                }
+
+                var lx = new ImageRequest
+                {
+                    Image = imageData,
+                    MapData = new MapData
+                    {
+                        Coordinate = new Coordinate(tile.coordinate.columnIndex, rowCount + 1 - tile.coordinate.rowIndex)
+                    }
+                };
+
+                await _httpClient.PostAsync("Images/SubmitImage", new StringContent(JsonConvert.SerializeObject(lx)));
+            }
         }
 
         private static int CalculateColRowCount(int imageDimension)
