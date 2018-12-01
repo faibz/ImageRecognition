@@ -9,6 +9,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DistributedSystems.Migratio
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DistributedSystems.WorkerManager", "DistributedSystems.WorkerManager\DistributedSystems.WorkerManager.csproj", "{4E941CD1-0877-4EBF-858C-5AC4F43A724B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DistributedSystems.Client", "DistributedSystems.Client\DistributedSystems.Client.csproj", "{A1745F27-B079-4450-92D3-9F1A3BFC9789}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DistributedSystems.Shared", "DistributedSystems.Shared\DistributedSystems.Shared.csproj", "{A1886CD8-5171-408B-B392-32CB1250AA28}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +31,14 @@ Global
 		{4E941CD1-0877-4EBF-858C-5AC4F43A724B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4E941CD1-0877-4EBF-858C-5AC4F43A724B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4E941CD1-0877-4EBF-858C-5AC4F43A724B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A1745F27-B079-4450-92D3-9F1A3BFC9789}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A1745F27-B079-4450-92D3-9F1A3BFC9789}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A1745F27-B079-4450-92D3-9F1A3BFC9789}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A1745F27-B079-4450-92D3-9F1A3BFC9789}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A1886CD8-5171-408B-B392-32CB1250AA28}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A1886CD8-5171-408B-B392-32CB1250AA28}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A1886CD8-5171-408B-B392-32CB1250AA28}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A1886CD8-5171-408B-B392-32CB1250AA28}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
