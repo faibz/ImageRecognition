@@ -31,5 +31,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="ImageAnalyser.cs" />
+    <Compile Remove="QueueListenerCompoundImage.cs" />
   </ItemGroup>
 </Project>
