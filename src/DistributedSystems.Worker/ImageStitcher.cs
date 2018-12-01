@@ -55,7 +55,7 @@ namespace DistributedSystems.Worker
 
                     g.DrawImage(_bitmap, new Rectangle(_offsetX, _offsetY, _bitmap.Width, _bitmap.Height));
 
-                    _bitmap.Dispose(); // TODO: Possible pitfall.
+                    _bitmap.Dispose();
                 }
             }
 
@@ -101,6 +101,5 @@ namespace DistributedSystems.Worker
 
             return destImage;
         }
-
     }
 }
