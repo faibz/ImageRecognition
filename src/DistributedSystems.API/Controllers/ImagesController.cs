@@ -37,12 +37,12 @@ namespace DistributedSystems.API.Controllers
 
             var imgStream = new MemoryStream(imageRequest.Image);
 
-            var uploadImageResult = await _imagesService.UploadImage(imgStream);
+            var uploadImageResult = await _imagesService.UploadImage(imgStream, imageRequest.MapData?.MapId ?? Guid.Empty);
             if (!uploadImageResult.Success) return BadRequest();
 
             if (imageRequest.MapData != null) await _mapsService.AddImageToMap(imageRequest.MapData, uploadImageResult.Image.Id);
 
-            return Ok(new { ImageId = uploadImageResult.Image.Id, UploadedDate = uploadImageResult.Image.UploadedDate, Status = uploadImageResult.Image.Status });
+            return Ok(new { ImageId = uploadImageResult.Image.Id, UploadedDate = uploadImageResult.Image.UploadedDate });
         }
 
         [HttpGet("[action]/{imageId:Guid}")]

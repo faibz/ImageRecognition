@@ -14,6 +14,7 @@ namespace DistributedSystems.API.Repositories
         Task<MapImagePart> GetMapImagePartByIdAndLocation(Guid mapId, int x, int y);
         Task<MapImagePart> InsertMapImagePart(MapImagePart mapImagePart);
         Task<MapImagePart> GetMapImagePartByImageId(Guid imageId);
+        Task<int> MapImagePartsUploaded(Guid mapId);
     }
 
     public class MapsRepository : IMapsRepository
@@ -67,5 +68,8 @@ namespace DistributedSystems.API.Repositories
 
             return (MapImagePart) mapImagePart;
         }
+
+        public async Task<int> MapImagePartsUploaded(Guid mapId) 
+            => await _connection.ExecuteScalarAsync<int>("SELECT COUNT(*) FROM [dbo].[MapImageParts] WHERE [MapId] = @MapId", new { MapId = mapId });
     }
 }

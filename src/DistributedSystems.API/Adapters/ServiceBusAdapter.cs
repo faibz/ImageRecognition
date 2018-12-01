@@ -10,58 +10,19 @@ namespace DistributedSystems.API.Adapters
     public class ServiceBusAdapter : IQueueAdapter
     {
         private readonly IQueueClient _queueClientPrimary;
-        private readonly IQueueClient _queueClientSecondary;
 
         public ServiceBusAdapter(IConfiguration config)
         {
             _queueClientPrimary = new QueueClient(config.GetValue<string>("Azure:ServiceBusConnectionString"), config.GetValue<string>("Azure:ServiceBusQueueName"));
-            _queueClientSecondary = new QueueClient(config.GetValue<string>("Azure:ServiceBusConnectionString"), config.GetValue<string>("Azure:ServiceBusQueueNameSecondary"));
         }
 
-        public async Task<bool> SendMessage(string message)
+        public async Task<bool> SendMessage(object obj, string label = "single-image")
         {
             try
             {
-                await _queueClientPrimary.SendAsync(new Message(Encoding.UTF8.GetBytes(message)));
-                return true;
-            }
-            catch (Exception)
-            { }
+                var message = new Message(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(obj))) { Label = label };
 
-            return false;
-        }
-
-        public async Task<bool> SendMessage(object obj)
-        {
-            try
-            {
-                await _queueClientPrimary.SendAsync(new Message(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(obj))));
-                return true;
-            }
-            catch (Exception)
-            { }
-
-            return false;
-        }
-
-        public async Task<bool> SendMessageSecondary(string message)
-        {
-            try
-            {
-                await _queueClientSecondary.SendAsync(new Message(Encoding.UTF8.GetBytes(message)));
-                return true;
-            }
-            catch (Exception)
-            { }
-
-            return false;
-        }
-
-        public async Task<bool> SendMessageSecondary(object obj)
-        {
-            try
-            {
-                await _queueClientSecondary.SendAsync(new Message(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(obj))));
+                await _queueClientPrimary.SendAsync(message);
                 return true;
             }
             catch (Exception)
