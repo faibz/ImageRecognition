@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Threading.Tasks;
-using DistributedSystems.API.Models;
 using Dapper;
 using DistributedSystems.API.Factories;
 using System.Data;
 using System.Collections.Generic;
 using System.Linq;
+using DistributedSystems.Shared.Models;
 
 namespace DistributedSystems.API.Repositories
 {
