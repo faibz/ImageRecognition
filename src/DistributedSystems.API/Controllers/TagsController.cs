@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using DistributedSystems.API.Models;
-using DistributedSystems.API.Models.Requests;
 using DistributedSystems.API.Repositories;
 using DistributedSystems.API.Services;
 using DistributedSystems.API.Validators;
+using DistributedSystems.Shared.Models;
+using DistributedSystems.Shared.Models.Requests;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DistributedSystems.API.Controllers
@@ -18,7 +18,6 @@ namespace DistributedSystems.API.Controllers
         private readonly IImagesService _imagesService;
         private readonly ITagsService _tagsService;
         private readonly ITagsRepository _tagsRepository;
-        private readonly ICompoundImageTagsRepository _compoundImageTagsRepository;
 
         public TagsController(ITagsValidator tagsValidator, IImagesService imagesService, ITagsService tagsService, ITagsRepository tagsRepository, ICompoundImageTagsRepository compoundImageTagsRepository)
         {
@@ -26,7 +25,6 @@ namespace DistributedSystems.API.Controllers
             _imagesService = imagesService;
             _tagsRepository = tagsRepository;
             _tagsValidator = tagsValidator;
-            _compoundImageTagsRepository = compoundImageTagsRepository;
         }
 
         [HttpPost("[action]")]

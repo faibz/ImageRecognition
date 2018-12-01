@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
-using System.Drawing;
 using System.Threading.Tasks;
-using DistributedSystems.API.Models;
 using DistributedSystems.API.Repositories;
+using DistributedSystems.Shared.Models;
 
 namespace DistributedSystems.API.Validators
 {

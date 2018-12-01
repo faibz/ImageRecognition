@@ -5,8 +5,8 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
-using DistributedSystems.API.Models;
-using DistributedSystems.API.Models.Requests;
+using DistributedSystems.Shared.Models;
+using DistributedSystems.Shared.Models.Requests;
 using Microsoft.Azure.CognitiveServices.Vision.ComputerVision;
 using Microsoft.Azure.CognitiveServices.Vision.ComputerVision.Models;
 using Microsoft.Extensions.Configuration;
@@ -36,7 +36,7 @@ namespace DistributedSystems.Worker
 
         public async Task<ImageTagData> ProcessSingleImage(string message)
         {
-            var image = JsonConvert.DeserializeObject<DistributedSystems.API.Models.Image>(message);
+            var image = JsonConvert.DeserializeObject<DistributedSystems.Shared.Models.Image>(message);
             var imageAnalysis = await AnalyseRemoteImage(image.Location);
             var tagData = imageAnalysis.Tags.Select(tag => new Tag {Name = tag.Name, Confidence = (decimal)tag.Confidence }).ToList();
 

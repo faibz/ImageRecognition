@@ -1,12 +1,11 @@
 ﻿using DistributedSystems.API.Adapters;
-using DistributedSystems.API.Models;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.IO;
-using System.Linq;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 using DistributedSystems.API.Repositories;
+using DistributedSystems.Shared.Models;
 
 namespace DistributedSystems.API.Services
 {

@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using DistributedSystems.API.Models;
-using DistributedSystems.API.Models.Requests;
 using DistributedSystems.API.Services;
 using DistributedSystems.API.Validators;
+using DistributedSystems.Shared.Models;
+using DistributedSystems.Shared.Models.Requests;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DistributedSystems.API.Controllers
