@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using DistributedSystems.API.Factories;
 using Dapper;
+using DistributedSystems.Shared.Models;
 
 namespace DistributedSystems.API.Repositories
 {

@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Threading.Tasks;
-using DistributedSystems.API.Models;
 using DistributedSystems.API.Repositories;
+using DistributedSystems.Shared.Models;
 
 namespace DistributedSystems.API.Services
 {
     public interface IMapsService
     {
-        Task<Map> CreateNewImageMap(int columnCount, int rowCount);
-        Task<MapImagePart> AddImageToMap(MapData mapData, Guid imageId);
+        Task<Shared.Models.Map> CreateNewImageMap(int columnCount, int rowCount);
+        Task<Shared.Models.MapImagePart> AddImageToMap(MapData mapData, Guid imageId);
         Task<bool> VerifyMapCompletion(Guid mapId);
     }
 
@@ -21,11 +21,11 @@ namespace DistributedSystems.API.Services
             _mapsRepository = mapsRepository;
         }
 
-        public async Task<Map> CreateNewImageMap(int columnCount, int rowCount) 
-            => await _mapsRepository.InsertMap(new Map(columnCount, rowCount));
+        public async Task<Shared.Models.Map> CreateNewImageMap(int columnCount, int rowCount) 
+            => await _mapsRepository.InsertMap(new Shared.Models.Map(columnCount, rowCount));
 
-        public async Task<MapImagePart> AddImageToMap(MapData mapData, Guid imageId) 
-            => await _mapsRepository.InsertMapImagePart(new MapImagePart(mapData, imageId));
+        public async Task<Shared.Models.MapImagePart> AddImageToMap(MapData mapData, Guid imageId) 
+            => await _mapsRepository.InsertMapImagePart(new Shared.Models.MapImagePart(mapData, imageId));
 
         public async Task<bool> VerifyMapCompletion(Guid mapId)
         {

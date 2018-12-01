@@ -4,11 +4,11 @@ using System.IO;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 using DistributedSystems.API.Adapters;
-using DistributedSystems.API.Models;
-using DistributedSystems.API.Models.Requests;
-using DistributedSystems.API.Models.Results;
 using DistributedSystems.API.Repositories;
 using DistributedSystems.API.Utils;
+using DistributedSystems.Shared.Models;
+using DistributedSystems.Shared.Models.Requests;
+using DistributedSystems.Shared.Models.Results;
 using Microsoft.Extensions.Configuration;
 
 namespace DistributedSystems.API.Services
@@ -47,15 +47,6 @@ namespace DistributedSystems.API.Services
 
         public async Task<UploadImageResult> UploadImage(MemoryStream memoryStream, Guid mapId)
         {
-            //TODO:
-            // Probably should do:
-            // If the storage isn't available:
-            // - write all required information to a file so that it can be retried
-            // If the DB isn't available:
-            // - write all required information to a file so that it can be retried
-            // If the service bus isn't available:
-            // - write all required information to a file so that it can be retried
-
             var image = new Image();
 
             using (var md5 = MD5.Create())
@@ -70,16 +61,11 @@ namespace DistributedSystems.API.Services
             {
                 image.Status = ImageStatus.Errored;
                 await _imagesRepository.InsertImage(image);
-
-                //write to file
-
                 return UploadFailureResult();
             }
 
             if (!await _imagesRepository.InsertImage(image))
             {
-                //write to file
-
                 return UploadFailureResult();
             }
 
@@ -88,18 +74,12 @@ namespace DistributedSystems.API.Services
             if (string.IsNullOrEmpty(image.Location))
             {
                 await _imagesRepository.UpdateImageStatus(image.Id, ImageStatus.Errored);
-
-                //write to file
-
                 return UploadFailureResult();
             }
 
             if (!await _queueAdapter.SendMessage(new ImageProcessRequest(image, mapId), "single-image"))
             {
                 await _imagesRepository.UpdateImageStatus(image.Id, ImageStatus.Errored);
-
-                //write to file
-
                 return UploadFailureResult();
             }
 
