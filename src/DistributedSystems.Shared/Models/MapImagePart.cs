@@ -10,8 +10,8 @@ namespace DistributedSystems.Shared.Models
         {
             MapId = mapData.MapId;
             ImageId = imageId;
-            CoordinateX = mapData.Coordinate.X;
-            CoordinateY = mapData.Coordinate.Y;
+            CoordinateX = mapData.Coordinates.X;
+            CoordinateY = mapData.Coordinates.Y;
         }
 
         public Guid MapId { get; set; }

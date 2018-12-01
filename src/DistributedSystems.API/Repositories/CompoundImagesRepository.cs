@@ -32,7 +32,7 @@ namespace DistributedSystems.API.Repositories
 
         public async Task<IList<CompoundImage>> GetByMapId(Guid mapId)
         {
-            var compoundImages = await _connection.QueryAsync<Models.DTOs.CompoundImage>("SELECT [CompoundImageId], [MapId], [UploadedDate], [ProcessedDate] FROM [dbo].[CompoundImages] WHERE [MapId] = @MapId", new { MapId = mapId });
+            var compoundImages = await _connection.QueryAsync<Models.DTOs.CompoundImage>("SELECT [Id], [MapId], [UploadedDate], [ProcessedDate] FROM [dbo].[CompoundImages] WHERE [MapId] = @MapId", new { MapId = mapId });
 
             return compoundImages.Select(img => (CompoundImage) img).ToList();
         }
