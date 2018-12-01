@@ -15,15 +15,14 @@ namespace DistributedSystems.Client
 {
     public class ImageHelper
     {
-        private readonly HttpClient _httpClient = new HttpClient();
+        private readonly HttpClient _httpClient;
 
-        public ImageHelper()
+        public ImageHelper(HttpClient httpClient)
         {
-            //_httpClient.BaseAddress = new Uri("https://distsysimageapi.azurewebsites.net/api/"); // requests using this must have not have a '/' at the start of path
-            _httpClient.BaseAddress = new Uri("http://localhost:54127/api/");
+            _httpClient = httpClient;
         }
 
-        public async Task DoImageStuff(string file)
+        public async Task<(bool success, Guid mapId)> SendImageRequest(string file)
         {
             var originalImage = new Bitmap(file);
             var colCount = CalculateColRowCount(originalImage.Width);
@@ -45,7 +44,8 @@ namespace DistributedSystems.Client
                 }
             }
 
-            var orderedTiles =  tiles.OrderByDescending(tuple => tuple.coordinate.rowIndex);
+            var orderedTiles =  tiles.OrderByDescending(tile => tile.coordinate.rowIndex);
+            var successful = true;
 
             foreach (var tile in orderedTiles)
             {
@@ -59,25 +59,30 @@ namespace DistributedSystems.Client
                     imageData = base64String;
                 }
 
-                var lx = new ImageRequest
+                var imageReq = new ImageRequest
                 {
                     Image = imageData,
                     MapData = new MapData
                     {
                         MapId = map.Id,
-                        Coordinate = new Coordinate(tile.coordinate.columnIndex, rowCount + 1 - tile.coordinate.rowIndex)
+                        Coordinates = new Coordinate(tile.coordinate.columnIndex, rowCount + 1 - tile.coordinate.rowIndex)
                     }
                 };
 
                 var request = new HttpRequestMessage
                 {
-                    RequestUri = new Uri("http://localhost:54127/api/Images/SubmitImage"),
+                    RequestUri = new Uri($"{_httpClient.BaseAddress}Images/SubmitImage"),
                     Method = HttpMethod.Post,
-                    Content = new StringContent(JsonConvert.SerializeObject(lx), Encoding.UTF8, "application/json")
+                    Content = new StringContent(JsonConvert.SerializeObject(imageReq), Encoding.UTF8, "application/json")
                 };
                 request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
                 var response = await _httpClient.SendAsync(request);
+
+                if (!response.IsSuccessStatusCode) successful = false;
             }
+
+            return (successful, map.Id);
         }
 
         private static int CalculateColRowCount(int imageDimension)

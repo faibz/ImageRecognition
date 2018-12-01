@@ -32,9 +32,11 @@ namespace DistributedSystems.API.Validators
 
         private static void RemoveMatchingTags(ICollection<Tag> primaryList, IEnumerable<Tag> comparisonList)
         {
-            if (comparisonList == null || comparisonList.Count() == 0) return;
+            var existingTags = comparisonList.ToList();
 
-            foreach (var existingTag in comparisonList)
+            if (!existingTags.Any()) return;
+
+            foreach (var existingTag in existingTags)
             {
                 var matchingTag = primaryList.FirstOrDefault(tag => tag.Name == existingTag.Name);
                 if (matchingTag != null) primaryList.Remove(matchingTag);
