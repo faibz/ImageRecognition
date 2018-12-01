@@ -41,7 +41,7 @@ namespace DistributedSystems.API.Repositories
 
         public async Task<IList<CompoundImage>> GetRecentProcessedImageDates()
         {
-            var images = await _connection.QueryAsync<Models.DTOs.CompoundImage>("SELECT TOP 10 [UploadedDate], [ProcessedDate] FROM [dbo].[CompoundImage] ORDER BY [ProcessedDate] DESC");
+            var images = await _connection.QueryAsync<Models.DTOs.CompoundImage>("SELECT TOP 10 [UploadedDate], [ProcessedDate] FROM [dbo].[CompoundImages] WHERE [ProcessedDate] IS NOT NULL ORDER BY [ProcessedDate] DESC");
 
             return images.Select(img => (CompoundImage) img).ToList();
         }

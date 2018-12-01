@@ -76,7 +76,7 @@ namespace DistributedSystems.API.Repositories
 
         public async Task<IList<Image>> GetRecentProcessedImageDates()
         {
-            var images = await _connection.QueryAsync<Models.DTOs.Image>("SELECT TOP 10 [UploadedDate], [ProcessedDate] FROM [dbo].[Images] ORDER BY [ProcessedDate] DESC");
+            var images = await _connection.QueryAsync<Models.DTOs.Image>("SELECT TOP 10 [UploadedDate], [ProcessedDate] FROM [dbo].[Images] WHERE [ProcessedDate] IS NOT NULL ORDER BY [ProcessedDate] DESC");
 
             return images.Select(img => (Image) img).ToList();
         }

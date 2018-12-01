@@ -9,6 +9,7 @@ namespace DistributedSystems.API.Services
     {
         Task<Map> CreateNewImageMap(int columnCount, int rowCount);
         Task<MapImagePart> AddImageToMap(MapData mapData, Guid imageId);
+        Task<bool> VerifyMapCompletion(Guid mapId);
     }
 
     public class MapsService : IMapsService
@@ -25,5 +26,13 @@ namespace DistributedSystems.API.Services
 
         public async Task<MapImagePart> AddImageToMap(MapData mapData, Guid imageId) 
             => await _mapsRepository.InsertMapImagePart(new MapImagePart(mapData, imageId));
+
+        public async Task<bool> VerifyMapCompletion(Guid mapId)
+        {
+            var map = await _mapsRepository.GetMapById(mapId);
+            var mapTiles = map.ColumnCount * map.RowCount;
+
+            return mapTiles == await _mapsRepository.MapImagePartsUploaded(mapId);
+        }
     }
 }
