@@ -21,8 +21,7 @@ namespace DistributedSystems.Client
         public ImageSenderForm()
         {
             InitializeComponent();
-            //_httpClient.BaseAddress = new Uri("https://distsysimageapi.azurewebsites.net/api/"); // requests using this must have not have a '/' at the start of path
-            _httpClient.BaseAddress = new Uri("http://localhost:54127/api/");
+            _httpClient.BaseAddress = new Uri("https://distsysimageapi.azurewebsites.net/api/"); // requests using this must have not have a '/' at the start of path
             _imageHelper = new ImageHelper(_httpClient);
 
             imageTagsPoller.Interval = 1000;
