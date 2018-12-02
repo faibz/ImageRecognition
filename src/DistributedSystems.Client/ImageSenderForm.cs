@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Net.Http;
 using System.Windows.Forms;
@@ -15,7 +16,7 @@ namespace DistributedSystems.Client
 
         private Guid _mapId = Guid.Empty;
         private BindingSource _tagDataSource;
-        private readonly List<Tag> _tagData = new List<Tag>();
+        private SortableBindingList<Tag> _tagData = new SortableBindingList<Tag>();
 
         public ImageSenderForm()
         {
@@ -63,15 +64,25 @@ namespace DistributedSystems.Client
             foreach (var tag in tagData)
             {
                 _tagData.Add(tag);
-                _tagDataSource.Add(tag);
             }
+
+            var orderedTags = _tagData.OrderByDescending(tag => tag.Confidence);
+
+            var lx = orderedTags.GroupBy(tag => tag.Name).Select(tags => tags.First());
+            _tagData = new SortableBindingList<Tag>(lx.ToList());
+
+            _tagDataSource.DataSource = _tagData;
+            tagDataGrid.Sort(tagDataGrid.Columns[1], ListSortDirection.Descending);
         }
 
         private void ShowTagsInformation()
         {
             selectImageButton.Hide();
             tagsLabel.Show();
-            _tagDataSource = new BindingSource { DataSource = new List<Tag>() };
+            _tagDataSource = new BindingSource
+            {
+                DataSource = _tagData
+            };
             tagDataGrid.DataSource = _tagDataSource;
             tagsPanel.Show();
             imageTagsPoller.Start();
