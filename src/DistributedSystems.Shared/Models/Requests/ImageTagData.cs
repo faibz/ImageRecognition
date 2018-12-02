@@ -9,5 +9,6 @@ namespace DistributedSystems.Shared.Models.Requests
         
         public IList<Tag> TagData { get; set; }
         public string Key { get; set; }
+        public Guid MapId { get; set; }
     }
 } 
