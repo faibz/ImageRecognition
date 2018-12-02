@@ -36,9 +36,20 @@ namespace DistributedSystems.Worker
 
         public async Task<ImageTagData> ProcessSingleImage(string message)
         {
-            var image = JsonConvert.DeserializeObject<DistributedSystems.Shared.Models.Image>(message);
+            var image = JsonConvert.DeserializeObject<ImageProcessRequest>(message);
             var imageAnalysis = await AnalyseRemoteImage(image.Location);
             var tagData = imageAnalysis.Tags.Select(tag => new Tag {Name = tag.Name, Confidence = (decimal)tag.Confidence }).ToList();
+
+            if (image.MapId != Guid.Empty)
+            {
+                return new MapTagData
+                {
+                    ImageId = image.Id,
+                    TagData = tagData,
+                    Key = image.ImageKey,
+                    MapId = image.MapId
+                };
+            }
 
             return new ImageTagData
             {
