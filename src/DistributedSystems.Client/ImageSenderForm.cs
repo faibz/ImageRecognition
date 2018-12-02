@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
 using System.Net.Http;
 using System.Windows.Forms;
@@ -24,7 +23,7 @@ namespace DistributedSystems.Client
             _httpClient.BaseAddress = new Uri("https://distsysimageapi.azurewebsites.net/api/"); // requests using this must have not have a '/' at the start of path
             _imageHelper = new ImageHelper(_httpClient);
 
-            imageTagsPoller.Interval = 1000;
+            imageTagsPoller.Interval = 3000;
             imageTagsPoller.Tick += TagsTimer_Tick;
         }
 
@@ -66,7 +65,6 @@ namespace DistributedSystems.Client
                 _tagData.Add(tag);
                 _tagDataSource.Add(tag);
             }
-
         }
 
         private void ShowTagsInformation()
