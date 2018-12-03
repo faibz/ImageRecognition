@@ -5,7 +5,6 @@ using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
-using System.Windows.Forms;
 using DistributedSystems.Shared.Models;
 
 namespace DistributedSystems.Worker
@@ -66,17 +65,20 @@ namespace DistributedSystems.Worker
                 }
             }
 
-            Stream compoundImageStream = new MemoryStream();
-            _compoundImage.Save(compoundImageStream, ImageFormat.Jpeg);
+            Stream compoundImageStream = new MemoryStream(4000000);
+            _compoundImage.Save(compoundImageStream, ImageFormat.Png);
+            _compoundImage.Save($"/Users/ayylmao/Downloads/bobs/{keyedCompoundImage.CompoundImageId}bob.png");
+
 
             // If stitched image is greater than 4MB
-            if (compoundImageStream.Length > 4000000)
+            if (compoundImageStream.Length > 20000)
             {
                 do
                 {
+                    compoundImageStream.Position = 0;
                     _compoundImage = ResizeImage(new Bitmap(compoundImageStream), Convert.ToInt32(_compoundImage.Width * 0.9), Convert.ToInt32(_compoundImage.Height * 0.9));
                 }
-                while (compoundImageStream.Length > 4000000);
+                while (compoundImageStream.Length > 20000);
 
                 return _compoundImage;
             }
