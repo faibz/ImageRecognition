@@ -16,6 +16,8 @@ namespace DistributedSystems.Client
     public class ImageHelper
     {
         private readonly HttpClient _httpClient;
+        private const int WidthHeightLimit = 1000;
+
 
         public ImageHelper(HttpClient httpClient)
         {
@@ -27,7 +29,9 @@ namespace DistributedSystems.Client
             var originalImage = new Bitmap(file);
             var colCount = CalculateColRowCount(originalImage.Width);
             var rowCount = CalculateColRowCount(originalImage.Height);
-            var adjustedImage = new Bitmap(originalImage, colCount * 500, rowCount * 500);
+            var adjustedImage = new Bitmap(originalImage, colCount * WidthHeightLimit, rowCount * WidthHeightLimit);
+
+            var uploadTasks = new List<Task<HttpResponseMessage>>();
 
             var result = await _httpClient.GetAsync($"Maps/CreateImageMap?columnCount={colCount}&rowCount={rowCount}");
             var map = JsonConvert.DeserializeObject<Map>(await result.Content.ReadAsStringAsync());
@@ -39,7 +43,7 @@ namespace DistributedSystems.Client
                 for (var rowIndex = 1; rowIndex <= rowCount; rowIndex++)
                 {
                     tiles.Add(((colIndex, rowIndex),
-                        adjustedImage.Clone(new Rectangle((colIndex - 1) * 500, (rowIndex - 1) * 500, 500, 500),
+                        adjustedImage.Clone(new Rectangle((colIndex - 1) * WidthHeightLimit, (rowIndex - 1) * WidthHeightLimit, WidthHeightLimit, WidthHeightLimit),
                             adjustedImage.PixelFormat)));
                 }
             }
@@ -77,10 +81,12 @@ namespace DistributedSystems.Client
                 };
                 request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-                var response = await _httpClient.SendAsync(request);
-
-                if (!response.IsSuccessStatusCode) successful = false;
+                uploadTasks.Add(_httpClient.SendAsync(request));
             }
+
+            Task.WaitAll(uploadTasks.ToArray());
+
+            successful = uploadTasks.Select(task => task.Result).All(response => response.IsSuccessStatusCode);
 
             return (successful, map.Id);
         }
@@ -88,15 +94,15 @@ namespace DistributedSystems.Client
         private static int CalculateColRowCount(int imageDimension)
         {
             if (imageDimension <= 0) return -1;
-            if (imageDimension < 500) return 1;
+            if (imageDimension < WidthHeightLimit) return 1;
 
             var colCount = 1;
 
             do
             {
                 ++colCount;
-                imageDimension -= 500;
-            } while (imageDimension >= 500);
+                imageDimension -= WidthHeightLimit;
+            } while (imageDimension >= WidthHeightLimit);
 
             return colCount;
         }
