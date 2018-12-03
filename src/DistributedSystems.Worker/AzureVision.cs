@@ -52,6 +52,7 @@ namespace DistributedSystems.Worker
             var keyedCompoundImage = JsonConvert.DeserializeObject<KeyedCompoundImage>(message);
 
             var stitchedImage = _imageStitcher.StitchImages(keyedCompoundImage);
+
             var imageAnalysis = await AnalyseMemoryStreamImage(stitchedImage);
             stitchedImage.Dispose();
 
