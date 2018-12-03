@@ -5,6 +5,7 @@ using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
+using System.Windows.Forms;
 using DistributedSystems.Shared.Models;
 
 namespace DistributedSystems.Worker
@@ -18,10 +19,13 @@ namespace DistributedSystems.Worker
             Bitmap _compoundImage = null; // Final, stitched image
 
             // Get width and height assumming that every image has equal dimensions.
-            Bitmap _anyImage = new Bitmap(keyedCompoundImage.Images[0].Image.Location);
-            int _width = _anyImage.Width;
-            int _height = _anyImage.Height;
-            _anyImage.Dispose();
+            //Bitmap _anyImage = new Bitmap(keyedCompoundImage.Images[0].Image.Location);
+            //int _width = _anyImage.Width;
+            //int _height = _anyImage.Height;
+            //_anyImage.Dispose();
+
+            int _width = 1000;
+            int _height = 1000;
 
             // Store coordinates of each image.
             foreach (var image in keyedCompoundImage.Images)
@@ -30,12 +34,14 @@ namespace DistributedSystems.Worker
                 _coordsY.Add(image.Coordinate.Y);
             }
 
-            _coordsX.OrderBy(coord => coord);
-            _coordsY.OrderBy(coord => coord);
+            //_coordsX.OrderBy(coord => coord);
+            //_coordsY.OrderBy(coord => coord);
+            _coordsX.Sort();
+            _coordsY.Sort();
 
             // Calculate canvas dimensions using the images count on each axis.
-            _width  *= _coordsX[_coordsX.Count - 1] - _coordsX[0];
-            _height *= _coordsY[_coordsY.Count - 1] - _coordsY[0];
+            _width  *= _coordsX[_coordsX.Count - 1] - _coordsX[0] + 1;
+            _height *= _coordsY[_coordsY.Count - 1] - _coordsY[0] + 1;
             _compoundImage = new Bitmap(_width, _height); // Initialise canvas with the dimensions.
 
             // Get a graphics object from the image so we can draw on it.
@@ -49,7 +55,8 @@ namespace DistributedSystems.Worker
                 // Go through each image and draw it on the _compoundImage.
                 foreach (var image in keyedCompoundImage.Images)
                 {
-                    _bitmap = new Bitmap(image.Image.Location);
+                    //_bitmap = new Bitmap(image.Image.Location);
+                    _bitmap = CreateBitmapFromUrl(image.Image.Location);
                     _offsetX = _bitmap.Width * image.Coordinate.X - _bitmap.Width;
                     _offsetY = _height - (_bitmap.Height * image.Coordinate.Y - _bitmap.Height) - _bitmap.Height;
 
@@ -59,7 +66,7 @@ namespace DistributedSystems.Worker
                 }
             }
 
-            Stream compoundImageStream = null;
+            Stream compoundImageStream = new MemoryStream();
             _compoundImage.Save(compoundImageStream, ImageFormat.Jpeg);
 
             // If stitched image is greater than 4MB
@@ -75,6 +82,14 @@ namespace DistributedSystems.Worker
             }
 
             return _compoundImage;
+        }
+
+        private Bitmap CreateBitmapFromUrl(string location)
+        {
+            System.Net.WebRequest request = System.Net.WebRequest.Create(location);
+            System.Net.WebResponse response = request.GetResponse();
+            Stream responseStream = response.GetResponseStream();
+            return new Bitmap(responseStream);
         }
 
         private static Bitmap ResizeImage(System.Drawing.Image image, int width, int height)

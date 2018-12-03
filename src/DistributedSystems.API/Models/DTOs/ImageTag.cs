@@ -11,11 +11,7 @@ namespace DistributedSystems.API.Models.DTOs
 
         public static explicit operator Shared.Models.Tag(ImageTag imageTag)
         {
-            return new Shared.Models.Tag
-            {
-                Name = imageTag.Tag,
-                Confidence = imageTag.Confidence
-            };
+            return new Shared.Models.Tag(imageTag.Tag, imageTag.Confidence);
         }
     }
 }

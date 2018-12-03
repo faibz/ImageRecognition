@@ -36,7 +36,7 @@ namespace DistributedSystems.Worker
         {
             var image = JsonConvert.DeserializeObject<ImageProcessRequest>(message);
             var imageAnalysis = await AnalyseRemoteImage(image.Location);
-            var tagData = imageAnalysis.Tags.Select(tag => new Tag {Name = tag.Name, Confidence = (decimal)tag.Confidence }).ToList();
+            var tagData = imageAnalysis.Tags.Select(tag => new Tag (tag.Name, (decimal)tag.Confidence)).ToList();
 
             return new ImageTagData
             {
@@ -59,7 +59,7 @@ namespace DistributedSystems.Worker
             {
                 CompoundImageId = keyedCompoundImage.CompoundImageId,
                 MapId = keyedCompoundImage.MapId,
-                Tags = (IList<Tag>)imageAnalysis.Tags,
+                Tags = imageAnalysis.Tags.Select(tag => new Tag(tag.Name, (decimal)tag.Confidence)).ToList(),
                 Key = keyedCompoundImage.ImageKey
             };
         }
@@ -80,7 +80,7 @@ namespace DistributedSystems.Worker
         {
             var imageStream = new MemoryStream();
             image.Save(imageStream, System.Drawing.Imaging.ImageFormat.Png);
-
+            imageStream.Position = 0;
             return await _computerVision.AnalyzeImageInStreamAsync(imageStream, _features);
         }
     }
