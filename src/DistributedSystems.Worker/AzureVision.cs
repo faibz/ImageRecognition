@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Net.Http;
 using System.Threading.Tasks;
 using DistributedSystems.Shared.Models;
 using DistributedSystems.Shared.Models.Requests;
@@ -11,7 +10,6 @@ using Microsoft.Azure.CognitiveServices.Vision.ComputerVision;
 using Microsoft.Azure.CognitiveServices.Vision.ComputerVision.Models;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace DistributedSystems.Worker
 {
@@ -40,22 +38,12 @@ namespace DistributedSystems.Worker
             var imageAnalysis = await AnalyseRemoteImage(image.Location);
             var tagData = imageAnalysis.Tags.Select(tag => new Tag {Name = tag.Name, Confidence = (decimal)tag.Confidence }).ToList();
 
-            if (image.MapId != Guid.Empty)
-            {
-                return new MapTagData
-                {
-                    ImageId = image.Id,
-                    TagData = tagData,
-                    Key = image.ImageKey,
-                    MapId = image.MapId
-                };
-            }
-
             return new ImageTagData
             {
                 ImageId = image.Id,
                 TagData = tagData,
-                Key = image.ImageKey
+                Key = image.ImageKey,
+                MapId = image.MapId
             };
         }
 
