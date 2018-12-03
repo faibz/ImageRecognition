@@ -33,20 +33,9 @@ namespace DistributedSystems.API.Controllers
             if (!await _tagsService.ValidateTagDataKey(imageTagData)) return Unauthorized();
 
             await _tagsService.ProcessImageTags(imageTagData);
-            await _imagesService.CompleteImageProcessing(imageTagData.ImageId);
 
-            return Ok();
-        }
-
-        [HttpPost("[action]")]
-        public async Task<IActionResult> SubmitMapImagePartTags([FromBody] MapTagData mapTagData)
-        {
-            if (!await _tagsService.ValidateTagDataKey(mapTagData)) return Unauthorized();
-
-            await _tagsValidator.ValidateImageTagData(mapTagData.TagData, mapTagData.ImageId);
-            await _tagsService.ProcessImageTags(mapTagData);
-            await _imagesService.CompleteImageProcessing(mapTagData.ImageId);
-            await _tagsService.CheckForCompoundImageRequestsFromSingleMapImage(mapTagData);
+            if (imageTagData.MapId == Guid.Empty) await _imagesService.CompleteImageProcessing(imageTagData.ImageId);
+            else await ProcessSingleMapImageTags(imageTagData);
 
             return Ok();
         }
@@ -76,5 +65,13 @@ namespace DistributedSystems.API.Controllers
 
             return Ok(tags);
         }
+
+        private async Task ProcessSingleMapImageTags(ImageTagData imageTagData)
+        {
+            await _tagsValidator.ValidateImageTagData(imageTagData.TagData, imageTagData.ImageId);
+            await _imagesService.CompleteImageProcessing(imageTagData.ImageId);
+            await _tagsService.CheckForCompoundImageRequestsFromSingleMapImage(imageTagData);
+        }
     }
 }
+
