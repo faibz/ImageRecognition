@@ -4,6 +4,8 @@ namespace DistributedSystems.Shared.Models.Requests
 {
     public class ImageProcessRequest
     {
+        public ImageProcessRequest() {}
+
         public ImageProcessRequest(Image img, Guid mapId)
         {
             Id = img.Id;

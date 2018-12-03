@@ -30,7 +30,7 @@ namespace DistributedSystems.Worker
         {
             // Register the queue message handler and receive messages in a loop
             RegisterOnMessageHandlerAndReceiveMessages();
-            Console.WriteLine("1: finished RegisterOnMessageHandlerAndReceiveMessages");
+            Console.WriteLine("finished RegisterOnMessageHandlerAndReceiveMessages");
 
             Console.ReadKey();
 
@@ -48,32 +48,21 @@ namespace DistributedSystems.Worker
 
             // Register the function that processes messages.
             _queueClient.RegisterMessageHandler(ProcessMessagesAsync, messageHandlerOptions);
-            Console.WriteLine("2: finished ProcessMessagesAsync");
+            Console.WriteLine("finished ProcessMessagesAsync");
         }
 
         async Task ProcessMessagesAsync(Message message, CancellationToken token)
         {
             HttpResponseMessage sendTagsResponse;
             var messageBodyString = Encoding.UTF8.GetString(message.Body);
-            Console.WriteLine("5: got into ProcessMessagesAsync");
 
             if (message.Label == "single-image")
             {
-                var tagData = await _imageAnalyser.ProcessSingleImage(messageBodyString);
-                Console.WriteLine("3: finished ProcessSingleImage");
+                var tagData = JsonConvert.SerializeObject(await _imageAnalyser.ProcessSingleImage(messageBodyString));
+                Console.WriteLine("finished ProcessSingleImage");
 
-                if (tagData.GetType() == typeof(MapTagData))
-                {
-                    var tagDataString = JsonConvert.SerializeObject(tagData);
-                    sendTagsResponse = await SendTags(_config["ApiSubmitMapImagePartTags"], tagDataString);
-                    Console.WriteLine("4: sent stuff to the API");
-                }
-                else
-                {
-                    var tagDataString = JsonConvert.SerializeObject(tagData);
-                    sendTagsResponse = await SendTags(_config["ApiSubmitImageTags"], tagDataString);
-                    Console.WriteLine("4: sent stuff to the API");
-                }
+                sendTagsResponse = await SendTags(_config["ApiSubmitImageTags"], tagData);
+                Console.WriteLine("sent stuff to the ApiSubmitImageTags");
 
                 if (sendTagsResponse.StatusCode == System.Net.HttpStatusCode.OK)
                     await _queueClient.CompleteAsync(message.SystemProperties.LockToken);
@@ -81,10 +70,10 @@ namespace DistributedSystems.Worker
             else if (message.Label == "compound-image")
             {
                 var tagData = JsonConvert.SerializeObject(await _imageAnalyser.ProcessCompoundImage(messageBodyString));
-                Console.WriteLine("3: finished ProcessCompoundImage");
+                Console.WriteLine("finished ProcessCompoundImage");
 
                 sendTagsResponse = await SendTags(_config["ApiSubmitMapCompoundImageTags"], tagData);
-                Console.WriteLine("4: sent stuff to the API");
+                Console.WriteLine("sent stuff to the ApiSubmitMapCompoundImageTags");
 
                 if (sendTagsResponse.StatusCode == System.Net.HttpStatusCode.OK)
                     await _queueClient.CompleteAsync(message.SystemProperties.LockToken);
