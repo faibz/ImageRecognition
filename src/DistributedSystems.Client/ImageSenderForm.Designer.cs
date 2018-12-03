@@ -48,7 +48,7 @@
             // 
             // selectImageButton
             // 
-            this.selectImageButton.Location = new System.Drawing.Point(315, 198);
+            this.selectImageButton.Location = new System.Drawing.Point(98, 229);
             this.selectImageButton.Name = "selectImageButton";
             this.selectImageButton.Size = new System.Drawing.Size(128, 23);
             this.selectImageButton.TabIndex = 0;
@@ -75,15 +75,15 @@
             this.tagDataGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.tagDataGrid.Location = new System.Drawing.Point(3, 3);
             this.tagDataGrid.Name = "tagDataGrid";
-            this.tagDataGrid.Size = new System.Drawing.Size(250, 143);
+            this.tagDataGrid.Size = new System.Drawing.Size(269, 439);
             this.tagDataGrid.TabIndex = 4;
             // 
             // tagsPanel
             // 
             this.tagsPanel.Controls.Add(this.tagDataGrid);
-            this.tagsPanel.Location = new System.Drawing.Point(16, 39);
+            this.tagsPanel.Location = new System.Drawing.Point(16, 29);
             this.tagsPanel.Name = "tagsPanel";
-            this.tagsPanel.Size = new System.Drawing.Size(504, 399);
+            this.tagsPanel.Size = new System.Drawing.Size(275, 445);
             this.tagsPanel.TabIndex = 3;
             this.tagsPanel.Visible = false;
             // 
@@ -91,10 +91,10 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(306, 485);
+            this.Controls.Add(this.selectImageButton);
             this.Controls.Add(this.tagsPanel);
             this.Controls.Add(this.tagsLabel);
-            this.Controls.Add(this.selectImageButton);
             this.Name = "ImageSenderForm";
             this.Text = "Test Client";
             ((System.ComponentModel.ISupportInitialize)(this.tagDataGrid)).EndInit();

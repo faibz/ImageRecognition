@@ -15,7 +15,7 @@ namespace DistributedSystems.API.Services
     {
         Task ProcessImageTags(ImageTagData imageTagData);
         Task ProcessCompoundImageTags(Guid compoundImageId, IList<Tag> tags);
-        Task CheckForCompoundImageRequestsFromSingleMapImage(MapTagData mapTagData);
+        Task CheckForCompoundImageRequestsFromSingleMapImage(ImageTagData imageTagData);
         Task CheckForCompoundImageRequestFromCompoundImage(CompoundImageTagData compoundImageTagData);
         Task<bool> ValidateTagDataKey(ImageTagData tagData);
         Task<bool> ValidateCompoundImageTagDataKey(CompoundImageTagData compoundImageTagData);
@@ -49,7 +49,7 @@ namespace DistributedSystems.API.Services
         {
             foreach (var tag in imageTagData.TagData)
                 await _tagsRepository.InsertImageTag(imageTagData.ImageId, tag,
-                    imageTagData.GetType() == typeof(MapTagData) ? ((MapTagData) imageTagData).MapId : (Guid?) null);
+                    imageTagData.MapId == Guid.Empty ? (Guid?) null : imageTagData.MapId);
         }
         public async Task ProcessCompoundImageTags(Guid compoundImageId, IList<Tag> tags)
         {
@@ -57,10 +57,10 @@ namespace DistributedSystems.API.Services
                 await _compoundImageTagsRepository.InsertCompoundImageTag(compoundImageId, tag);
         }
 
-        public async Task CheckForCompoundImageRequestsFromSingleMapImage(MapTagData mapTagData)
+        public async Task CheckForCompoundImageRequestsFromSingleMapImage(ImageTagData imageTagData)
         {
-            if (await _tagsAnalyser.AnalyseTagConfidence(mapTagData.TagData) == TagAnalysisAction.RequestCompoundImage && await _mapsService.VerifyMapCompletion(mapTagData.MapId))
-                await _imagesService.CreateNewCompoundImage(mapTagData.MapId, new List<Guid> { mapTagData.ImageId });
+            if (await _tagsAnalyser.AnalyseTagConfidence(imageTagData.TagData) == TagAnalysisAction.RequestCompoundImage && await _mapsService.VerifyMapCompletion(imageTagData.MapId))
+                await _imagesService.CreateNewCompoundImage(imageTagData.MapId, new List<Guid> { imageTagData.ImageId });
         }
 
         public async Task CheckForCompoundImageRequestFromCompoundImage(CompoundImageTagData compoundImageTagData)

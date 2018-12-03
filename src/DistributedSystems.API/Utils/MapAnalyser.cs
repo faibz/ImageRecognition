@@ -37,7 +37,7 @@ namespace DistributedSystems.API.Utils
 
             while (nextImageId == Guid.Empty)
             {   
-                //TODO: plz make better
+                //When creating a compound image, this code will look for the next map tile to add. If there are no remaining images to add, it will stop.
                 if(primaryMapPart.CoordinateY + 1 <= map.RowCount && !mapImageParts.Any(imagePart => imagePart.CoordinateX == primaryMapPart.CoordinateX && imagePart.CoordinateY == primaryMapPart.CoordinateY + 1))
                 {
                     nextImageId = (await _mapsRepository.GetMapImagePartByIdAndLocation(mapId, primaryMapPart.CoordinateX, primaryMapPart.CoordinateY + 1)).ImageId;
