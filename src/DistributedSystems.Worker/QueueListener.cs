@@ -4,7 +4,6 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using DistributedSystems.Shared.Models.Requests;
 using Microsoft.Azure.ServiceBus;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
@@ -28,12 +27,11 @@ namespace DistributedSystems.Worker
 
         public async Task Run()
         {
-            // Register the queue message handler and receive messages in a loop
+            // Register the queue message handler and receive messages in a loop...
             RegisterOnMessageHandlerAndReceiveMessages();
-            Console.WriteLine("finished RegisterOnMessageHandlerAndReceiveMessages");
 
+            // ...until the user presses a key.
             Console.ReadKey();
-
             await _queueClient.CloseAsync();
         }
 
@@ -48,7 +46,7 @@ namespace DistributedSystems.Worker
 
             // Register the function that processes messages.
             _queueClient.RegisterMessageHandler(ProcessMessagesAsync, messageHandlerOptions);
-            Console.WriteLine("finished ProcessMessagesAsync");
+            Console.WriteLine("Finished processing MESSAGES from the queue.");
         }
 
         async Task ProcessMessagesAsync(Message message, CancellationToken token)
@@ -59,27 +57,30 @@ namespace DistributedSystems.Worker
             if (message.Label == "single-image")
             {
                 var tagData = JsonConvert.SerializeObject(await _imageAnalyser.ProcessSingleImage(messageBodyString));
-                Console.WriteLine("finished ProcessSingleImage");
+                Console.WriteLine("Processed a SINGLE IMAGE.");
 
                 sendTagsResponse = await SendTags(_config["ApiSubmitImageTags"], tagData);
-                Console.WriteLine("sent stuff to the ApiSubmitImageTags");
+                Console.WriteLine("Submitted SINGLE IMAGE tags to the API.");
 
+                // If the API responds with '200', close the message.
                 if (sendTagsResponse.StatusCode == System.Net.HttpStatusCode.OK)
                     await _queueClient.CompleteAsync(message.SystemProperties.LockToken);
             }
             else if (message.Label == "compound-image")
             {
                 var tagData = JsonConvert.SerializeObject(await _imageAnalyser.ProcessCompoundImage(messageBodyString));
-                Console.WriteLine("finished ProcessCompoundImage");
+                Console.WriteLine("Processed a COMPOUND IMAGE.");
 
                 sendTagsResponse = await SendTags(_config["ApiSubmitMapCompoundImageTags"], tagData);
-                Console.WriteLine("sent stuff to the ApiSubmitMapCompoundImageTags");
+                Console.WriteLine("Submitted COMPOUND IMAGE tags to the API.");
 
+                // If the API responds with '200', close the message.
                 if (sendTagsResponse.StatusCode == System.Net.HttpStatusCode.OK)
                     await _queueClient.CompleteAsync(message.SystemProperties.LockToken);
             }
             else
             {
+                // Default: If there is no matching 'Label' key on the message, close it.
                 await _queueClient.CompleteAsync(message.SystemProperties.LockToken);
             }
         }
@@ -100,14 +101,12 @@ namespace DistributedSystems.Worker
         // Use this handler to examine the exceptions received on the message pump.
         static Task ExceptionReceivedHandler(ExceptionReceivedEventArgs exceptionReceivedEventArgs)
         {
-            Console.WriteLine($"Message handler encountered an exception {exceptionReceivedEventArgs.Exception}.");
+            Console.WriteLine($"Message handler encountered an exception:\n{exceptionReceivedEventArgs.Exception}.\n\n");
             var context = exceptionReceivedEventArgs.ExceptionReceivedContext;
             Console.WriteLine("Exception context for troubleshooting:");
-            Console.WriteLine($"- Endpoint: {context.Endpoint}");
-            Console.WriteLine();
-            Console.WriteLine($"- Entity Path: {context.EntityPath}");
-            Console.WriteLine();
-            Console.WriteLine($"- Executing Action: {context.Action}");
+            Console.WriteLine($"- Endpoint:\n{context.Endpoint}\n");
+            Console.WriteLine($"- Entity Path:\n{context.EntityPath}\n");
+            Console.WriteLine($"- Executing Action:\n{context.Action}\n\n\n\n");
             return Task.CompletedTask;
         }
     }
