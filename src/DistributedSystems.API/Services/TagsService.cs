@@ -76,15 +76,18 @@ namespace DistributedSystems.API.Services
         {
             if (string.IsNullOrEmpty(compoundImageTagData.Key)) return false;
 
-            var suppliedKey = compoundImageTagData.Key;
-            var imageKey = string.Empty;
+            var keyParts = compoundImageTagData.Key.SplitInParts(32).ToList();
 
             var imageIds = await _compoundImageMappingsRepository.GetImageIdsByCompoundImageId(compoundImageTagData.CompoundImageId);
 
-            foreach (var imageId in imageIds)
-                imageKey += await _imagesRepository.GetImageKeyById(imageId);
+            var imageKeys = new List<string>();
 
-            return suppliedKey == imageKey;
+            foreach (var imageId in imageIds)
+            {
+                imageKeys.Add(await _imagesRepository.GetImageKeyById(imageId));
+            }
+
+            return imageKeys.Count == keyParts.Count && imageKeys.All(keyParts.Contains);
         }
 
         public async Task<bool> ValidateTagDataKey(ImageTagData tagData)
