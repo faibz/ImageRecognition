@@ -32,8 +32,11 @@ namespace DistributedSystems.API.Utils
                 mapImageParts.Add(await _mapsRepository.GetMapImagePartByImageId(imageId));
             }
 
+            if (mapImageParts.Count == map.ColumnCount * map.RowCount) return Guid.Empty;
+
             var nextImageId = Guid.Empty;
             var primaryMapPart = mapImageParts.First(imagePart => imagePart.ImageId == imageIds.First());
+            var pastPrimaryMapParts = new List<MapImagePart>();
 
             while (nextImageId == Guid.Empty)
             {   
@@ -72,25 +75,41 @@ namespace DistributedSystems.API.Utils
                 }
                 else
                 {
-                    if (primaryMapPart.CoordinateY + 1 <= map.RowCount)
+                    if (primaryMapPart.CoordinateY + 1 <= map.RowCount && pastPrimaryMapParts.All(part => part.CoordinateY == primaryMapPart.CoordinateY + 1 && part.CoordinateX == primaryMapPart.CoordinateX))
                     {
                         var upperMapPart = await _mapsRepository.GetMapImagePartByIdAndLocation(mapId, primaryMapPart.CoordinateX, primaryMapPart.CoordinateY + 1);
-                        if (imageIds.Any(imageId => imageId == upperMapPart.ImageId)) primaryMapPart = await _mapsRepository.GetMapImagePartByImageId(imageIds.Where(imageId => imageId == upperMapPart.ImageId).First());
+                        if (imageIds.Any(imageId => imageId == upperMapPart.ImageId))
+                        {
+                            pastPrimaryMapParts.Add(primaryMapPart);
+                            primaryMapPart = await _mapsRepository.GetMapImagePartByImageId(imageIds.First(imageId => imageId == upperMapPart.ImageId));
+                        }
                     }
-                    else if (primaryMapPart.CoordinateY - 1 >= 1)
+                    else if (primaryMapPart.CoordinateY - 1 >= 1 && pastPrimaryMapParts.All(part => part.CoordinateY == primaryMapPart.CoordinateY - 1 && part.CoordinateX == primaryMapPart.CoordinateX))
                     {
                         var lowerMapPart = await _mapsRepository.GetMapImagePartByIdAndLocation(mapId, primaryMapPart.CoordinateX, primaryMapPart.CoordinateY - 1);
-                        if (imageIds.Any(imageId => imageId == lowerMapPart.ImageId)) primaryMapPart = await _mapsRepository.GetMapImagePartByImageId(imageIds.Where(imageId => imageId == lowerMapPart.ImageId).First());
+                        if (imageIds.Any(imageId => imageId == lowerMapPart.ImageId))
+                        {
+                            pastPrimaryMapParts.Add(primaryMapPart);
+                            primaryMapPart = await _mapsRepository.GetMapImagePartByImageId(imageIds.First(imageId => imageId == lowerMapPart.ImageId));
+                        }
                     }
-                    else if (primaryMapPart.CoordinateX + 1 <= map.ColumnCount)
+                    else if (primaryMapPart.CoordinateX + 1 <= map.ColumnCount && pastPrimaryMapParts.All(part => part.CoordinateX == primaryMapPart.CoordinateX + 1 && part.CoordinateY == primaryMapPart.CoordinateY))
                     {
                         var rightMapPart = await _mapsRepository.GetMapImagePartByIdAndLocation(mapId, primaryMapPart.CoordinateX + 1, primaryMapPart.CoordinateY);
-                        if (imageIds.Any(imageId => imageId == rightMapPart.ImageId)) primaryMapPart = await _mapsRepository.GetMapImagePartByImageId(imageIds.Where(imageId => imageId == rightMapPart.ImageId).First());
+                        if (imageIds.Any(imageId => imageId == rightMapPart.ImageId))
+                        {
+                            pastPrimaryMapParts.Add(primaryMapPart);
+                            primaryMapPart = await _mapsRepository.GetMapImagePartByImageId(imageIds.First(imageId => imageId == rightMapPart.ImageId));
+                        }
                     }
-                    else if (primaryMapPart.CoordinateX - 1 >= 1)
+                    else if (primaryMapPart.CoordinateX - 1 >= 1 && pastPrimaryMapParts.All(part => part.CoordinateX == primaryMapPart.CoordinateX - 1 && part.CoordinateY == primaryMapPart.CoordinateY))
                     {
                         var leftMapPart = await _mapsRepository.GetMapImagePartByIdAndLocation(mapId, primaryMapPart.CoordinateX - 1, primaryMapPart.CoordinateY);
-                        if (imageIds.Any(imageId => imageId == leftMapPart.ImageId)) primaryMapPart = await _mapsRepository.GetMapImagePartByImageId(imageIds.Where(imageId => imageId == leftMapPart.ImageId).First());
+                        if (imageIds.Any(imageId => imageId == leftMapPart.ImageId))
+                        {
+                            pastPrimaryMapParts.Add(primaryMapPart);
+                            primaryMapPart = await _mapsRepository.GetMapImagePartByImageId(imageIds.First(imageId => imageId == leftMapPart.ImageId));
+                        }
                     }
                     else
                     {
