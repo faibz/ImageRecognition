@@ -36,6 +36,7 @@
             this.tagsLabel = new System.Windows.Forms.Label();
             this.tagDataGrid = new System.Windows.Forms.DataGridView();
             this.tagsPanel = new System.Windows.Forms.Panel();
+            this.StopTagCheckButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.tagDataGrid)).BeginInit();
             this.tagsPanel.SuspendLayout();
             this.SuspendLayout();
@@ -80,18 +81,29 @@
             // 
             // tagsPanel
             // 
+            this.tagsPanel.Controls.Add(this.StopTagCheckButton);
             this.tagsPanel.Controls.Add(this.tagDataGrid);
             this.tagsPanel.Location = new System.Drawing.Point(16, 29);
             this.tagsPanel.Name = "tagsPanel";
-            this.tagsPanel.Size = new System.Drawing.Size(275, 445);
+            this.tagsPanel.Size = new System.Drawing.Size(275, 479);
             this.tagsPanel.TabIndex = 3;
             this.tagsPanel.Visible = false;
+            // 
+            // StopTagCheckButton
+            // 
+            this.StopTagCheckButton.Location = new System.Drawing.Point(3, 448);
+            this.StopTagCheckButton.Name = "StopTagCheckButton";
+            this.StopTagCheckButton.Size = new System.Drawing.Size(269, 23);
+            this.StopTagCheckButton.TabIndex = 4;
+            this.StopTagCheckButton.Text = "Stop";
+            this.StopTagCheckButton.UseVisualStyleBackColor = true;
+            this.StopTagCheckButton.Click += new System.EventHandler(this.StopTagCheckButton_Click);
             // 
             // ImageSenderForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(306, 485);
+            this.ClientSize = new System.Drawing.Size(306, 511);
             this.Controls.Add(this.selectImageButton);
             this.Controls.Add(this.tagsPanel);
             this.Controls.Add(this.tagsLabel);
@@ -113,6 +125,7 @@
         private System.Windows.Forms.Label tagsLabel;
         private System.Windows.Forms.DataGridView tagDataGrid;
         private System.Windows.Forms.Panel tagsPanel;
+        private System.Windows.Forms.Button StopTagCheckButton;
     }
 }
 
