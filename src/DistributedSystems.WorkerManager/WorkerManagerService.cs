@@ -26,10 +26,10 @@ namespace DistributedSystems.WorkerManager
             _log = LogManager.GetLogger(typeof(WorkerManagerService));
             _targetProcessingSla = int.Parse(System.Configuration.ConfigurationManager.AppSettings["TargetProcessingSla"]);
             _minimumWorkerCount = int.Parse(System.Configuration.ConfigurationManager.AppSettings["MinimumWorkerCount"]);
-            if (_minimumWorkerCount > TotalWorkerCount()) _minimumWorkerCount = TotalWorkerCount();
             _httpClient.BaseAddress = new Uri(System.Configuration.ConfigurationManager.AppSettings["ImageAPIBaseAddress"]);
             _serviceBusManager = new ServiceBusManager(System.Configuration.ConfigurationManager.AppSettings["ServiceBusConnectionString"], System.Configuration.ConfigurationManager.AppSettings["ServiceBusQueueName"]);
             _workerPoolMonitor = new WorkerPoolMonitor(System.Configuration.ConfigurationManager.AppSettings["AzureAuthFileLocation"]);
+            if (_minimumWorkerCount > TotalWorkerCount()) _minimumWorkerCount = TotalWorkerCount();
         }
 
         public void Start()
