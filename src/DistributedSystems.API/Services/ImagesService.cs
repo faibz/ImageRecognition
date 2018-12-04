@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 using DistributedSystems.API.Adapters;
@@ -95,6 +96,7 @@ namespace DistributedSystems.API.Services
         {
             var nextImageId = await _mapsAnalyser.SelectNextImageId(mapId, imageIds);
 
+            if (await CompoundImageAlreadyExists(mapId, imageIds)) return;
             if (nextImageId == Guid.Empty) return;
 
             imageIds.Add(nextImageId);
@@ -116,6 +118,20 @@ namespace DistributedSystems.API.Services
             };
 
             await _queueAdapter.SendMessage(queueCompoundImage, "compound-image");
+        }
+
+        private async Task<bool> CompoundImageAlreadyExists(Guid mapId, IList<Guid> imageIds)
+        {
+            var compoundImagesForMap = await _compoundImagesRepository.GetByMapId(mapId);
+
+            foreach (var compoundImage in compoundImagesForMap)
+            {
+                var imagesInCompoundImage = await _compoundImageMappingsRepository.GetImageIdsByCompoundImageId(compoundImage.Id);
+
+                if (imagesInCompoundImage.All(imageIds.Contains)) return true;
+            }
+
+            return false;
         }
 
         private async Task<IList<CompoundImagePart>> GetCompoundImagePartsFromIds(IEnumerable<Guid> imageIds)
