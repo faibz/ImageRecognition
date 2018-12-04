@@ -29,6 +29,9 @@ namespace DistributedSystems.Client
             var originalImage = new Bitmap(file);
             var colCount = CalculateColRowCount(originalImage.Width);
             var rowCount = CalculateColRowCount(originalImage.Height);
+
+            if (colCount == -1 || rowCount == -1) return (false, Guid.Empty);
+;
             var adjustedImage = new Bitmap(originalImage, colCount * WidthHeightLimit, rowCount * WidthHeightLimit);
 
             var uploadTasks = new List<Task<HttpResponseMessage>>();
