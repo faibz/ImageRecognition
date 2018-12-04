@@ -49,7 +49,6 @@ namespace DistributedSystems.Client
             }
 
             var orderedTiles =  tiles.OrderByDescending(tile => tile.coordinate.rowIndex);
-            var successful = true;
 
             foreach (var tile in orderedTiles)
             {
@@ -86,7 +85,7 @@ namespace DistributedSystems.Client
 
             Task.WaitAll(uploadTasks.ToArray());
 
-            successful = uploadTasks.Select(task => task.Result).All(response => response.IsSuccessStatusCode);
+            var successful = uploadTasks.Select(task => task.Result).All(response => response.IsSuccessStatusCode);
 
             return (successful, map.Id);
         }
