@@ -11,9 +11,8 @@ namespace DistributedSystems.WorkerManager.WorkerManager
     {
         internal static async Task<WorkerAction> AdviseAction(int activeWorkerCount, int totalWorkerCount, long queueMessageCount, int targetSla, HttpClient httpClient)
         {
-            if (activeWorkerCount == 0 && queueMessageCount > 0) return WorkerAction.Add;
             if (activeWorkerCount == 0 && queueMessageCount == 0) return WorkerAction.Nothing;
-            if (activeWorkerCount > 0 && queueMessageCount == 0) return WorkerAction.Remove;
+            if (activeWorkerCount > 1 && queueMessageCount == 0) return WorkerAction.Remove;
 
             var result = await (await httpClient.GetAsync("Data/ImageProcessingTime")).Content.ReadAsStringAsync();
             var timespan = new List<TimeSpan> { JsonConvert.DeserializeObject<TimeSpan>(result) };
