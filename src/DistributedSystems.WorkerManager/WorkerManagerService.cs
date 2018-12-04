@@ -12,8 +12,9 @@ namespace DistributedSystems.WorkerManager
     public class WorkerManagerService
     {
         private readonly int _targetProcessingSla;
+        private int _minimumWorkerCount;
 
-        private ILog _log;
+        private readonly ILog _log;
         private readonly Timer _timer = new Timer();
         private readonly HttpClient _httpClient = new HttpClient();
 
@@ -24,9 +25,11 @@ namespace DistributedSystems.WorkerManager
         {
             _log = LogManager.GetLogger(typeof(WorkerManagerService));
             _targetProcessingSla = int.Parse(System.Configuration.ConfigurationManager.AppSettings["TargetProcessingSla"]);
+            _minimumWorkerCount = int.Parse(System.Configuration.ConfigurationManager.AppSettings["MinimumWorkerCount"]);
             _httpClient.BaseAddress = new Uri(System.Configuration.ConfigurationManager.AppSettings["ImageAPIBaseAddress"]);
             _serviceBusManager = new ServiceBusManager(System.Configuration.ConfigurationManager.AppSettings["ServiceBusConnectionString"], System.Configuration.ConfigurationManager.AppSettings["ServiceBusQueueName"]);
             _workerPoolMonitor = new WorkerPoolMonitor(System.Configuration.ConfigurationManager.AppSettings["AzureAuthFileLocation"]);
+            if (_minimumWorkerCount > TotalWorkerCount()) _minimumWorkerCount = TotalWorkerCount();
         }
 
         public void Start()
@@ -49,7 +52,7 @@ namespace DistributedSystems.WorkerManager
 
             _log.Info($"Checking service bus and workers. Amount of message in queues: {queueMessageCount}. Amount of workers (active/total): {activeWorkerCount}/{totalWorkerCount}.");
 
-            switch (await WorkerQueueEvaluator.AdviseAction(activeWorkerCount, totalWorkerCount, queueMessageCount, _targetProcessingSla, _httpClient))
+            switch (await WorkerQueueEvaluator.AdviseAction(activeWorkerCount, totalWorkerCount, queueMessageCount, _targetProcessingSla, _minimumWorkerCount, _httpClient))
             {
                 case WorkerAction.Add:
                     _log.Info("Starting new worker.");
