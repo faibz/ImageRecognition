@@ -58,15 +58,17 @@ namespace DistributedSystems.Worker
             compoundImage.Save(compoundImageStream, ImageFormat.Jpeg);
 
             // If stitched image is greater than 4MB in size...
-            if (compoundImageStream.Length > 4000000)
+            if (compoundImageStream.Length > 400000)
             {
                 // ...gradually decrease the image dimensions until it is less than 4MB in size (Azure Vision's limit).
                 do
                 {
                     compoundImageStream.Position = 0; // Rewind the memory stream.
                     compoundImage = ResizeImage(new Bitmap(compoundImageStream), Convert.ToInt32(compoundImage.Width * 0.9), Convert.ToInt32(compoundImage.Height * 0.9));
+                    compoundImageStream.Position = 0;
+                    compoundImage.Save(compoundImageStream, ImageFormat.Jpeg);
                 }
-                while (compoundImageStream.Length > 4000000);
+                while (compoundImageStream.Position > 400000);
 
                 return compoundImage;
             }
