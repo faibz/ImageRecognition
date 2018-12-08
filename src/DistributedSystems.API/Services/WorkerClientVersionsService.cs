@@ -39,7 +39,7 @@ namespace DistributedSystems.API.Services
 
             if (workerVersion == null) return null;
 
-            workerVersion.Location = await _fileStorageAdapter.GetFileUriWithKey($"WorkerClient_v{workerVersion.Version}.exe", _storageContainerName);
+            workerVersion.Location = await _fileStorageAdapter.GetFileUriWithKey($"WorkerClient_v{workerVersion.Version}.zip", _storageContainerName);
 
             return workerVersion;
         }
@@ -50,7 +50,7 @@ namespace DistributedSystems.API.Services
 
             if (workerVersion == null) return null;
 
-            workerVersion.Location = await _fileStorageAdapter.GetFileUriWithKey($"WorkerClient_v{workerVersion.Version}.exe", _storageContainerName);
+            workerVersion.Location = await _fileStorageAdapter.GetFileUriWithKey($"WorkerClient_v{workerVersion.Version}.zip", _storageContainerName);
 
             return workerVersion;
         }
@@ -67,7 +67,7 @@ namespace DistributedSystems.API.Services
                 clientUpdate.Hash = BitConverter.ToString(md5.ComputeHash(memoryStream)).Replace("-", "").ToLower();
 
             memoryStream.Position = 0;
-            clientUpdate.Location = await _fileStorageAdapter.UploadFile($"WorkerClient_v{clientUpdate.Version}.exe", memoryStream, _storageContainerName);
+            clientUpdate.Location = await _fileStorageAdapter.UploadFile($"WorkerClient_v{clientUpdate.Version}.zip", memoryStream, _storageContainerName);
 
             if (string.IsNullOrEmpty(clientUpdate.Location)) return null;
 
