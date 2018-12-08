@@ -37,6 +37,7 @@
             this.tagDataGrid = new System.Windows.Forms.DataGridView();
             this.tagsPanel = new System.Windows.Forms.Panel();
             this.StopTagCheckButton = new System.Windows.Forms.Button();
+            this.StartTagCheckButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.tagDataGrid)).BeginInit();
             this.tagsPanel.SuspendLayout();
             this.SuspendLayout();
@@ -81,6 +82,7 @@
             // 
             // tagsPanel
             // 
+            this.tagsPanel.Controls.Add(this.StartTagCheckButton);
             this.tagsPanel.Controls.Add(this.StopTagCheckButton);
             this.tagsPanel.Controls.Add(this.tagDataGrid);
             this.tagsPanel.Location = new System.Drawing.Point(16, 29);
@@ -98,6 +100,17 @@
             this.StopTagCheckButton.Text = "Stop";
             this.StopTagCheckButton.UseVisualStyleBackColor = true;
             this.StopTagCheckButton.Click += new System.EventHandler(this.StopTagCheckButton_Click);
+            // 
+            // StartTagCheckButton
+            // 
+            this.StartTagCheckButton.Location = new System.Drawing.Point(3, 448);
+            this.StartTagCheckButton.Name = "StartTagCheckButton";
+            this.StartTagCheckButton.Size = new System.Drawing.Size(269, 23);
+            this.StartTagCheckButton.TabIndex = 5;
+            this.StartTagCheckButton.Text = "Start";
+            this.StartTagCheckButton.UseVisualStyleBackColor = true;
+            this.StartTagCheckButton.Visible = false;
+            this.StartTagCheckButton.Click += new System.EventHandler(this.StartTagCheckButton_Click);
             // 
             // ImageSenderForm
             // 
@@ -126,6 +139,7 @@
         private System.Windows.Forms.DataGridView tagDataGrid;
         private System.Windows.Forms.Panel tagsPanel;
         private System.Windows.Forms.Button StopTagCheckButton;
+        private System.Windows.Forms.Button StartTagCheckButton;
     }
 }
 

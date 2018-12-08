@@ -92,7 +92,17 @@ namespace DistributedSystems.Client
         {
             imageTagsPoller.Stop();
             StopTagCheckButton.Hide();
+            StartTagCheckButton.Show();
             tagsLabel.Text = @"Tag retrieval stopped. Tags found are listed below.";
+        }
+
+
+        private void StartTagCheckButton_Click(object sender, EventArgs e)
+        {
+            imageTagsPoller.Start();
+            StartTagCheckButton.Hide();
+            StopTagCheckButton.Show();
+            tagsLabel.Text = @"Retrieving tags... They will show below as they are found.";
         }
     }
 }
