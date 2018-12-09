@@ -2,6 +2,7 @@
 using Microsoft.Azure.Management.ResourceManager.Fluent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace DistributedSystems.WorkerManager.WorkerManager
 {
@@ -17,6 +18,14 @@ namespace DistributedSystems.WorkerManager.WorkerManager
             foreach (var vm in vms)
             {
                 Workers.Add(new Worker(vm));
+            }
+        }
+
+        public async Task UpdateAllWorkers()
+        {
+            foreach (var worker in Workers)
+            {
+                await worker.Update();
             }
         }
 

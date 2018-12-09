@@ -66,6 +66,8 @@ namespace DistributedSystems.WorkerManager
                     _log.Info("No worker action taken.");
                     break;
             }
+			
+			await _workerPoolMonitor.UpdateAllWorkers();
         }
 
         private async Task StartNewWorker()

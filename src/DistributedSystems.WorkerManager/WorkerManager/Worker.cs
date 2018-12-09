@@ -8,6 +8,7 @@ namespace DistributedSystems.WorkerManager.WorkerManager
         Task TurnOn();
         Task TurnOff();
         bool PowerState { get; }
+        Task Update();
     }
 
     public class Worker : IWorker
@@ -46,7 +47,9 @@ namespace DistributedSystems.WorkerManager.WorkerManager
 
             var refreshTask = Task.Run(() => _virtualMachine.RefreshInstanceViewAsync());
             await refreshTask.ContinueWith(_ => _powerStateUpdating = false);
-
         }
+
+        public async Task Update() 
+            => await _virtualMachine.RefreshInstanceViewAsync();
     }
 }
