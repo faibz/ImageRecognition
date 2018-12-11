@@ -46,10 +46,10 @@ namespace DistributedSystems.API.Controllers
         {
             if (!await _tagsService.ValidateCompoundImageTagDataKey(compoundImageTagData)) return Unauthorized();
 
+            await _tagsService.CheckForCompoundImageRequestFromCompoundImage(compoundImageTagData);
             await _tagsValidator.ValidateCompoundImageTagData(compoundImageTagData.Tags, compoundImageTagData.CompoundImageId);
             await _tagsService.ProcessCompoundImageTags(compoundImageTagData.CompoundImageId, compoundImageTagData.Tags);
             await _imagesService.CompleteCompoundImageProcessing(compoundImageTagData.CompoundImageId);
-            await _tagsService.CheckForCompoundImageRequestFromCompoundImage(compoundImageTagData);
 
             return Ok();
         }
@@ -75,10 +75,10 @@ namespace DistributedSystems.API.Controllers
 
         private async Task ProcessSingleMapImageTags(ImageTagData imageTagData)
         {
+            await _tagsService.CheckForCompoundImageRequestsFromSingleMapImage(imageTagData);
             await _tagsValidator.ValidateImageTagData(imageTagData.TagData, imageTagData.ImageId);
             await _tagsService.ProcessImageTags(imageTagData);
             await _imagesService.CompleteImageProcessing(imageTagData.ImageId);
-            await _tagsService.CheckForCompoundImageRequestsFromSingleMapImage(imageTagData);
         }
     }
 }
