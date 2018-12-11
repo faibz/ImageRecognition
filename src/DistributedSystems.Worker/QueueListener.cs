@@ -46,7 +46,6 @@ namespace DistributedSystems.Worker
 
             // Register the function that processes messages.
             _queueClient.RegisterMessageHandler(ProcessMessagesAsync, messageHandlerOptions);
-            Console.WriteLine("Finished processing MESSAGES from the queue.");
         }
 
         async Task ProcessMessagesAsync(Message message, CancellationToken token)
