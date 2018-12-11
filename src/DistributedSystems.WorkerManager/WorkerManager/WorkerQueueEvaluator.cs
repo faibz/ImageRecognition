@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Polly;
 
 namespace DistributedSystems.WorkerManager.WorkerManager
 {
@@ -15,9 +16,36 @@ namespace DistributedSystems.WorkerManager.WorkerManager
             if (activeWorkerCount == minimumWorkerCount && queueMessageCount == 0) return WorkerAction.Nothing;
             if (activeWorkerCount > minimumWorkerCount && queueMessageCount == 0) return WorkerAction.Remove;
 
-            var result = await (await httpClient.GetAsync("Data/ImageProcessingTime")).Content.ReadAsStringAsync();
-            var timespan = new List<TimeSpan> { JsonConvert.DeserializeObject<TimeSpan>(result) };
-            timespan.Add(JsonConvert.DeserializeObject<TimeSpan>(await (await httpClient.GetAsync("Data/CompoundImageProcessingTime")).Content.ReadAsStringAsync()));
+            var responseSingleImages = await Policy
+                .Handle<Exception>()
+                .OrResult<HttpResponseMessage>(message => !message.IsSuccessStatusCode && string.IsNullOrEmpty(message.Content.ReadAsStringAsync().Result))
+                .RetryAsync(3)
+                .ExecuteAsync(async () =>  await httpClient.GetAsync("Data/ImageProcessingTime"));
+
+            var responseCompoundImages = await Policy
+                .Handle<Exception>()
+                .OrResult<HttpResponseMessage>(message => !message.IsSuccessStatusCode && string.IsNullOrEmpty(message.Content.ReadAsStringAsync().Result))
+                .RetryAsync(3)
+                .ExecuteAsync(async () => await httpClient.GetAsync("Data/CompoundImageProcessingTime"));
+
+            string resultSingleImages;
+            string resultCompoundImages;
+
+            try
+            {
+                resultSingleImages = await responseSingleImages.Content.ReadAsStringAsync();
+                resultCompoundImages = await responseCompoundImages.Content.ReadAsStringAsync();
+            }
+            catch (Exception)
+            {
+                return WorkerAction.Nothing;
+            }
+
+            var timespan = new List<TimeSpan>
+            {
+                JsonConvert.DeserializeObject<TimeSpan>(resultSingleImages),
+                JsonConvert.DeserializeObject<TimeSpan>(resultCompoundImages)
+            };
             var averageProcessingTime = new TimeSpan(Convert.ToInt64(timespan.Average(time => time.Ticks))).TotalSeconds;
 
             if (averageProcessingTime > targetSla + 1 && activeWorkerCount < totalWorkerCount) return WorkerAction.Add;
