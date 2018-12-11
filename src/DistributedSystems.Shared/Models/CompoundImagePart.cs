@@ -6,7 +6,7 @@
 
         public CompoundImagePart(MapImagePart mapImagePart)
         {
-            Image = new Image(mapImagePart.ImageId); // TODO: Message handler encountered an exception System.NullReferenceException: Object reference not set to an instance of an object.
+            Image = new Image(mapImagePart.ImageId);
             Coordinate = new Coordinate(mapImagePart.CoordinateX, mapImagePart.CoordinateY);
         }
 
