@@ -18,7 +18,7 @@ namespace DistributedSystems.WorkerManager.WorkerManager
 
             var responseSingleImages = await Policy
                 .Handle<Exception>()
-                .OrResult<HttpResponseMessage>(message => !message.IsSuccessStatusCode && string.IsNullOrEmpty(message.Content.ReadAsStringAsync().Result))
+                .OrResult<HttpResponseMessage>(message => !message.IsSuccessStatusCode || string.IsNullOrEmpty(message.Content.ReadAsStringAsync().Result))
                 .RetryAsync(3)
                 .ExecuteAsync(async () =>  await httpClient.GetAsync("Data/ImageProcessingTime"));
 
