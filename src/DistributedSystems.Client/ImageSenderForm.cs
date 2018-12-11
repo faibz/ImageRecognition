@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Windows.Forms;
 using DistributedSystems.Shared.Models;
 using Newtonsoft.Json;
+using Polly;
 
 namespace DistributedSystems.Client
 {
@@ -36,7 +37,13 @@ namespace DistributedSystems.Client
                 var file = FilePickerDialog.FileName;
 
                 var imageResult = await _imageHelper.SendImageRequest((file));
-                if (!imageResult.success) return;
+                if (!imageResult.success)
+                {
+                    tagsLabel.Text = @"Failed to process image. Please close and re-open the application.";
+                    tagsLabel.Show();
+
+                    return;
+                }
 
                 _mapId = imageResult.mapId;
 
@@ -46,7 +53,12 @@ namespace DistributedSystems.Client
 
         private async void TagsTimer_Tick(object sender, EventArgs e)
         {
-            var tagResult = await _httpClient.GetAsync($"Tags/GetTagsForMapId/{_mapId}");
+            var tagResult = await Policy
+                .Handle<Exception>()
+                .OrResult<HttpResponseMessage>(message => !message.IsSuccessStatusCode)
+                .RetryAsync(3)
+                .ExecuteAsync(async () => await _httpClient.GetAsync($"Tags/GetTagsForMapId/{_mapId}"));
+
             var tagData = JsonConvert.DeserializeObject<List<Tag>>(await tagResult.Content.ReadAsStringAsync());
             ProcessTagData(tagData);
         }

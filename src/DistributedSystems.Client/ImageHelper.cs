@@ -10,6 +10,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Http.Headers;
 using System.Text;
+using Polly;
 
 namespace DistributedSystems.Client
 {
@@ -36,8 +37,24 @@ namespace DistributedSystems.Client
 
             var uploadTasks = new List<Task<HttpResponseMessage>>();
 
-            var result = await _httpClient.GetAsync($"Maps/CreateImageMap?columnCount={colCount}&rowCount={rowCount}");
-            var map = JsonConvert.DeserializeObject<Map>(await result.Content.ReadAsStringAsync());
+            //TODO POLLY IT'S ON  CLIP BOARD
+
+            var result = await Policy
+                .Handle<Exception>()
+                .OrResult<HttpResponseMessage>(message => !message.IsSuccessStatusCode)
+                .RetryAsync(3)
+                .ExecuteAsync(async () => await _httpClient.GetAsync($"Maps/CreateImageMap?columnCount={colCount}&rowCount={rowCount}"));
+
+            Map map;
+
+            try
+            {
+                map = JsonConvert.DeserializeObject<Map>(await result.Content.ReadAsStringAsync());
+            }
+            catch (Exception)
+            {
+                return (false, Guid.Empty);
+            }
 
             var tiles = new List<((int columnIndex, int rowIndex) coordinate, Bitmap bmp)>();
 
@@ -86,7 +103,14 @@ namespace DistributedSystems.Client
                 uploadTasks.Add(_httpClient.SendAsync(request));
             }
 
-            Task.WaitAll(uploadTasks.ToArray());
+            Parallel.ForEach(uploadTasks, async task =>
+            {
+                var response = await Policy
+                    .Handle<Exception>()
+                    .OrResult<HttpResponseMessage>(message => !message.IsSuccessStatusCode)
+                    .RetryAsync(3)
+                    .ExecuteAsync(async () => await task);
+            });
 
             var successful = uploadTasks.Select(task => task.Result).All(response => response.IsSuccessStatusCode);
 
