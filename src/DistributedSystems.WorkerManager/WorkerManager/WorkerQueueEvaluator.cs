@@ -18,13 +18,13 @@ namespace DistributedSystems.WorkerManager.WorkerManager
 
             var responseSingleImages = await Policy
                 .Handle<Exception>()
-                .OrResult<HttpResponseMessage>(message => !message.IsSuccessStatusCode || string.IsNullOrEmpty(message.Content.ReadAsStringAsync().Result))
+                .OrResult<HttpResponseMessage>(message => !message.IsSuccessStatusCode)
                 .RetryAsync(3)
                 .ExecuteAsync(async () =>  await httpClient.GetAsync("Data/ImageProcessingTime"));
 
             var responseCompoundImages = await Policy
                 .Handle<Exception>()
-                .OrResult<HttpResponseMessage>(message => !message.IsSuccessStatusCode && string.IsNullOrEmpty(message.Content.ReadAsStringAsync().Result))
+                .OrResult<HttpResponseMessage>(message => !message.IsSuccessStatusCode)
                 .RetryAsync(3)
                 .ExecuteAsync(async () => await httpClient.GetAsync("Data/CompoundImageProcessingTime"));
 
