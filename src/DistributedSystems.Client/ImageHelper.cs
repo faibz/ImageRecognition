@@ -35,10 +35,6 @@ namespace DistributedSystems.Client
 ;
             var adjustedImage = new Bitmap(originalImage, colCount * WidthHeightLimit, rowCount * WidthHeightLimit);
 
-            var uploadTasks = new List<Task<HttpResponseMessage>>();
-
-            //TODO POLLY IT'S ON  CLIP BOARD
-
             var result = await Policy
                 .Handle<Exception>()
                 .OrResult<HttpResponseMessage>(message => !message.IsSuccessStatusCode)
@@ -67,6 +63,8 @@ namespace DistributedSystems.Client
                             adjustedImage.PixelFormat)));
                 }
             }
+
+            var uploadTasks = new List<Task<HttpResponseMessage>>();
 
             var orderedTiles =  tiles.OrderByDescending(tile => tile.coordinate.rowIndex);
 
@@ -105,7 +103,7 @@ namespace DistributedSystems.Client
 
             Parallel.ForEach(uploadTasks, async task =>
             {
-                var response = await Policy
+                await Policy
                     .Handle<Exception>()
                     .OrResult<HttpResponseMessage>(message => !message.IsSuccessStatusCode)
                     .RetryAsync(3)
