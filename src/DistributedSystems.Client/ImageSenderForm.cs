@@ -80,8 +80,8 @@ namespace DistributedSystems.Client
 
             var orderedTags = _tagData.OrderByDescending(tag => tag.Confidence);
 
-            var lx = orderedTags.GroupBy(tag => tag.Name).Select(tags => tags.First());
-            _tagData = new SortableBindingList<Tag>(lx.ToList());
+            var uniqueOrderedTags = orderedTags.GroupBy(tag => tag.Name).Select(tags => tags.First());
+            _tagData = new SortableBindingList<Tag>(uniqueOrderedTags.ToList());
 
             _tagDataSource.DataSource = _tagData;
             tagDataGrid.Sort(tagDataGrid.Columns[1], ListSortDirection.Descending);

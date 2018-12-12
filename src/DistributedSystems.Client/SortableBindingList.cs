@@ -1,4 +1,7 @@
-﻿using System;
+﻿//Credit to Microsoft https://referencesource.microsoft.com/#system.data.linq/SortableBindingList.cs
+//
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
