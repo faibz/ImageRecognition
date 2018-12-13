@@ -32,7 +32,6 @@ namespace DistributedSystems.API.Controllers
         {
             if (!await _tagsService.ValidateTagDataKey(imageTagData)) return Unauthorized();
 
-
             if (imageTagData.MapId == Guid.Empty)
                 await ProcessSingleImageTags(imageTagData);
             else
