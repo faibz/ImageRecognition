@@ -31,8 +31,10 @@ This application was built and deployed via Azure DevOps to various components h
 
 ### Map Visualisation
 
+When a large image gets selected by the user on the client. It gets broken down into a map comprised of several tiles. Each of these tiles are firstly processed individually. However, if Azure's Computer Vision API returns image data with low confidence levels, the API will submit an image process request for a compound image. This compound image will contain the original tile and another that is connected to it. This process can be repeated until the data from the Computer Vision API is satisfactory.
+
 ![Map Visualisation](https://github.com/faibz/image-recognition/blob/master/mapvisualisation.png "Map Visualisation")
 
 #### Credit
 
-Thank you to my friend https://github.com/amrwc for his work on the DistributedSystems.Client project.
+Thank you to my friend https://github.com/amrwc for his work on the DistributedSystems.Worker project.
