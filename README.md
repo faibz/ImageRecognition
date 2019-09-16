@@ -8,9 +8,13 @@ This system is comprised of various components that work together to process an 
 
 ### DistributedSystems.Client
 
+.NET Framework 4.6.1 WinForms Application
+
 The client is the front-end application of the system. This application is where the user will select an image to analyse. The selected image will then be broken down into 1000x1000 pieces and sent off to the API. After sending the image to the API, the client will then check to see if any of the image pieces have been processed by asking the API if there are any available results of processing the whole image. Should any results be found and returned by the API, they will be shown to the user in a table.
 
 ### DistributedSystems.API
+
+.NET Core 2.1 Web API Application
 
 The API is the central application in the system. This application is responsible for most of the work in the system, and therefore, each controller will be described individually:
 * Data Controller - Provides data about image processing times. Consumed by the DistributedSystems.WorkerManager project. 
@@ -18,6 +22,23 @@ The API is the central application in the system. This application is responsibl
 * Maps Controller - Provides a single endpoint for creating an image map (visualisation of a map can be seen below). Consumed by the Client project when breaking down a large image.
 * Tags Controller - Provides endpoints for the Worker project to send post-analysis image data and for the Client project to ask for the aforementioned image data. Consumed by Worker and Client projects.
 * Versions Controller - Provides information about DistributedSystems.Worker versions for updating purposes. Could, in future, be consumed by the Worker project to know when to update.
+
+Underneath the controller layer, there are some services that follow up some of the processing required by the controllers. Three important responsibilities on the service layer are:
+* Uploading the image - When image pieces come in, they need to be uploaded to Blob storage so they can be accessed by the Worker project.
+Sending a processing require - For the Worker project to know it needs to process an image, a message gets placed on a service bus queue which the Worker project listens to.
+* Storing the image data - To keep track of the image and map data, some data gets stored in a database.
+
+### DistributedSystems.Worker
+
+.NET Core 2.1 Console Application
+
+### DistributedSystems.WorkerManager
+
+.NET Framework 4.7 Windows Service (using TopShelf)
+
+### DistributedSystems.Migrations
+
+.NET Core 2.1 Console Application
 
 ## System Design
 
