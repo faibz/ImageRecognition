@@ -25,7 +25,11 @@ The API is the central application in the system. This application is responsibl
 
 ## Miscellaneous
 
+### Hosting
+
 This application was built and deployed via Azure DevOps to various components hosted in Azure.
+
+### Map Visualisation
 
 ![Map Visualisation](https://github.com/faibz/image-recognition/blob/master/mapvisualisation.png "Map Visualisation")
 
