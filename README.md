@@ -8,13 +8,13 @@ This system is comprised of various components that work together to process an 
 
 ### DistributedSystems.Client
 
-.NET Framework 4.6.1 WinForms Application
+_.NET Framework 4.6.1 WinForms Application_
 
 The client is the front-end application of the system. This application is where the user will select an image to analyse. The selected image will then be broken down into 1000x1000 pieces and sent off to the API. After sending the image to the API, the client will then check to see if any of the image pieces have been processed by asking the API if there are any available results of processing the whole image. Should any results be found and returned by the API, they will be shown to the user in a table.
 
 ### DistributedSystems.API
 
-.NET Core 2.1 Web API Application
+_.NET Core 2.1 Web API Application_
 
 The API is the central application in the system. This application is responsible for most of the work in the system, and therefore, each controller will be described individually:
 * Data Controller - Provides data about image processing times. Consumed by the DistributedSystems.WorkerManager project. 
@@ -31,19 +31,19 @@ Underneath the controller layer, there are some services that follow up some of 
 
 ### DistributedSystems.Worker
 
-.NET Core 2.1 Console Application
+_.NET Core 2.1 Console Application_
 
 The Worker project is responsible for processing images. It does this in several steps. Firstly, the Worker listens to the process request queue. When it has a message from the queue, it will download the image(s) specified in the message. If necessary, the Worker will then combine the images (with respect to the positions in the map) into a single image. Next, the Worker will send the image to Azure's Computer Vision API. Lastly, the Worker will send the information returned by the Computer Vision API to DistributedSystems.API for storage.
 
 ### DistributedSystems.WorkerManager
 
-.NET Framework 4.7 Windows Service (using TopShelf)
+_.NET Framework 4.7 Windows Service (using TopShelf)_
 
 The WorkerManager process is responsible for scaling the worker pool to adjust to system load. This is a simple process but it was written with expansion in mind. The WorkerManager uses a few metrics to decide what action it should take (add worker, remove worker, do nothing): current messages in the queue, current average processing time per image, and target processing time. It processes these metrics, decides on an action, and then executes it.
 
 ### DistributedSystems.Migrations
 
-.NET Core 2.1 Console Application (using Simple.Migrations)
+_.NET Core 2.1 Console Application (using Simple.Migrations)_
 
 The Migrations project is a simple project that simply migrates a database to a specific version (typically latest) of the migrations.
 
