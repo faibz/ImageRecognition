@@ -21,24 +21,31 @@ The API is the central application in the system. This application is responsibl
 * Images Controller - Provides endpoints for uploading images and retrieving the status of them. Consumed by Client project.
 * Maps Controller - Provides a single endpoint for creating an image map (visualisation of a map can be seen below). Consumed by the Client project when breaking down a large image.
 * Tags Controller - Provides endpoints for the Worker project to send post-analysis image data and for the Client project to ask for the aforementioned image data. Consumed by Worker and Client projects.
+** Note: If the image analysis data contains results (tags) with low confidence, the API will then add a message onto the process request queue with a neighbouring tile for further processing.
 * Versions Controller - Provides information about DistributedSystems.Worker versions for updating purposes. Could, in future, be consumed by the Worker project to know when to update.
 
 Underneath the controller layer, there are some services that follow up some of the processing required by the controllers. Three important responsibilities on the service layer are:
 * Uploading the image - When image pieces come in, they need to be uploaded to Blob storage so they can be accessed by the Worker project.
-Sending a processing require - For the Worker project to know it needs to process an image, a message gets placed on a service bus queue which the Worker project listens to.
+* Sending a processing request - For the Worker project to know it needs to process an image, a message gets placed on a service bus queue which the Worker project listens to.
 * Storing the image data - To keep track of the image and map data, some data gets stored in a database.
 
 ### DistributedSystems.Worker
 
 .NET Core 2.1 Console Application
 
+The Worker project is responsible for processing images. It does this in several steps. Firstly, the Worker listens to the process request queue. When it has a message from the queue, it will download the image(s) specified in the message. If necessary, the Worker will then combine the images (with respect to the positions in the map) into a single image. Next, the Worker will send the image to Azure's Computer Vision API. Lastly, the Worker will send the information returned by the Computer Vision API to DistributedSystems.API for storage.
+
 ### DistributedSystems.WorkerManager
 
 .NET Framework 4.7 Windows Service (using TopShelf)
 
+The WorkerManager process is responsible for scaling the worker pool to adjust to system load. This is a simple process but it was written with expansion in mind. The WorkerManager uses a few metrics to decide what action it should take (add worker, remove worker, do nothing): current messages in the queue, current average processing time per image, and target processing time. It processes these metrics, decides on an action, and then executes it.
+
 ### DistributedSystems.Migrations
 
-.NET Core 2.1 Console Application
+.NET Core 2.1 Console Application (using Simple.Migrations)
+
+The Migrations project is a simple project that simply migrates a database to a specific version (typically latest) of the migrations.
 
 ## System Design
 
